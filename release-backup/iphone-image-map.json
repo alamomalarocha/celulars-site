@@ -1,0 +1,1993 @@
+{
+  "name": "iphone-image-map",
+  "instructions": "Paste GoDaddy media library URLs into front, back, and side. Leave empty to use the built-in fallback illustration.",
+  "preferred_format": "WebP",
+  "preferred_canvas": "1000x1000 or 1200x1200 square",
+  "images": {
+    "iPhone 17e": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17e Black",
+        "suggested_front_filename": "iphone-17e-black-front.webp",
+        "suggested_back_filename": "iphone-17e-black-back.webp",
+        "suggested_side_filename": "iphone-17e-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17e White",
+        "suggested_front_filename": "iphone-17e-white-front.webp",
+        "suggested_back_filename": "iphone-17e-white-back.webp",
+        "suggested_side_filename": "iphone-17e-white-side.webp"
+      },
+      "Soft Pink": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17e Soft Pink",
+        "suggested_front_filename": "iphone-17e-soft-pink-front.webp",
+        "suggested_back_filename": "iphone-17e-soft-pink-back.webp",
+        "suggested_side_filename": "iphone-17e-soft-pink-side.webp"
+      }
+    },
+    "iPhone 17 Pro Max": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 Pro Max Silver",
+        "suggested_front_filename": "iphone-17-pro-max-silver-front.webp",
+        "suggested_back_filename": "iphone-17-pro-max-silver-back.webp",
+        "suggested_side_filename": "iphone-17-pro-max-silver-side.webp"
+      },
+      "Cosmic Orange": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 Pro Max Cosmic Orange",
+        "suggested_front_filename": "iphone-17-pro-max-cosmic-orange-front.webp",
+        "suggested_back_filename": "iphone-17-pro-max-cosmic-orange-back.webp",
+        "suggested_side_filename": "iphone-17-pro-max-cosmic-orange-side.webp"
+      },
+      "Deep Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 Pro Max Deep Blue",
+        "suggested_front_filename": "iphone-17-pro-max-deep-blue-front.webp",
+        "suggested_back_filename": "iphone-17-pro-max-deep-blue-back.webp",
+        "suggested_side_filename": "iphone-17-pro-max-deep-blue-side.webp"
+      }
+    },
+    "iPhone 17 Pro": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 Pro Silver",
+        "suggested_front_filename": "iphone-17-pro-silver-front.webp",
+        "suggested_back_filename": "iphone-17-pro-silver-back.webp",
+        "suggested_side_filename": "iphone-17-pro-silver-side.webp"
+      },
+      "Cosmic Orange": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 Pro Cosmic Orange",
+        "suggested_front_filename": "iphone-17-pro-cosmic-orange-front.webp",
+        "suggested_back_filename": "iphone-17-pro-cosmic-orange-back.webp",
+        "suggested_side_filename": "iphone-17-pro-cosmic-orange-side.webp"
+      },
+      "Deep Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 Pro Deep Blue",
+        "suggested_front_filename": "iphone-17-pro-deep-blue-front.webp",
+        "suggested_back_filename": "iphone-17-pro-deep-blue-back.webp",
+        "suggested_side_filename": "iphone-17-pro-deep-blue-side.webp"
+      }
+    },
+    "iPhone Air": {
+      "Space Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone Air Space Black",
+        "suggested_front_filename": "iphone-air-space-black-front.webp",
+        "suggested_back_filename": "iphone-air-space-black-back.webp",
+        "suggested_side_filename": "iphone-air-space-black-side.webp"
+      },
+      "Cloud White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone Air Cloud White",
+        "suggested_front_filename": "iphone-air-cloud-white-front.webp",
+        "suggested_back_filename": "iphone-air-cloud-white-back.webp",
+        "suggested_side_filename": "iphone-air-cloud-white-side.webp"
+      },
+      "Light Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone Air Light Gold",
+        "suggested_front_filename": "iphone-air-light-gold-front.webp",
+        "suggested_back_filename": "iphone-air-light-gold-back.webp",
+        "suggested_side_filename": "iphone-air-light-gold-side.webp"
+      },
+      "Sky Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone Air Sky Blue",
+        "suggested_front_filename": "iphone-air-sky-blue-front.webp",
+        "suggested_back_filename": "iphone-air-sky-blue-back.webp",
+        "suggested_side_filename": "iphone-air-sky-blue-side.webp"
+      }
+    },
+    "iPhone 17": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 Black",
+        "suggested_front_filename": "iphone-17-black-front.webp",
+        "suggested_back_filename": "iphone-17-black-back.webp",
+        "suggested_side_filename": "iphone-17-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 White",
+        "suggested_front_filename": "iphone-17-white-front.webp",
+        "suggested_back_filename": "iphone-17-white-back.webp",
+        "suggested_side_filename": "iphone-17-white-side.webp"
+      },
+      "Mist Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 Mist Blue",
+        "suggested_front_filename": "iphone-17-mist-blue-front.webp",
+        "suggested_back_filename": "iphone-17-mist-blue-back.webp",
+        "suggested_side_filename": "iphone-17-mist-blue-side.webp"
+      },
+      "Sage": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 Sage",
+        "suggested_front_filename": "iphone-17-sage-front.webp",
+        "suggested_back_filename": "iphone-17-sage-back.webp",
+        "suggested_side_filename": "iphone-17-sage-side.webp"
+      },
+      "Lavender": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 17 Lavender",
+        "suggested_front_filename": "iphone-17-lavender-front.webp",
+        "suggested_back_filename": "iphone-17-lavender-back.webp",
+        "suggested_side_filename": "iphone-17-lavender-side.webp"
+      }
+    },
+    "iPhone 16e": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16e Black",
+        "suggested_front_filename": "iphone-16e-black-front.webp",
+        "suggested_back_filename": "iphone-16e-black-back.webp",
+        "suggested_side_filename": "iphone-16e-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16e White",
+        "suggested_front_filename": "iphone-16e-white-front.webp",
+        "suggested_back_filename": "iphone-16e-white-back.webp",
+        "suggested_side_filename": "iphone-16e-white-side.webp"
+      }
+    },
+    "iPhone 16 Pro Max": {
+      "Black Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Pro Max Black Titanium",
+        "suggested_front_filename": "iphone-16-pro-max-black-titanium-front.webp",
+        "suggested_back_filename": "iphone-16-pro-max-black-titanium-back.webp",
+        "suggested_side_filename": "iphone-16-pro-max-black-titanium-side.webp"
+      },
+      "White Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Pro Max White Titanium",
+        "suggested_front_filename": "iphone-16-pro-max-white-titanium-front.webp",
+        "suggested_back_filename": "iphone-16-pro-max-white-titanium-back.webp",
+        "suggested_side_filename": "iphone-16-pro-max-white-titanium-side.webp"
+      },
+      "Natural Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Pro Max Natural Titanium",
+        "suggested_front_filename": "iphone-16-pro-max-natural-titanium-front.webp",
+        "suggested_back_filename": "iphone-16-pro-max-natural-titanium-back.webp",
+        "suggested_side_filename": "iphone-16-pro-max-natural-titanium-side.webp"
+      },
+      "Desert Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Pro Max Desert Titanium",
+        "suggested_front_filename": "iphone-16-pro-max-desert-titanium-front.webp",
+        "suggested_back_filename": "iphone-16-pro-max-desert-titanium-back.webp",
+        "suggested_side_filename": "iphone-16-pro-max-desert-titanium-side.webp"
+      }
+    },
+    "iPhone 16 Pro": {
+      "Black Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Pro Black Titanium",
+        "suggested_front_filename": "iphone-16-pro-black-titanium-front.webp",
+        "suggested_back_filename": "iphone-16-pro-black-titanium-back.webp",
+        "suggested_side_filename": "iphone-16-pro-black-titanium-side.webp"
+      },
+      "White Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Pro White Titanium",
+        "suggested_front_filename": "iphone-16-pro-white-titanium-front.webp",
+        "suggested_back_filename": "iphone-16-pro-white-titanium-back.webp",
+        "suggested_side_filename": "iphone-16-pro-white-titanium-side.webp"
+      },
+      "Natural Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Pro Natural Titanium",
+        "suggested_front_filename": "iphone-16-pro-natural-titanium-front.webp",
+        "suggested_back_filename": "iphone-16-pro-natural-titanium-back.webp",
+        "suggested_side_filename": "iphone-16-pro-natural-titanium-side.webp"
+      },
+      "Desert Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Pro Desert Titanium",
+        "suggested_front_filename": "iphone-16-pro-desert-titanium-front.webp",
+        "suggested_back_filename": "iphone-16-pro-desert-titanium-back.webp",
+        "suggested_side_filename": "iphone-16-pro-desert-titanium-side.webp"
+      }
+    },
+    "iPhone 16 Plus": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Plus Black",
+        "suggested_front_filename": "iphone-16-plus-black-front.webp",
+        "suggested_back_filename": "iphone-16-plus-black-back.webp",
+        "suggested_side_filename": "iphone-16-plus-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Plus White",
+        "suggested_front_filename": "iphone-16-plus-white-front.webp",
+        "suggested_back_filename": "iphone-16-plus-white-back.webp",
+        "suggested_side_filename": "iphone-16-plus-white-side.webp"
+      },
+      "Pink": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Plus Pink",
+        "suggested_front_filename": "iphone-16-plus-pink-front.webp",
+        "suggested_back_filename": "iphone-16-plus-pink-back.webp",
+        "suggested_side_filename": "iphone-16-plus-pink-side.webp"
+      },
+      "Teal": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Plus Teal",
+        "suggested_front_filename": "iphone-16-plus-teal-front.webp",
+        "suggested_back_filename": "iphone-16-plus-teal-back.webp",
+        "suggested_side_filename": "iphone-16-plus-teal-side.webp"
+      },
+      "Ultramarine": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Plus Ultramarine",
+        "suggested_front_filename": "iphone-16-plus-ultramarine-front.webp",
+        "suggested_back_filename": "iphone-16-plus-ultramarine-back.webp",
+        "suggested_side_filename": "iphone-16-plus-ultramarine-side.webp"
+      }
+    },
+    "iPhone 16": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Black",
+        "suggested_front_filename": "iphone-16-black-front.webp",
+        "suggested_back_filename": "iphone-16-black-back.webp",
+        "suggested_side_filename": "iphone-16-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 White",
+        "suggested_front_filename": "iphone-16-white-front.webp",
+        "suggested_back_filename": "iphone-16-white-back.webp",
+        "suggested_side_filename": "iphone-16-white-side.webp"
+      },
+      "Pink": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Pink",
+        "suggested_front_filename": "iphone-16-pink-front.webp",
+        "suggested_back_filename": "iphone-16-pink-back.webp",
+        "suggested_side_filename": "iphone-16-pink-side.webp"
+      },
+      "Teal": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Teal",
+        "suggested_front_filename": "iphone-16-teal-front.webp",
+        "suggested_back_filename": "iphone-16-teal-back.webp",
+        "suggested_side_filename": "iphone-16-teal-side.webp"
+      },
+      "Ultramarine": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 16 Ultramarine",
+        "suggested_front_filename": "iphone-16-ultramarine-front.webp",
+        "suggested_back_filename": "iphone-16-ultramarine-back.webp",
+        "suggested_side_filename": "iphone-16-ultramarine-side.webp"
+      }
+    },
+    "iPhone 15 Pro Max": {
+      "Black Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Pro Max Black Titanium",
+        "suggested_front_filename": "iphone-15-pro-max-black-titanium-front.webp",
+        "suggested_back_filename": "iphone-15-pro-max-black-titanium-back.webp",
+        "suggested_side_filename": "iphone-15-pro-max-black-titanium-side.webp"
+      },
+      "White Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Pro Max White Titanium",
+        "suggested_front_filename": "iphone-15-pro-max-white-titanium-front.webp",
+        "suggested_back_filename": "iphone-15-pro-max-white-titanium-back.webp",
+        "suggested_side_filename": "iphone-15-pro-max-white-titanium-side.webp"
+      },
+      "Blue Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Pro Max Blue Titanium",
+        "suggested_front_filename": "iphone-15-pro-max-blue-titanium-front.webp",
+        "suggested_back_filename": "iphone-15-pro-max-blue-titanium-back.webp",
+        "suggested_side_filename": "iphone-15-pro-max-blue-titanium-side.webp"
+      },
+      "Natural Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Pro Max Natural Titanium",
+        "suggested_front_filename": "iphone-15-pro-max-natural-titanium-front.webp",
+        "suggested_back_filename": "iphone-15-pro-max-natural-titanium-back.webp",
+        "suggested_side_filename": "iphone-15-pro-max-natural-titanium-side.webp"
+      }
+    },
+    "iPhone 15 Pro": {
+      "Black Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Pro Black Titanium",
+        "suggested_front_filename": "iphone-15-pro-black-titanium-front.webp",
+        "suggested_back_filename": "iphone-15-pro-black-titanium-back.webp",
+        "suggested_side_filename": "iphone-15-pro-black-titanium-side.webp"
+      },
+      "White Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Pro White Titanium",
+        "suggested_front_filename": "iphone-15-pro-white-titanium-front.webp",
+        "suggested_back_filename": "iphone-15-pro-white-titanium-back.webp",
+        "suggested_side_filename": "iphone-15-pro-white-titanium-side.webp"
+      },
+      "Blue Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Pro Blue Titanium",
+        "suggested_front_filename": "iphone-15-pro-blue-titanium-front.webp",
+        "suggested_back_filename": "iphone-15-pro-blue-titanium-back.webp",
+        "suggested_side_filename": "iphone-15-pro-blue-titanium-side.webp"
+      },
+      "Natural Titanium": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Pro Natural Titanium",
+        "suggested_front_filename": "iphone-15-pro-natural-titanium-front.webp",
+        "suggested_back_filename": "iphone-15-pro-natural-titanium-back.webp",
+        "suggested_side_filename": "iphone-15-pro-natural-titanium-side.webp"
+      }
+    },
+    "iPhone 15 Plus": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Plus Black",
+        "suggested_front_filename": "iphone-15-plus-black-front.webp",
+        "suggested_back_filename": "iphone-15-plus-black-back.webp",
+        "suggested_side_filename": "iphone-15-plus-black-side.webp"
+      },
+      "Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Plus Blue",
+        "suggested_front_filename": "iphone-15-plus-blue-front.webp",
+        "suggested_back_filename": "iphone-15-plus-blue-back.webp",
+        "suggested_side_filename": "iphone-15-plus-blue-side.webp"
+      },
+      "Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Plus Green",
+        "suggested_front_filename": "iphone-15-plus-green-front.webp",
+        "suggested_back_filename": "iphone-15-plus-green-back.webp",
+        "suggested_side_filename": "iphone-15-plus-green-side.webp"
+      },
+      "Yellow": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Plus Yellow",
+        "suggested_front_filename": "iphone-15-plus-yellow-front.webp",
+        "suggested_back_filename": "iphone-15-plus-yellow-back.webp",
+        "suggested_side_filename": "iphone-15-plus-yellow-side.webp"
+      },
+      "Pink": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Plus Pink",
+        "suggested_front_filename": "iphone-15-plus-pink-front.webp",
+        "suggested_back_filename": "iphone-15-plus-pink-back.webp",
+        "suggested_side_filename": "iphone-15-plus-pink-side.webp"
+      }
+    },
+    "iPhone 15": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Black",
+        "suggested_front_filename": "iphone-15-black-front.webp",
+        "suggested_back_filename": "iphone-15-black-back.webp",
+        "suggested_side_filename": "iphone-15-black-side.webp"
+      },
+      "Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Blue",
+        "suggested_front_filename": "iphone-15-blue-front.webp",
+        "suggested_back_filename": "iphone-15-blue-back.webp",
+        "suggested_side_filename": "iphone-15-blue-side.webp"
+      },
+      "Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Green",
+        "suggested_front_filename": "iphone-15-green-front.webp",
+        "suggested_back_filename": "iphone-15-green-back.webp",
+        "suggested_side_filename": "iphone-15-green-side.webp"
+      },
+      "Yellow": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Yellow",
+        "suggested_front_filename": "iphone-15-yellow-front.webp",
+        "suggested_back_filename": "iphone-15-yellow-back.webp",
+        "suggested_side_filename": "iphone-15-yellow-side.webp"
+      },
+      "Pink": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 15 Pink",
+        "suggested_front_filename": "iphone-15-pink-front.webp",
+        "suggested_back_filename": "iphone-15-pink-back.webp",
+        "suggested_side_filename": "iphone-15-pink-side.webp"
+      }
+    },
+    "iPhone 14 Pro Max": {
+      "Space Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Pro Max Space Black",
+        "suggested_front_filename": "iphone-14-pro-max-space-black-front.webp",
+        "suggested_back_filename": "iphone-14-pro-max-space-black-back.webp",
+        "suggested_side_filename": "iphone-14-pro-max-space-black-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Pro Max Silver",
+        "suggested_front_filename": "iphone-14-pro-max-silver-front.webp",
+        "suggested_back_filename": "iphone-14-pro-max-silver-back.webp",
+        "suggested_side_filename": "iphone-14-pro-max-silver-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Pro Max Gold",
+        "suggested_front_filename": "iphone-14-pro-max-gold-front.webp",
+        "suggested_back_filename": "iphone-14-pro-max-gold-back.webp",
+        "suggested_side_filename": "iphone-14-pro-max-gold-side.webp"
+      },
+      "Deep Purple": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Pro Max Deep Purple",
+        "suggested_front_filename": "iphone-14-pro-max-deep-purple-front.webp",
+        "suggested_back_filename": "iphone-14-pro-max-deep-purple-back.webp",
+        "suggested_side_filename": "iphone-14-pro-max-deep-purple-side.webp"
+      }
+    },
+    "iPhone 14 Pro": {
+      "Space Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Pro Space Black",
+        "suggested_front_filename": "iphone-14-pro-space-black-front.webp",
+        "suggested_back_filename": "iphone-14-pro-space-black-back.webp",
+        "suggested_side_filename": "iphone-14-pro-space-black-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Pro Silver",
+        "suggested_front_filename": "iphone-14-pro-silver-front.webp",
+        "suggested_back_filename": "iphone-14-pro-silver-back.webp",
+        "suggested_side_filename": "iphone-14-pro-silver-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Pro Gold",
+        "suggested_front_filename": "iphone-14-pro-gold-front.webp",
+        "suggested_back_filename": "iphone-14-pro-gold-back.webp",
+        "suggested_side_filename": "iphone-14-pro-gold-side.webp"
+      },
+      "Deep Purple": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Pro Deep Purple",
+        "suggested_front_filename": "iphone-14-pro-deep-purple-front.webp",
+        "suggested_back_filename": "iphone-14-pro-deep-purple-back.webp",
+        "suggested_side_filename": "iphone-14-pro-deep-purple-side.webp"
+      }
+    },
+    "iPhone 14 Plus": {
+      "Midnight": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Plus Midnight",
+        "suggested_front_filename": "iphone-14-plus-midnight-front.webp",
+        "suggested_back_filename": "iphone-14-plus-midnight-back.webp",
+        "suggested_side_filename": "iphone-14-plus-midnight-side.webp"
+      },
+      "Starlight": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Plus Starlight",
+        "suggested_front_filename": "iphone-14-plus-starlight-front.webp",
+        "suggested_back_filename": "iphone-14-plus-starlight-back.webp",
+        "suggested_side_filename": "iphone-14-plus-starlight-side.webp"
+      },
+      "Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Plus Blue",
+        "suggested_front_filename": "iphone-14-plus-blue-front.webp",
+        "suggested_back_filename": "iphone-14-plus-blue-back.webp",
+        "suggested_side_filename": "iphone-14-plus-blue-side.webp"
+      },
+      "Purple": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Plus Purple",
+        "suggested_front_filename": "iphone-14-plus-purple-front.webp",
+        "suggested_back_filename": "iphone-14-plus-purple-back.webp",
+        "suggested_side_filename": "iphone-14-plus-purple-side.webp"
+      },
+      "Yellow": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Plus Yellow",
+        "suggested_front_filename": "iphone-14-plus-yellow-front.webp",
+        "suggested_back_filename": "iphone-14-plus-yellow-back.webp",
+        "suggested_side_filename": "iphone-14-plus-yellow-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Plus (PRODUCT)RED",
+        "suggested_front_filename": "iphone-14-plus-productred-front.webp",
+        "suggested_back_filename": "iphone-14-plus-productred-back.webp",
+        "suggested_side_filename": "iphone-14-plus-productred-side.webp"
+      }
+    },
+    "iPhone 14": {
+      "Midnight": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Midnight",
+        "suggested_front_filename": "iphone-14-midnight-front.webp",
+        "suggested_back_filename": "iphone-14-midnight-back.webp",
+        "suggested_side_filename": "iphone-14-midnight-side.webp"
+      },
+      "Starlight": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Starlight",
+        "suggested_front_filename": "iphone-14-starlight-front.webp",
+        "suggested_back_filename": "iphone-14-starlight-back.webp",
+        "suggested_side_filename": "iphone-14-starlight-side.webp"
+      },
+      "Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Blue",
+        "suggested_front_filename": "iphone-14-blue-front.webp",
+        "suggested_back_filename": "iphone-14-blue-back.webp",
+        "suggested_side_filename": "iphone-14-blue-side.webp"
+      },
+      "Purple": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Purple",
+        "suggested_front_filename": "iphone-14-purple-front.webp",
+        "suggested_back_filename": "iphone-14-purple-back.webp",
+        "suggested_side_filename": "iphone-14-purple-side.webp"
+      },
+      "Yellow": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 Yellow",
+        "suggested_front_filename": "iphone-14-yellow-front.webp",
+        "suggested_back_filename": "iphone-14-yellow-back.webp",
+        "suggested_side_filename": "iphone-14-yellow-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 14 (PRODUCT)RED",
+        "suggested_front_filename": "iphone-14-productred-front.webp",
+        "suggested_back_filename": "iphone-14-productred-back.webp",
+        "suggested_side_filename": "iphone-14-productred-side.webp"
+      }
+    },
+    "iPhone SE (3rd generation)": {
+      "Midnight": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone SE (3rd generation) Midnight",
+        "suggested_front_filename": "iphone-se-3rd-generation-midnight-front.webp",
+        "suggested_back_filename": "iphone-se-3rd-generation-midnight-back.webp",
+        "suggested_side_filename": "iphone-se-3rd-generation-midnight-side.webp"
+      },
+      "Starlight": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone SE (3rd generation) Starlight",
+        "suggested_front_filename": "iphone-se-3rd-generation-starlight-front.webp",
+        "suggested_back_filename": "iphone-se-3rd-generation-starlight-back.webp",
+        "suggested_side_filename": "iphone-se-3rd-generation-starlight-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone SE (3rd generation) (PRODUCT)RED",
+        "suggested_front_filename": "iphone-se-3rd-generation-productred-front.webp",
+        "suggested_back_filename": "iphone-se-3rd-generation-productred-back.webp",
+        "suggested_side_filename": "iphone-se-3rd-generation-productred-side.webp"
+      }
+    },
+    "iPhone 13 Pro Max": {
+      "Graphite": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pro Max Graphite",
+        "suggested_front_filename": "iphone-13-pro-max-graphite-front.webp",
+        "suggested_back_filename": "iphone-13-pro-max-graphite-back.webp",
+        "suggested_side_filename": "iphone-13-pro-max-graphite-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pro Max Gold",
+        "suggested_front_filename": "iphone-13-pro-max-gold-front.webp",
+        "suggested_back_filename": "iphone-13-pro-max-gold-back.webp",
+        "suggested_side_filename": "iphone-13-pro-max-gold-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pro Max Silver",
+        "suggested_front_filename": "iphone-13-pro-max-silver-front.webp",
+        "suggested_back_filename": "iphone-13-pro-max-silver-back.webp",
+        "suggested_side_filename": "iphone-13-pro-max-silver-side.webp"
+      },
+      "Sierra Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pro Max Sierra Blue",
+        "suggested_front_filename": "iphone-13-pro-max-sierra-blue-front.webp",
+        "suggested_back_filename": "iphone-13-pro-max-sierra-blue-back.webp",
+        "suggested_side_filename": "iphone-13-pro-max-sierra-blue-side.webp"
+      },
+      "Alpine Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pro Max Alpine Green",
+        "suggested_front_filename": "iphone-13-pro-max-alpine-green-front.webp",
+        "suggested_back_filename": "iphone-13-pro-max-alpine-green-back.webp",
+        "suggested_side_filename": "iphone-13-pro-max-alpine-green-side.webp"
+      }
+    },
+    "iPhone 13 Pro": {
+      "Graphite": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pro Graphite",
+        "suggested_front_filename": "iphone-13-pro-graphite-front.webp",
+        "suggested_back_filename": "iphone-13-pro-graphite-back.webp",
+        "suggested_side_filename": "iphone-13-pro-graphite-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pro Gold",
+        "suggested_front_filename": "iphone-13-pro-gold-front.webp",
+        "suggested_back_filename": "iphone-13-pro-gold-back.webp",
+        "suggested_side_filename": "iphone-13-pro-gold-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pro Silver",
+        "suggested_front_filename": "iphone-13-pro-silver-front.webp",
+        "suggested_back_filename": "iphone-13-pro-silver-back.webp",
+        "suggested_side_filename": "iphone-13-pro-silver-side.webp"
+      },
+      "Sierra Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pro Sierra Blue",
+        "suggested_front_filename": "iphone-13-pro-sierra-blue-front.webp",
+        "suggested_back_filename": "iphone-13-pro-sierra-blue-back.webp",
+        "suggested_side_filename": "iphone-13-pro-sierra-blue-side.webp"
+      },
+      "Alpine Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pro Alpine Green",
+        "suggested_front_filename": "iphone-13-pro-alpine-green-front.webp",
+        "suggested_back_filename": "iphone-13-pro-alpine-green-back.webp",
+        "suggested_side_filename": "iphone-13-pro-alpine-green-side.webp"
+      }
+    },
+    "iPhone 13": {
+      "Pink": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Pink",
+        "suggested_front_filename": "iphone-13-pink-front.webp",
+        "suggested_back_filename": "iphone-13-pink-back.webp",
+        "suggested_side_filename": "iphone-13-pink-side.webp"
+      },
+      "Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Blue",
+        "suggested_front_filename": "iphone-13-blue-front.webp",
+        "suggested_back_filename": "iphone-13-blue-back.webp",
+        "suggested_side_filename": "iphone-13-blue-side.webp"
+      },
+      "Midnight": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Midnight",
+        "suggested_front_filename": "iphone-13-midnight-front.webp",
+        "suggested_back_filename": "iphone-13-midnight-back.webp",
+        "suggested_side_filename": "iphone-13-midnight-side.webp"
+      },
+      "Starlight": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Starlight",
+        "suggested_front_filename": "iphone-13-starlight-front.webp",
+        "suggested_back_filename": "iphone-13-starlight-back.webp",
+        "suggested_side_filename": "iphone-13-starlight-side.webp"
+      },
+      "Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 Green",
+        "suggested_front_filename": "iphone-13-green-front.webp",
+        "suggested_back_filename": "iphone-13-green-back.webp",
+        "suggested_side_filename": "iphone-13-green-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 (PRODUCT)RED",
+        "suggested_front_filename": "iphone-13-productred-front.webp",
+        "suggested_back_filename": "iphone-13-productred-back.webp",
+        "suggested_side_filename": "iphone-13-productred-side.webp"
+      }
+    },
+    "iPhone 13 mini": {
+      "Pink": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 mini Pink",
+        "suggested_front_filename": "iphone-13-mini-pink-front.webp",
+        "suggested_back_filename": "iphone-13-mini-pink-back.webp",
+        "suggested_side_filename": "iphone-13-mini-pink-side.webp"
+      },
+      "Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 mini Blue",
+        "suggested_front_filename": "iphone-13-mini-blue-front.webp",
+        "suggested_back_filename": "iphone-13-mini-blue-back.webp",
+        "suggested_side_filename": "iphone-13-mini-blue-side.webp"
+      },
+      "Midnight": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 mini Midnight",
+        "suggested_front_filename": "iphone-13-mini-midnight-front.webp",
+        "suggested_back_filename": "iphone-13-mini-midnight-back.webp",
+        "suggested_side_filename": "iphone-13-mini-midnight-side.webp"
+      },
+      "Starlight": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 mini Starlight",
+        "suggested_front_filename": "iphone-13-mini-starlight-front.webp",
+        "suggested_back_filename": "iphone-13-mini-starlight-back.webp",
+        "suggested_side_filename": "iphone-13-mini-starlight-side.webp"
+      },
+      "Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 mini Green",
+        "suggested_front_filename": "iphone-13-mini-green-front.webp",
+        "suggested_back_filename": "iphone-13-mini-green-back.webp",
+        "suggested_side_filename": "iphone-13-mini-green-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 13 mini (PRODUCT)RED",
+        "suggested_front_filename": "iphone-13-mini-productred-front.webp",
+        "suggested_back_filename": "iphone-13-mini-productred-back.webp",
+        "suggested_side_filename": "iphone-13-mini-productred-side.webp"
+      }
+    },
+    "iPhone 12 Pro Max": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Pro Max Silver",
+        "suggested_front_filename": "iphone-12-pro-max-silver-front.webp",
+        "suggested_back_filename": "iphone-12-pro-max-silver-back.webp",
+        "suggested_side_filename": "iphone-12-pro-max-silver-side.webp"
+      },
+      "Graphite": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Pro Max Graphite",
+        "suggested_front_filename": "iphone-12-pro-max-graphite-front.webp",
+        "suggested_back_filename": "iphone-12-pro-max-graphite-back.webp",
+        "suggested_side_filename": "iphone-12-pro-max-graphite-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Pro Max Gold",
+        "suggested_front_filename": "iphone-12-pro-max-gold-front.webp",
+        "suggested_back_filename": "iphone-12-pro-max-gold-back.webp",
+        "suggested_side_filename": "iphone-12-pro-max-gold-side.webp"
+      },
+      "Pacific Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Pro Max Pacific Blue",
+        "suggested_front_filename": "iphone-12-pro-max-pacific-blue-front.webp",
+        "suggested_back_filename": "iphone-12-pro-max-pacific-blue-back.webp",
+        "suggested_side_filename": "iphone-12-pro-max-pacific-blue-side.webp"
+      }
+    },
+    "iPhone 12 Pro": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Pro Silver",
+        "suggested_front_filename": "iphone-12-pro-silver-front.webp",
+        "suggested_back_filename": "iphone-12-pro-silver-back.webp",
+        "suggested_side_filename": "iphone-12-pro-silver-side.webp"
+      },
+      "Graphite": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Pro Graphite",
+        "suggested_front_filename": "iphone-12-pro-graphite-front.webp",
+        "suggested_back_filename": "iphone-12-pro-graphite-back.webp",
+        "suggested_side_filename": "iphone-12-pro-graphite-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Pro Gold",
+        "suggested_front_filename": "iphone-12-pro-gold-front.webp",
+        "suggested_back_filename": "iphone-12-pro-gold-back.webp",
+        "suggested_side_filename": "iphone-12-pro-gold-side.webp"
+      },
+      "Pacific Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Pro Pacific Blue",
+        "suggested_front_filename": "iphone-12-pro-pacific-blue-front.webp",
+        "suggested_back_filename": "iphone-12-pro-pacific-blue-back.webp",
+        "suggested_side_filename": "iphone-12-pro-pacific-blue-side.webp"
+      }
+    },
+    "iPhone 12": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Black",
+        "suggested_front_filename": "iphone-12-black-front.webp",
+        "suggested_back_filename": "iphone-12-black-back.webp",
+        "suggested_side_filename": "iphone-12-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 White",
+        "suggested_front_filename": "iphone-12-white-front.webp",
+        "suggested_back_filename": "iphone-12-white-back.webp",
+        "suggested_side_filename": "iphone-12-white-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 (PRODUCT)RED",
+        "suggested_front_filename": "iphone-12-productred-front.webp",
+        "suggested_back_filename": "iphone-12-productred-back.webp",
+        "suggested_side_filename": "iphone-12-productred-side.webp"
+      },
+      "Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Green",
+        "suggested_front_filename": "iphone-12-green-front.webp",
+        "suggested_back_filename": "iphone-12-green-back.webp",
+        "suggested_side_filename": "iphone-12-green-side.webp"
+      },
+      "Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Blue",
+        "suggested_front_filename": "iphone-12-blue-front.webp",
+        "suggested_back_filename": "iphone-12-blue-back.webp",
+        "suggested_side_filename": "iphone-12-blue-side.webp"
+      },
+      "Purple": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 Purple",
+        "suggested_front_filename": "iphone-12-purple-front.webp",
+        "suggested_back_filename": "iphone-12-purple-back.webp",
+        "suggested_side_filename": "iphone-12-purple-side.webp"
+      }
+    },
+    "iPhone 12 mini": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 mini Black",
+        "suggested_front_filename": "iphone-12-mini-black-front.webp",
+        "suggested_back_filename": "iphone-12-mini-black-back.webp",
+        "suggested_side_filename": "iphone-12-mini-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 mini White",
+        "suggested_front_filename": "iphone-12-mini-white-front.webp",
+        "suggested_back_filename": "iphone-12-mini-white-back.webp",
+        "suggested_side_filename": "iphone-12-mini-white-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 mini (PRODUCT)RED",
+        "suggested_front_filename": "iphone-12-mini-productred-front.webp",
+        "suggested_back_filename": "iphone-12-mini-productred-back.webp",
+        "suggested_side_filename": "iphone-12-mini-productred-side.webp"
+      },
+      "Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 mini Green",
+        "suggested_front_filename": "iphone-12-mini-green-front.webp",
+        "suggested_back_filename": "iphone-12-mini-green-back.webp",
+        "suggested_side_filename": "iphone-12-mini-green-side.webp"
+      },
+      "Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 mini Blue",
+        "suggested_front_filename": "iphone-12-mini-blue-front.webp",
+        "suggested_back_filename": "iphone-12-mini-blue-back.webp",
+        "suggested_side_filename": "iphone-12-mini-blue-side.webp"
+      },
+      "Purple": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 12 mini Purple",
+        "suggested_front_filename": "iphone-12-mini-purple-front.webp",
+        "suggested_back_filename": "iphone-12-mini-purple-back.webp",
+        "suggested_side_filename": "iphone-12-mini-purple-side.webp"
+      }
+    },
+    "iPhone SE (2nd generation)": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone SE (2nd generation) Black",
+        "suggested_front_filename": "iphone-se-2nd-generation-black-front.webp",
+        "suggested_back_filename": "iphone-se-2nd-generation-black-back.webp",
+        "suggested_side_filename": "iphone-se-2nd-generation-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone SE (2nd generation) White",
+        "suggested_front_filename": "iphone-se-2nd-generation-white-front.webp",
+        "suggested_back_filename": "iphone-se-2nd-generation-white-back.webp",
+        "suggested_side_filename": "iphone-se-2nd-generation-white-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone SE (2nd generation) (PRODUCT)RED",
+        "suggested_front_filename": "iphone-se-2nd-generation-productred-front.webp",
+        "suggested_back_filename": "iphone-se-2nd-generation-productred-back.webp",
+        "suggested_side_filename": "iphone-se-2nd-generation-productred-side.webp"
+      }
+    },
+    "iPhone 11 Pro Max": {
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Pro Max Space Gray",
+        "suggested_front_filename": "iphone-11-pro-max-space-gray-front.webp",
+        "suggested_back_filename": "iphone-11-pro-max-space-gray-back.webp",
+        "suggested_side_filename": "iphone-11-pro-max-space-gray-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Pro Max Silver",
+        "suggested_front_filename": "iphone-11-pro-max-silver-front.webp",
+        "suggested_back_filename": "iphone-11-pro-max-silver-back.webp",
+        "suggested_side_filename": "iphone-11-pro-max-silver-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Pro Max Gold",
+        "suggested_front_filename": "iphone-11-pro-max-gold-front.webp",
+        "suggested_back_filename": "iphone-11-pro-max-gold-back.webp",
+        "suggested_side_filename": "iphone-11-pro-max-gold-side.webp"
+      },
+      "Midnight Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Pro Max Midnight Green",
+        "suggested_front_filename": "iphone-11-pro-max-midnight-green-front.webp",
+        "suggested_back_filename": "iphone-11-pro-max-midnight-green-back.webp",
+        "suggested_side_filename": "iphone-11-pro-max-midnight-green-side.webp"
+      }
+    },
+    "iPhone 11 Pro": {
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Pro Space Gray",
+        "suggested_front_filename": "iphone-11-pro-space-gray-front.webp",
+        "suggested_back_filename": "iphone-11-pro-space-gray-back.webp",
+        "suggested_side_filename": "iphone-11-pro-space-gray-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Pro Silver",
+        "suggested_front_filename": "iphone-11-pro-silver-front.webp",
+        "suggested_back_filename": "iphone-11-pro-silver-back.webp",
+        "suggested_side_filename": "iphone-11-pro-silver-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Pro Gold",
+        "suggested_front_filename": "iphone-11-pro-gold-front.webp",
+        "suggested_back_filename": "iphone-11-pro-gold-back.webp",
+        "suggested_side_filename": "iphone-11-pro-gold-side.webp"
+      },
+      "Midnight Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Pro Midnight Green",
+        "suggested_front_filename": "iphone-11-pro-midnight-green-front.webp",
+        "suggested_back_filename": "iphone-11-pro-midnight-green-back.webp",
+        "suggested_side_filename": "iphone-11-pro-midnight-green-side.webp"
+      }
+    },
+    "iPhone 11": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Black",
+        "suggested_front_filename": "iphone-11-black-front.webp",
+        "suggested_back_filename": "iphone-11-black-back.webp",
+        "suggested_side_filename": "iphone-11-black-side.webp"
+      },
+      "Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Green",
+        "suggested_front_filename": "iphone-11-green-front.webp",
+        "suggested_back_filename": "iphone-11-green-back.webp",
+        "suggested_side_filename": "iphone-11-green-side.webp"
+      },
+      "Yellow": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Yellow",
+        "suggested_front_filename": "iphone-11-yellow-front.webp",
+        "suggested_back_filename": "iphone-11-yellow-back.webp",
+        "suggested_side_filename": "iphone-11-yellow-side.webp"
+      },
+      "Purple": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 Purple",
+        "suggested_front_filename": "iphone-11-purple-front.webp",
+        "suggested_back_filename": "iphone-11-purple-back.webp",
+        "suggested_side_filename": "iphone-11-purple-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 (PRODUCT)RED",
+        "suggested_front_filename": "iphone-11-productred-front.webp",
+        "suggested_back_filename": "iphone-11-productred-back.webp",
+        "suggested_side_filename": "iphone-11-productred-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 11 White",
+        "suggested_front_filename": "iphone-11-white-front.webp",
+        "suggested_back_filename": "iphone-11-white-back.webp",
+        "suggested_side_filename": "iphone-11-white-side.webp"
+      }
+    },
+    "iPhone XS Max": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XS Max Silver",
+        "suggested_front_filename": "iphone-xs-max-silver-front.webp",
+        "suggested_back_filename": "iphone-xs-max-silver-back.webp",
+        "suggested_side_filename": "iphone-xs-max-silver-side.webp"
+      },
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XS Max Space Gray",
+        "suggested_front_filename": "iphone-xs-max-space-gray-front.webp",
+        "suggested_back_filename": "iphone-xs-max-space-gray-back.webp",
+        "suggested_side_filename": "iphone-xs-max-space-gray-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XS Max Gold",
+        "suggested_front_filename": "iphone-xs-max-gold-front.webp",
+        "suggested_back_filename": "iphone-xs-max-gold-back.webp",
+        "suggested_side_filename": "iphone-xs-max-gold-side.webp"
+      }
+    },
+    "iPhone XS": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XS Silver",
+        "suggested_front_filename": "iphone-xs-silver-front.webp",
+        "suggested_back_filename": "iphone-xs-silver-back.webp",
+        "suggested_side_filename": "iphone-xs-silver-side.webp"
+      },
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XS Space Gray",
+        "suggested_front_filename": "iphone-xs-space-gray-front.webp",
+        "suggested_back_filename": "iphone-xs-space-gray-back.webp",
+        "suggested_side_filename": "iphone-xs-space-gray-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XS Gold",
+        "suggested_front_filename": "iphone-xs-gold-front.webp",
+        "suggested_back_filename": "iphone-xs-gold-back.webp",
+        "suggested_side_filename": "iphone-xs-gold-side.webp"
+      }
+    },
+    "iPhone XR": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XR Black",
+        "suggested_front_filename": "iphone-xr-black-front.webp",
+        "suggested_back_filename": "iphone-xr-black-back.webp",
+        "suggested_side_filename": "iphone-xr-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XR White",
+        "suggested_front_filename": "iphone-xr-white-front.webp",
+        "suggested_back_filename": "iphone-xr-white-back.webp",
+        "suggested_side_filename": "iphone-xr-white-side.webp"
+      },
+      "Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XR Blue",
+        "suggested_front_filename": "iphone-xr-blue-front.webp",
+        "suggested_back_filename": "iphone-xr-blue-back.webp",
+        "suggested_side_filename": "iphone-xr-blue-side.webp"
+      },
+      "Yellow": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XR Yellow",
+        "suggested_front_filename": "iphone-xr-yellow-front.webp",
+        "suggested_back_filename": "iphone-xr-yellow-back.webp",
+        "suggested_side_filename": "iphone-xr-yellow-side.webp"
+      },
+      "Coral": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XR Coral",
+        "suggested_front_filename": "iphone-xr-coral-front.webp",
+        "suggested_back_filename": "iphone-xr-coral-back.webp",
+        "suggested_side_filename": "iphone-xr-coral-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone XR (PRODUCT)RED",
+        "suggested_front_filename": "iphone-xr-productred-front.webp",
+        "suggested_back_filename": "iphone-xr-productred-back.webp",
+        "suggested_side_filename": "iphone-xr-productred-side.webp"
+      }
+    },
+    "iPhone X": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone X Silver",
+        "suggested_front_filename": "iphone-x-silver-front.webp",
+        "suggested_back_filename": "iphone-x-silver-back.webp",
+        "suggested_side_filename": "iphone-x-silver-side.webp"
+      },
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone X Space Gray",
+        "suggested_front_filename": "iphone-x-space-gray-front.webp",
+        "suggested_back_filename": "iphone-x-space-gray-back.webp",
+        "suggested_side_filename": "iphone-x-space-gray-side.webp"
+      }
+    },
+    "iPhone 8 Plus": {
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 8 Plus Gold",
+        "suggested_front_filename": "iphone-8-plus-gold-front.webp",
+        "suggested_back_filename": "iphone-8-plus-gold-back.webp",
+        "suggested_side_filename": "iphone-8-plus-gold-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 8 Plus Silver",
+        "suggested_front_filename": "iphone-8-plus-silver-front.webp",
+        "suggested_back_filename": "iphone-8-plus-silver-back.webp",
+        "suggested_side_filename": "iphone-8-plus-silver-side.webp"
+      },
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 8 Plus Space Gray",
+        "suggested_front_filename": "iphone-8-plus-space-gray-front.webp",
+        "suggested_back_filename": "iphone-8-plus-space-gray-back.webp",
+        "suggested_side_filename": "iphone-8-plus-space-gray-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 8 Plus (PRODUCT)RED",
+        "suggested_front_filename": "iphone-8-plus-productred-front.webp",
+        "suggested_back_filename": "iphone-8-plus-productred-back.webp",
+        "suggested_side_filename": "iphone-8-plus-productred-side.webp"
+      }
+    },
+    "iPhone 8": {
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 8 Gold",
+        "suggested_front_filename": "iphone-8-gold-front.webp",
+        "suggested_back_filename": "iphone-8-gold-back.webp",
+        "suggested_side_filename": "iphone-8-gold-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 8 Silver",
+        "suggested_front_filename": "iphone-8-silver-front.webp",
+        "suggested_back_filename": "iphone-8-silver-back.webp",
+        "suggested_side_filename": "iphone-8-silver-side.webp"
+      },
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 8 Space Gray",
+        "suggested_front_filename": "iphone-8-space-gray-front.webp",
+        "suggested_back_filename": "iphone-8-space-gray-back.webp",
+        "suggested_side_filename": "iphone-8-space-gray-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 8 (PRODUCT)RED",
+        "suggested_front_filename": "iphone-8-productred-front.webp",
+        "suggested_back_filename": "iphone-8-productred-back.webp",
+        "suggested_side_filename": "iphone-8-productred-side.webp"
+      }
+    },
+    "iPhone 7 Plus": {
+      "Rose Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Plus Rose Gold",
+        "suggested_front_filename": "iphone-7-plus-rose-gold-front.webp",
+        "suggested_back_filename": "iphone-7-plus-rose-gold-back.webp",
+        "suggested_side_filename": "iphone-7-plus-rose-gold-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Plus Gold",
+        "suggested_front_filename": "iphone-7-plus-gold-front.webp",
+        "suggested_back_filename": "iphone-7-plus-gold-back.webp",
+        "suggested_side_filename": "iphone-7-plus-gold-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Plus Silver",
+        "suggested_front_filename": "iphone-7-plus-silver-front.webp",
+        "suggested_back_filename": "iphone-7-plus-silver-back.webp",
+        "suggested_side_filename": "iphone-7-plus-silver-side.webp"
+      },
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Plus Black",
+        "suggested_front_filename": "iphone-7-plus-black-front.webp",
+        "suggested_back_filename": "iphone-7-plus-black-back.webp",
+        "suggested_side_filename": "iphone-7-plus-black-side.webp"
+      },
+      "Jet Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Plus Jet Black",
+        "suggested_front_filename": "iphone-7-plus-jet-black-front.webp",
+        "suggested_back_filename": "iphone-7-plus-jet-black-back.webp",
+        "suggested_side_filename": "iphone-7-plus-jet-black-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Plus (PRODUCT)RED",
+        "suggested_front_filename": "iphone-7-plus-productred-front.webp",
+        "suggested_back_filename": "iphone-7-plus-productred-back.webp",
+        "suggested_side_filename": "iphone-7-plus-productred-side.webp"
+      }
+    },
+    "iPhone 7": {
+      "Rose Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Rose Gold",
+        "suggested_front_filename": "iphone-7-rose-gold-front.webp",
+        "suggested_back_filename": "iphone-7-rose-gold-back.webp",
+        "suggested_side_filename": "iphone-7-rose-gold-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Gold",
+        "suggested_front_filename": "iphone-7-gold-front.webp",
+        "suggested_back_filename": "iphone-7-gold-back.webp",
+        "suggested_side_filename": "iphone-7-gold-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Silver",
+        "suggested_front_filename": "iphone-7-silver-front.webp",
+        "suggested_back_filename": "iphone-7-silver-back.webp",
+        "suggested_side_filename": "iphone-7-silver-side.webp"
+      },
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Black",
+        "suggested_front_filename": "iphone-7-black-front.webp",
+        "suggested_back_filename": "iphone-7-black-back.webp",
+        "suggested_side_filename": "iphone-7-black-side.webp"
+      },
+      "Jet Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 Jet Black",
+        "suggested_front_filename": "iphone-7-jet-black-front.webp",
+        "suggested_back_filename": "iphone-7-jet-black-back.webp",
+        "suggested_side_filename": "iphone-7-jet-black-side.webp"
+      },
+      "(PRODUCT)RED": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 7 (PRODUCT)RED",
+        "suggested_front_filename": "iphone-7-productred-front.webp",
+        "suggested_back_filename": "iphone-7-productred-back.webp",
+        "suggested_side_filename": "iphone-7-productred-side.webp"
+      }
+    },
+    "iPhone SE (1st generation)": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone SE (1st generation) Silver",
+        "suggested_front_filename": "iphone-se-1st-generation-silver-front.webp",
+        "suggested_back_filename": "iphone-se-1st-generation-silver-back.webp",
+        "suggested_side_filename": "iphone-se-1st-generation-silver-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone SE (1st generation) Gold",
+        "suggested_front_filename": "iphone-se-1st-generation-gold-front.webp",
+        "suggested_back_filename": "iphone-se-1st-generation-gold-back.webp",
+        "suggested_side_filename": "iphone-se-1st-generation-gold-side.webp"
+      },
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone SE (1st generation) Space Gray",
+        "suggested_front_filename": "iphone-se-1st-generation-space-gray-front.webp",
+        "suggested_back_filename": "iphone-se-1st-generation-space-gray-back.webp",
+        "suggested_side_filename": "iphone-se-1st-generation-space-gray-side.webp"
+      },
+      "Rose Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone SE (1st generation) Rose Gold",
+        "suggested_front_filename": "iphone-se-1st-generation-rose-gold-front.webp",
+        "suggested_back_filename": "iphone-se-1st-generation-rose-gold-back.webp",
+        "suggested_side_filename": "iphone-se-1st-generation-rose-gold-side.webp"
+      }
+    },
+    "iPhone 6s Plus": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6s Plus Silver",
+        "suggested_front_filename": "iphone-6s-plus-silver-front.webp",
+        "suggested_back_filename": "iphone-6s-plus-silver-back.webp",
+        "suggested_side_filename": "iphone-6s-plus-silver-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6s Plus Gold",
+        "suggested_front_filename": "iphone-6s-plus-gold-front.webp",
+        "suggested_back_filename": "iphone-6s-plus-gold-back.webp",
+        "suggested_side_filename": "iphone-6s-plus-gold-side.webp"
+      },
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6s Plus Space Gray",
+        "suggested_front_filename": "iphone-6s-plus-space-gray-front.webp",
+        "suggested_back_filename": "iphone-6s-plus-space-gray-back.webp",
+        "suggested_side_filename": "iphone-6s-plus-space-gray-side.webp"
+      },
+      "Rose Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6s Plus Rose Gold",
+        "suggested_front_filename": "iphone-6s-plus-rose-gold-front.webp",
+        "suggested_back_filename": "iphone-6s-plus-rose-gold-back.webp",
+        "suggested_side_filename": "iphone-6s-plus-rose-gold-side.webp"
+      }
+    },
+    "iPhone 6s": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6s Silver",
+        "suggested_front_filename": "iphone-6s-silver-front.webp",
+        "suggested_back_filename": "iphone-6s-silver-back.webp",
+        "suggested_side_filename": "iphone-6s-silver-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6s Gold",
+        "suggested_front_filename": "iphone-6s-gold-front.webp",
+        "suggested_back_filename": "iphone-6s-gold-back.webp",
+        "suggested_side_filename": "iphone-6s-gold-side.webp"
+      },
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6s Space Gray",
+        "suggested_front_filename": "iphone-6s-space-gray-front.webp",
+        "suggested_back_filename": "iphone-6s-space-gray-back.webp",
+        "suggested_side_filename": "iphone-6s-space-gray-side.webp"
+      },
+      "Rose Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6s Rose Gold",
+        "suggested_front_filename": "iphone-6s-rose-gold-front.webp",
+        "suggested_back_filename": "iphone-6s-rose-gold-back.webp",
+        "suggested_side_filename": "iphone-6s-rose-gold-side.webp"
+      }
+    },
+    "iPhone 6 Plus": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6 Plus Silver",
+        "suggested_front_filename": "iphone-6-plus-silver-front.webp",
+        "suggested_back_filename": "iphone-6-plus-silver-back.webp",
+        "suggested_side_filename": "iphone-6-plus-silver-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6 Plus Gold",
+        "suggested_front_filename": "iphone-6-plus-gold-front.webp",
+        "suggested_back_filename": "iphone-6-plus-gold-back.webp",
+        "suggested_side_filename": "iphone-6-plus-gold-side.webp"
+      },
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6 Plus Space Gray",
+        "suggested_front_filename": "iphone-6-plus-space-gray-front.webp",
+        "suggested_back_filename": "iphone-6-plus-space-gray-back.webp",
+        "suggested_side_filename": "iphone-6-plus-space-gray-side.webp"
+      }
+    },
+    "iPhone 6": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6 Silver",
+        "suggested_front_filename": "iphone-6-silver-front.webp",
+        "suggested_back_filename": "iphone-6-silver-back.webp",
+        "suggested_side_filename": "iphone-6-silver-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6 Gold",
+        "suggested_front_filename": "iphone-6-gold-front.webp",
+        "suggested_back_filename": "iphone-6-gold-back.webp",
+        "suggested_side_filename": "iphone-6-gold-side.webp"
+      },
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 6 Space Gray",
+        "suggested_front_filename": "iphone-6-space-gray-front.webp",
+        "suggested_back_filename": "iphone-6-space-gray-back.webp",
+        "suggested_side_filename": "iphone-6-space-gray-side.webp"
+      }
+    },
+    "iPhone 5s": {
+      "Space Gray": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 5s Space Gray",
+        "suggested_front_filename": "iphone-5s-space-gray-front.webp",
+        "suggested_back_filename": "iphone-5s-space-gray-back.webp",
+        "suggested_side_filename": "iphone-5s-space-gray-side.webp"
+      },
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 5s Silver",
+        "suggested_front_filename": "iphone-5s-silver-front.webp",
+        "suggested_back_filename": "iphone-5s-silver-back.webp",
+        "suggested_side_filename": "iphone-5s-silver-side.webp"
+      },
+      "Gold": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 5s Gold",
+        "suggested_front_filename": "iphone-5s-gold-front.webp",
+        "suggested_back_filename": "iphone-5s-gold-back.webp",
+        "suggested_side_filename": "iphone-5s-gold-side.webp"
+      }
+    },
+    "iPhone 5c": {
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 5c White",
+        "suggested_front_filename": "iphone-5c-white-front.webp",
+        "suggested_back_filename": "iphone-5c-white-back.webp",
+        "suggested_side_filename": "iphone-5c-white-side.webp"
+      },
+      "Pink": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 5c Pink",
+        "suggested_front_filename": "iphone-5c-pink-front.webp",
+        "suggested_back_filename": "iphone-5c-pink-back.webp",
+        "suggested_side_filename": "iphone-5c-pink-side.webp"
+      },
+      "Yellow": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 5c Yellow",
+        "suggested_front_filename": "iphone-5c-yellow-front.webp",
+        "suggested_back_filename": "iphone-5c-yellow-back.webp",
+        "suggested_side_filename": "iphone-5c-yellow-side.webp"
+      },
+      "Blue": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 5c Blue",
+        "suggested_front_filename": "iphone-5c-blue-front.webp",
+        "suggested_back_filename": "iphone-5c-blue-back.webp",
+        "suggested_side_filename": "iphone-5c-blue-side.webp"
+      },
+      "Green": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 5c Green",
+        "suggested_front_filename": "iphone-5c-green-front.webp",
+        "suggested_back_filename": "iphone-5c-green-back.webp",
+        "suggested_side_filename": "iphone-5c-green-side.webp"
+      }
+    },
+    "iPhone 5": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 5 Black",
+        "suggested_front_filename": "iphone-5-black-front.webp",
+        "suggested_back_filename": "iphone-5-black-back.webp",
+        "suggested_side_filename": "iphone-5-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 5 White",
+        "suggested_front_filename": "iphone-5-white-front.webp",
+        "suggested_back_filename": "iphone-5-white-back.webp",
+        "suggested_side_filename": "iphone-5-white-side.webp"
+      }
+    },
+    "iPhone 4s": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 4s Black",
+        "suggested_front_filename": "iphone-4s-black-front.webp",
+        "suggested_back_filename": "iphone-4s-black-back.webp",
+        "suggested_side_filename": "iphone-4s-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 4s White",
+        "suggested_front_filename": "iphone-4s-white-front.webp",
+        "suggested_back_filename": "iphone-4s-white-back.webp",
+        "suggested_side_filename": "iphone-4s-white-side.webp"
+      }
+    },
+    "iPhone 4": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 4 Black",
+        "suggested_front_filename": "iphone-4-black-front.webp",
+        "suggested_back_filename": "iphone-4-black-back.webp",
+        "suggested_side_filename": "iphone-4-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 4 White",
+        "suggested_front_filename": "iphone-4-white-front.webp",
+        "suggested_back_filename": "iphone-4-white-back.webp",
+        "suggested_side_filename": "iphone-4-white-side.webp"
+      }
+    },
+    "iPhone 3GS": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 3GS Black",
+        "suggested_front_filename": "iphone-3gs-black-front.webp",
+        "suggested_back_filename": "iphone-3gs-black-back.webp",
+        "suggested_side_filename": "iphone-3gs-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 3GS White",
+        "suggested_front_filename": "iphone-3gs-white-front.webp",
+        "suggested_back_filename": "iphone-3gs-white-back.webp",
+        "suggested_side_filename": "iphone-3gs-white-side.webp"
+      }
+    },
+    "iPhone 3G": {
+      "Black": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 3G Black",
+        "suggested_front_filename": "iphone-3g-black-front.webp",
+        "suggested_back_filename": "iphone-3g-black-back.webp",
+        "suggested_side_filename": "iphone-3g-black-side.webp"
+      },
+      "White": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone 3G White",
+        "suggested_front_filename": "iphone-3g-white-front.webp",
+        "suggested_back_filename": "iphone-3g-white-back.webp",
+        "suggested_side_filename": "iphone-3g-white-side.webp"
+      }
+    },
+    "iPhone": {
+      "Silver": {
+        "front": "",
+        "back": "",
+        "side": "",
+        "alt": "iPhone Silver",
+        "suggested_front_filename": "iphone-silver-front.webp",
+        "suggested_back_filename": "iphone-silver-back.webp",
+        "suggested_side_filename": "iphone-silver-side.webp"
+      }
+    }
+  }
+}

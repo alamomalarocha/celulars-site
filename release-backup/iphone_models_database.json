@@ -1,0 +1,1310 @@
+[
+  {
+    "model_id": "iphone_17e",
+    "model_name": "iPhone 17e",
+    "release_year": 2026,
+    "generation": "iPhone 17",
+    "model_family": "e",
+    "capacities": [
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "Soft Pink"
+    ],
+    "us_model_numbers": [],
+    "display_order": 1,
+    "is_legacy": false,
+    "is_current": true,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_17_pro_max",
+    "model_name": "iPhone 17 Pro Max",
+    "release_year": 2025,
+    "generation": "iPhone 17",
+    "model_family": "Pro Max",
+    "capacities": [
+      "256GB",
+      "512GB",
+      "1TB",
+      "2TB"
+    ],
+    "colors": [
+      "Silver",
+      "Cosmic Orange",
+      "Deep Blue"
+    ],
+    "us_model_numbers": [],
+    "display_order": 2,
+    "is_legacy": false,
+    "is_current": true,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_17_pro",
+    "model_name": "iPhone 17 Pro",
+    "release_year": 2025,
+    "generation": "iPhone 17",
+    "model_family": "Pro",
+    "capacities": [
+      "256GB",
+      "512GB",
+      "1TB"
+    ],
+    "colors": [
+      "Silver",
+      "Cosmic Orange",
+      "Deep Blue"
+    ],
+    "us_model_numbers": [],
+    "display_order": 3,
+    "is_legacy": false,
+    "is_current": true,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_air",
+    "model_name": "iPhone Air",
+    "release_year": 2025,
+    "generation": "iPhone Air",
+    "model_family": "Air",
+    "capacities": [
+      "256GB",
+      "512GB",
+      "1TB"
+    ],
+    "colors": [
+      "Space Black",
+      "Cloud White",
+      "Light Gold",
+      "Sky Blue"
+    ],
+    "us_model_numbers": [],
+    "display_order": 4,
+    "is_legacy": false,
+    "is_current": true,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_17",
+    "model_name": "iPhone 17",
+    "release_year": 2025,
+    "generation": "iPhone 17",
+    "model_family": "standard",
+    "capacities": [
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "Mist Blue",
+      "Sage",
+      "Lavender"
+    ],
+    "us_model_numbers": [],
+    "display_order": 5,
+    "is_legacy": false,
+    "is_current": true,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_16e",
+    "model_name": "iPhone 16e",
+    "release_year": 2025,
+    "generation": "iPhone 16",
+    "model_family": "e",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "us_model_numbers": [],
+    "display_order": 6,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_16_pro_max",
+    "model_name": "iPhone 16 Pro Max",
+    "release_year": 2024,
+    "generation": "iPhone 16",
+    "model_family": "Pro Max",
+    "capacities": [
+      "256GB",
+      "512GB",
+      "1TB"
+    ],
+    "colors": [
+      "Black Titanium",
+      "White Titanium",
+      "Natural Titanium",
+      "Desert Titanium"
+    ],
+    "us_model_numbers": [],
+    "display_order": 7,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_16_pro",
+    "model_name": "iPhone 16 Pro",
+    "release_year": 2024,
+    "generation": "iPhone 16",
+    "model_family": "Pro",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB",
+      "1TB"
+    ],
+    "colors": [
+      "Black Titanium",
+      "White Titanium",
+      "Natural Titanium",
+      "Desert Titanium"
+    ],
+    "us_model_numbers": [],
+    "display_order": 8,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_16_plus",
+    "model_name": "iPhone 16 Plus",
+    "release_year": 2024,
+    "generation": "iPhone 16",
+    "model_family": "Plus",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "Pink",
+      "Teal",
+      "Ultramarine"
+    ],
+    "us_model_numbers": [],
+    "display_order": 9,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_16",
+    "model_name": "iPhone 16",
+    "release_year": 2024,
+    "generation": "iPhone 16",
+    "model_family": "standard",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "Pink",
+      "Teal",
+      "Ultramarine"
+    ],
+    "us_model_numbers": [],
+    "display_order": 10,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_15_pro_max",
+    "model_name": "iPhone 15 Pro Max",
+    "release_year": 2023,
+    "generation": "iPhone 15",
+    "model_family": "Pro Max",
+    "capacities": [
+      "256GB",
+      "512GB",
+      "1TB"
+    ],
+    "colors": [
+      "Black Titanium",
+      "White Titanium",
+      "Blue Titanium",
+      "Natural Titanium"
+    ],
+    "us_model_numbers": [],
+    "display_order": 11,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_15_pro",
+    "model_name": "iPhone 15 Pro",
+    "release_year": 2023,
+    "generation": "iPhone 15",
+    "model_family": "Pro",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB",
+      "1TB"
+    ],
+    "colors": [
+      "Black Titanium",
+      "White Titanium",
+      "Blue Titanium",
+      "Natural Titanium"
+    ],
+    "us_model_numbers": [],
+    "display_order": 12,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_15_plus",
+    "model_name": "iPhone 15 Plus",
+    "release_year": 2023,
+    "generation": "iPhone 15",
+    "model_family": "Plus",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Black",
+      "Blue",
+      "Green",
+      "Yellow",
+      "Pink"
+    ],
+    "us_model_numbers": [],
+    "display_order": 13,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_15",
+    "model_name": "iPhone 15",
+    "release_year": 2023,
+    "generation": "iPhone 15",
+    "model_family": "standard",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Black",
+      "Blue",
+      "Green",
+      "Yellow",
+      "Pink"
+    ],
+    "us_model_numbers": [],
+    "display_order": 14,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_14_pro_max",
+    "model_name": "iPhone 14 Pro Max",
+    "release_year": 2022,
+    "generation": "iPhone 14",
+    "model_family": "Pro Max",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB",
+      "1TB"
+    ],
+    "colors": [
+      "Space Black",
+      "Silver",
+      "Gold",
+      "Deep Purple"
+    ],
+    "us_model_numbers": [],
+    "display_order": 15,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_14_pro",
+    "model_name": "iPhone 14 Pro",
+    "release_year": 2022,
+    "generation": "iPhone 14",
+    "model_family": "Pro",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB",
+      "1TB"
+    ],
+    "colors": [
+      "Space Black",
+      "Silver",
+      "Gold",
+      "Deep Purple"
+    ],
+    "us_model_numbers": [],
+    "display_order": 16,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_14_plus",
+    "model_name": "iPhone 14 Plus",
+    "release_year": 2022,
+    "generation": "iPhone 14",
+    "model_family": "Plus",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Midnight",
+      "Starlight",
+      "Blue",
+      "Purple",
+      "Yellow",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 17,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_14",
+    "model_name": "iPhone 14",
+    "release_year": 2022,
+    "generation": "iPhone 14",
+    "model_family": "standard",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Midnight",
+      "Starlight",
+      "Blue",
+      "Purple",
+      "Yellow",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 18,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_se_3rd_generation",
+    "model_name": "iPhone SE (3rd generation)",
+    "release_year": 2022,
+    "generation": "iPhone SE",
+    "model_family": "SE",
+    "capacities": [
+      "64GB",
+      "128GB",
+      "256GB"
+    ],
+    "colors": [
+      "Midnight",
+      "Starlight",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 19,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_13_pro_max",
+    "model_name": "iPhone 13 Pro Max",
+    "release_year": 2021,
+    "generation": "iPhone 13",
+    "model_family": "Pro Max",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB",
+      "1TB"
+    ],
+    "colors": [
+      "Graphite",
+      "Gold",
+      "Silver",
+      "Sierra Blue",
+      "Alpine Green"
+    ],
+    "us_model_numbers": [],
+    "display_order": 20,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_13_pro",
+    "model_name": "iPhone 13 Pro",
+    "release_year": 2021,
+    "generation": "iPhone 13",
+    "model_family": "Pro",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB",
+      "1TB"
+    ],
+    "colors": [
+      "Graphite",
+      "Gold",
+      "Silver",
+      "Sierra Blue",
+      "Alpine Green"
+    ],
+    "us_model_numbers": [],
+    "display_order": 21,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_13",
+    "model_name": "iPhone 13",
+    "release_year": 2021,
+    "generation": "iPhone 13",
+    "model_family": "standard",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Pink",
+      "Blue",
+      "Midnight",
+      "Starlight",
+      "Green",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 22,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_13_mini",
+    "model_name": "iPhone 13 mini",
+    "release_year": 2021,
+    "generation": "iPhone 13",
+    "model_family": "mini",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Pink",
+      "Blue",
+      "Midnight",
+      "Starlight",
+      "Green",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 23,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_12_pro_max",
+    "model_name": "iPhone 12 Pro Max",
+    "release_year": 2020,
+    "generation": "iPhone 12",
+    "model_family": "Pro Max",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Silver",
+      "Graphite",
+      "Gold",
+      "Pacific Blue"
+    ],
+    "us_model_numbers": [],
+    "display_order": 24,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_12_pro",
+    "model_name": "iPhone 12 Pro",
+    "release_year": 2020,
+    "generation": "iPhone 12",
+    "model_family": "Pro",
+    "capacities": [
+      "128GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Silver",
+      "Graphite",
+      "Gold",
+      "Pacific Blue"
+    ],
+    "us_model_numbers": [],
+    "display_order": 25,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_12",
+    "model_name": "iPhone 12",
+    "release_year": 2020,
+    "generation": "iPhone 12",
+    "model_family": "standard",
+    "capacities": [
+      "64GB",
+      "128GB",
+      "256GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "(PRODUCT)RED",
+      "Green",
+      "Blue",
+      "Purple"
+    ],
+    "us_model_numbers": [],
+    "display_order": 26,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_12_mini",
+    "model_name": "iPhone 12 mini",
+    "release_year": 2020,
+    "generation": "iPhone 12",
+    "model_family": "mini",
+    "capacities": [
+      "64GB",
+      "128GB",
+      "256GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "(PRODUCT)RED",
+      "Green",
+      "Blue",
+      "Purple"
+    ],
+    "us_model_numbers": [],
+    "display_order": 27,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_se_2nd_generation",
+    "model_name": "iPhone SE (2nd generation)",
+    "release_year": 2020,
+    "generation": "iPhone SE",
+    "model_family": "SE",
+    "capacities": [
+      "64GB",
+      "128GB",
+      "256GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 28,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_11_pro_max",
+    "model_name": "iPhone 11 Pro Max",
+    "release_year": 2019,
+    "generation": "iPhone 11",
+    "model_family": "Pro Max",
+    "capacities": [
+      "64GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Space Gray",
+      "Silver",
+      "Gold",
+      "Midnight Green"
+    ],
+    "us_model_numbers": [],
+    "display_order": 29,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_11_pro",
+    "model_name": "iPhone 11 Pro",
+    "release_year": 2019,
+    "generation": "iPhone 11",
+    "model_family": "Pro",
+    "capacities": [
+      "64GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Space Gray",
+      "Silver",
+      "Gold",
+      "Midnight Green"
+    ],
+    "us_model_numbers": [],
+    "display_order": 30,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_11",
+    "model_name": "iPhone 11",
+    "release_year": 2019,
+    "generation": "iPhone 11",
+    "model_family": "standard",
+    "capacities": [
+      "64GB",
+      "128GB",
+      "256GB"
+    ],
+    "colors": [
+      "Black",
+      "Green",
+      "Yellow",
+      "Purple",
+      "(PRODUCT)RED",
+      "White"
+    ],
+    "us_model_numbers": [],
+    "display_order": 31,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_xs_max",
+    "model_name": "iPhone XS Max",
+    "release_year": 2018,
+    "generation": "iPhone",
+    "model_family": "XS Max",
+    "capacities": [
+      "64GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Silver",
+      "Space Gray",
+      "Gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 32,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_xs",
+    "model_name": "iPhone XS",
+    "release_year": 2018,
+    "generation": "iPhone",
+    "model_family": "XS",
+    "capacities": [
+      "64GB",
+      "256GB",
+      "512GB"
+    ],
+    "colors": [
+      "Silver",
+      "Space Gray",
+      "Gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 33,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_xr",
+    "model_name": "iPhone XR",
+    "release_year": 2018,
+    "generation": "iPhone",
+    "model_family": "XR",
+    "capacities": [
+      "64GB",
+      "128GB",
+      "256GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "Blue",
+      "Yellow",
+      "Coral",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 34,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_x",
+    "model_name": "iPhone X",
+    "release_year": 2017,
+    "generation": "iPhone",
+    "model_family": "X",
+    "capacities": [
+      "64GB",
+      "256GB"
+    ],
+    "colors": [
+      "Silver",
+      "Space Gray"
+    ],
+    "us_model_numbers": [],
+    "display_order": 35,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_8_plus",
+    "model_name": "iPhone 8 Plus",
+    "release_year": 2017,
+    "generation": "iPhone 8",
+    "model_family": "Plus",
+    "capacities": [
+      "64GB",
+      "128GB",
+      "256GB"
+    ],
+    "colors": [
+      "Gold",
+      "Silver",
+      "Space Gray",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 36,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_8",
+    "model_name": "iPhone 8",
+    "release_year": 2017,
+    "generation": "iPhone 8",
+    "model_family": "standard",
+    "capacities": [
+      "64GB",
+      "128GB",
+      "256GB"
+    ],
+    "colors": [
+      "Gold",
+      "Silver",
+      "Space Gray",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 37,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_7_plus",
+    "model_name": "iPhone 7 Plus",
+    "release_year": 2016,
+    "generation": "iPhone 7",
+    "model_family": "Plus",
+    "capacities": [
+      "32GB",
+      "128GB",
+      "256GB"
+    ],
+    "colors": [
+      "Rose Gold",
+      "Gold",
+      "Silver",
+      "Black",
+      "Jet Black",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 38,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_7",
+    "model_name": "iPhone 7",
+    "release_year": 2016,
+    "generation": "iPhone 7",
+    "model_family": "standard",
+    "capacities": [
+      "32GB",
+      "128GB",
+      "256GB"
+    ],
+    "colors": [
+      "Rose Gold",
+      "Gold",
+      "Silver",
+      "Black",
+      "Jet Black",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 39,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_se_1st_generation",
+    "model_name": "iPhone SE (1st generation)",
+    "release_year": 2016,
+    "generation": "iPhone SE",
+    "model_family": "SE",
+    "capacities": [
+      "16GB",
+      "32GB",
+      "64GB",
+      "128GB"
+    ],
+    "colors": [
+      "Silver",
+      "Gold",
+      "Space Gray",
+      "Rose Gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 40,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_6s_plus",
+    "model_name": "iPhone 6s Plus",
+    "release_year": 2015,
+    "generation": "iPhone 6",
+    "model_family": "Plus",
+    "capacities": [
+      "16GB",
+      "32GB",
+      "64GB",
+      "128GB"
+    ],
+    "colors": [
+      "Silver",
+      "Gold",
+      "Space Gray",
+      "Rose Gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 41,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_6s",
+    "model_name": "iPhone 6s",
+    "release_year": 2015,
+    "generation": "iPhone 6",
+    "model_family": "standard",
+    "capacities": [
+      "16GB",
+      "32GB",
+      "64GB",
+      "128GB"
+    ],
+    "colors": [
+      "Silver",
+      "Gold",
+      "Space Gray",
+      "Rose Gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 42,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_6_plus",
+    "model_name": "iPhone 6 Plus",
+    "release_year": 2014,
+    "generation": "iPhone 6",
+    "model_family": "Plus",
+    "capacities": [
+      "16GB",
+      "64GB",
+      "128GB"
+    ],
+    "colors": [
+      "Silver",
+      "Gold",
+      "Space Gray"
+    ],
+    "us_model_numbers": [],
+    "display_order": 43,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_6",
+    "model_name": "iPhone 6",
+    "release_year": 2014,
+    "generation": "iPhone 6",
+    "model_family": "standard",
+    "capacities": [
+      "16GB",
+      "64GB",
+      "128GB"
+    ],
+    "colors": [
+      "Silver",
+      "Gold",
+      "Space Gray"
+    ],
+    "us_model_numbers": [],
+    "display_order": 44,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_5s",
+    "model_name": "iPhone 5s",
+    "release_year": 2013,
+    "generation": "iPhone 5",
+    "model_family": "standard",
+    "capacities": [
+      "16GB",
+      "32GB",
+      "64GB"
+    ],
+    "colors": [
+      "Space Gray",
+      "Silver",
+      "Gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 45,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_5c",
+    "model_name": "iPhone 5c",
+    "release_year": 2013,
+    "generation": "iPhone 5",
+    "model_family": "c",
+    "capacities": [
+      "8GB",
+      "16GB",
+      "32GB"
+    ],
+    "colors": [
+      "White",
+      "Pink",
+      "Yellow",
+      "Blue",
+      "Green"
+    ],
+    "us_model_numbers": [],
+    "display_order": 46,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_5",
+    "model_name": "iPhone 5",
+    "release_year": 2012,
+    "generation": "iPhone 5",
+    "model_family": "standard",
+    "capacities": [
+      "16GB",
+      "32GB",
+      "64GB"
+    ],
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "us_model_numbers": [],
+    "display_order": 47,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_4s",
+    "model_name": "iPhone 4s",
+    "release_year": 2011,
+    "generation": "iPhone 4",
+    "model_family": "standard",
+    "capacities": [
+      "8GB",
+      "16GB",
+      "32GB",
+      "64GB"
+    ],
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "us_model_numbers": [],
+    "display_order": 48,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_4",
+    "model_name": "iPhone 4",
+    "release_year": 2010,
+    "generation": "iPhone 4",
+    "model_family": "standard",
+    "capacities": [
+      "8GB",
+      "16GB",
+      "32GB"
+    ],
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "us_model_numbers": [],
+    "display_order": 49,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_3gs",
+    "model_name": "iPhone 3GS",
+    "release_year": 2009,
+    "generation": "iPhone 3",
+    "model_family": "standard",
+    "capacities": [
+      "8GB",
+      "16GB",
+      "32GB"
+    ],
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "us_model_numbers": [],
+    "display_order": 50,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone_3g",
+    "model_name": "iPhone 3G",
+    "release_year": 2008,
+    "generation": "iPhone 3",
+    "model_family": "standard",
+    "capacities": [
+      "8GB",
+      "16GB"
+    ],
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "us_model_numbers": [],
+    "display_order": 51,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  },
+  {
+    "model_id": "iphone",
+    "model_name": "iPhone",
+    "release_year": 2007,
+    "generation": "iPhone original",
+    "model_family": "original",
+    "capacities": [
+      "4GB",
+      "8GB",
+      "16GB"
+    ],
+    "colors": [
+      "Silver"
+    ],
+    "us_model_numbers": [],
+    "display_order": 52,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": ""
+  }
+]

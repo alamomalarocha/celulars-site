@@ -1,0 +1,3720 @@
+<!-- CELULARS iPhone Catalog - GoDaddy paste-ready embed. Paste this whole block into a GoDaddy custom HTML section. -->
+<style>
+:root {
+  --catalog-bg: #f4f6f9;
+  --catalog-ink: #0e1628;
+  --catalog-muted: #697386;
+  --catalog-soft: #eef2f7;
+  --catalog-line: #dde4ef;
+  --catalog-card: #ffffff;
+  --catalog-blue: #123d79;
+  --catalog-blue-deep: #082c5c;
+  --catalog-blue-soft: #e8f0fb;
+  --catalog-gold: #a9792b;
+  --catalog-whatsapp: #25d366;
+  --catalog-whatsapp-dark: #1ebe5d;
+  --catalog-shadow: 0 22px 55px rgba(14, 22, 40, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--catalog-bg);
+  color: var(--catalog-ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow-x: hidden;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+.catalog-shell {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: clip;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(18, 61, 121, 0.14), transparent 32%),
+    linear-gradient(180deg, #fbfcfe 0%, #f4f6f9 48%, #eef2f7 100%);
+  padding: clamp(28px, 5vw, 70px) 16px;
+}
+
+.catalog-section {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+}
+
+.catalog-topbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 34px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid rgba(18, 61, 121, 0.12);
+}
+
+.catalog-topbar > * {
+  min-width: 0;
+}
+
+.catalog-heading {
+  max-width: 760px;
+}
+
+.catalog-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  color: var(--catalog-blue);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.catalog-brand::before {
+  content: "";
+  width: 30px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--catalog-blue);
+}
+
+h1 {
+  margin: 0;
+  color: var(--catalog-ink);
+  font-size: clamp(2.35rem, 5vw, 5.4rem);
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+.catalog-subtitle {
+  max-width: 650px;
+  margin: 18px 0 0;
+  color: var(--catalog-muted);
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.65;
+}
+
+.exchange-bar {
+  max-width: 780px;
+  margin: 20px 0 0;
+  padding: 14px 16px;
+  border: 1px solid rgba(18, 61, 121, 0.12);
+  border-left: 3px solid var(--catalog-blue);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 14px 32px rgba(14, 22, 40, 0.06);
+}
+
+.exchange-rate-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  color: var(--catalog-ink);
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.exchange-rate-items strong {
+  color: var(--catalog-blue-deep);
+}
+
+.exchange-bar p {
+  margin: 9px 0 0;
+  color: var(--catalog-muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.exchange-bar .exchange-adjustment {
+  margin-top: 4px;
+  color: var(--catalog-ink);
+  font-weight: 700;
+}
+
+.catalog-filter-panel {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 12px;
+  min-width: 0;
+}
+
+.filter-label {
+  display: block;
+  margin: 0 0 6px 8px;
+  color: var(--catalog-muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.catalog-filters {
+  display: inline-flex;
+  max-width: 100%;
+  gap: 7px;
+  padding: 7px;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(18, 61, 121, 0.12);
+  border-radius: 999px;
+  box-shadow: 0 16px 38px rgba(14, 22, 40, 0.08);
+}
+
+.catalog-line-filters {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 720px;
+  border-radius: 20px;
+}
+
+.filter-button {
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--catalog-muted);
+  padding: 0 18px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  white-space: nowrap;
+  max-width: min(360px, calc(100vw - 56px));
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filter-button:hover {
+  color: var(--catalog-blue);
+  transform: translateY(-1px);
+}
+
+.filter-button.is-active {
+  background: var(--catalog-blue);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(18, 61, 121, 0.22);
+}
+
+.catalog-status {
+  margin: 24px 0;
+  padding: 18px 20px;
+  border: 1px solid var(--catalog-line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--catalog-muted);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+  grid-auto-rows: 1fr;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100%;
+  min-height: 590px;
+  overflow: hidden;
+  background: var(--catalog-card);
+  border: 1px solid rgba(18, 61, 121, 0.09);
+  border-radius: 20px;
+  box-shadow: 0 18px 40px rgba(14, 22, 40, 0.075);
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.product-card:hover {
+  border-color: rgba(18, 61, 121, 0.22);
+  box-shadow: var(--catalog-shadow);
+  transform: translateY(-2px);
+}
+
+.product-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 252px;
+  padding: 24px;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(244, 248, 253, 0.94)),
+    #f6f9fd;
+}
+
+.product-media::after {
+  content: "";
+  position: absolute;
+  inset: auto 20% 26px;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(14, 22, 40, 0.12);
+  filter: blur(12px);
+}
+
+.product-media img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 230px;
+  max-height: 218px;
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(0 18px 22px rgba(14, 22, 40, 0.16));
+}
+
+.product-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 338px;
+  padding: 24px;
+}
+
+.variant-price-block {
+  display: grid;
+  gap: 4px;
+  margin-top: -2px;
+}
+
+.price-prefix {
+  color: var(--catalog-muted);
+  font-size: 0.78rem;
+  font-weight: 820;
+}
+
+.variant-groups {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.variant-group {
+  display: grid;
+  gap: 7px;
+}
+
+.variant-group > span {
+  color: #8a95a6;
+  font-size: 0.7rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.variant-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.variant-option {
+  min-height: 34px;
+  border: 1px solid rgba(18, 61, 121, 0.14);
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--catalog-muted);
+  padding: 0 11px;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 760;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.variant-option:hover {
+  border-color: rgba(18, 61, 121, 0.28);
+  color: var(--catalog-blue);
+  transform: translateY(-1px);
+}
+
+.variant-option.is-selected {
+  border-color: rgba(18, 61, 121, 0.9);
+  background: var(--catalog-blue);
+  color: #ffffff;
+}
+
+.condition {
+  align-self: flex-start;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(18, 61, 121, 0.16);
+  border-radius: 999px;
+  background: var(--catalog-blue-soft);
+  color: var(--catalog-blue);
+  padding: 6px 11px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.condition[data-condition="Novo"] {
+  border-color: rgba(169, 121, 43, 0.2);
+  background: #fbf4e8;
+  color: var(--catalog-gold);
+}
+
+.product-title {
+  margin: 0;
+  min-height: 2.42em;
+  color: var(--catalog-ink);
+  font-size: 1.3rem;
+  font-weight: 820;
+  line-height: 1.21;
+  letter-spacing: 0;
+}
+
+.product-details {
+  margin: -2px 0 2px;
+  color: var(--catalog-muted);
+  font-size: 0.98rem;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.product-footer {
+  display: grid;
+  gap: 13px;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--catalog-line);
+}
+
+.stock {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 30px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: var(--catalog-muted);
+  padding: 6px 10px;
+  font-size: 0.84rem;
+  font-weight: 720;
+  overflow-wrap: anywhere;
+}
+
+.stock strong {
+  color: var(--catalog-ink);
+  font: inherit;
+}
+
+.price {
+  display: block;
+  color: var(--catalog-blue-deep);
+  font-size: 1.52rem;
+  font-weight: 860;
+  line-height: 1.1;
+}
+
+.brl-price {
+  display: block;
+  margin-top: -4px;
+  color: var(--catalog-muted);
+  font-size: 1.02rem;
+  font-weight: 760;
+  line-height: 1.25;
+}
+
+.whatsapp-button,
+.guide-whatsapp-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  border: 1px solid rgba(37, 211, 102, 0.35);
+  border-radius: 12px;
+  background: var(--catalog-whatsapp);
+  color: #ffffff;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 14px 28px rgba(37, 211, 102, 0.18);
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.whatsapp-button::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--catalog-whatsapp);
+  box-shadow: 0 0 0 4px rgba(35, 192, 100, 0.16);
+}
+
+.whatsapp-button:hover,
+.guide-whatsapp-button:hover {
+  background: var(--catalog-whatsapp-dark);
+  color: #ffffff;
+  border-color: rgba(30, 190, 93, 0.45);
+  box-shadow: 0 18px 34px rgba(37, 211, 102, 0.24);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1100px) {
+  .product-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .catalog-topbar {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .catalog-filter-panel {
+    width: 100%;
+  }
+
+  .catalog-filters {
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+}
+
+.guide-section {
+  width: min(1240px, 100%);
+  margin: clamp(52px, 8vw, 90px) auto 0;
+  padding-top: clamp(34px, 5vw, 56px);
+  border-top: 1px solid rgba(18, 61, 121, 0.12);
+}
+
+.guide-header {
+  max-width: 760px;
+  margin-bottom: 24px;
+}
+
+.guide-header h2 {
+  margin: 0;
+  color: var(--catalog-ink);
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.guide-header p:not(.catalog-brand) {
+  margin: 14px 0 0;
+  color: var(--catalog-muted);
+  font-size: 1.04rem;
+  line-height: 1.6;
+}
+
+.guide-tools {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid rgba(18, 61, 121, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 18px 42px rgba(14, 22, 40, 0.07);
+}
+
+.search-field,
+.guide-filter-grid label {
+  display: grid;
+  gap: 7px;
+  color: var(--catalog-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.search-field input,
+.guide-filter-grid select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--catalog-line);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--catalog-ink);
+  padding: 0 13px;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.search-field input:focus,
+.guide-filter-grid select:focus {
+  outline: 2px solid rgba(18, 61, 121, 0.22);
+  outline-offset: 2px;
+}
+
+.guide-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.worked-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  color: var(--catalog-ink);
+  font-size: 0.92rem;
+  font-weight: 720;
+}
+
+.worked-toggle input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--catalog-blue);
+}
+
+.guide-count {
+  margin: 10px 0 16px;
+  color: var(--catalog-muted);
+  font-size: 0.92rem;
+  font-weight: 750;
+}
+
+.guide-count.is-prompt {
+  margin: 0;
+  border: 1px solid rgba(18, 61, 121, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.76);
+  padding: 16px 18px;
+  box-shadow: 0 12px 30px rgba(14, 22, 40, 0.045);
+}
+
+.guide-results {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.guide-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.78fr) minmax(0, 1.5fr) auto;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  border: 1px solid rgba(18, 61, 121, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 15px 16px;
+  box-shadow: 0 10px 26px rgba(14, 22, 40, 0.048);
+}
+
+.guide-card-top {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.guide-card h3 {
+  margin: 0;
+  color: var(--catalog-ink);
+  font-size: 1.1rem;
+  line-height: 1.25;
+}
+
+.guide-card-top p {
+  margin: 6px 0 0;
+  color: var(--catalog-muted);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.guide-chip {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--catalog-blue-soft);
+  color: var(--catalog-blue);
+  padding: 5px 9px;
+  font-size: 0.72rem;
+  font-weight: 820;
+}
+
+.guide-chip.muted {
+  background: #f1f5f9;
+  color: var(--catalog-muted);
+}
+
+.guide-specs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.guide-specs div {
+  min-width: 0;
+}
+
+.guide-specs dt {
+  margin-bottom: 3px;
+  color: #8a95a6;
+  font-size: 0.7rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.guide-specs dd {
+  margin: 0;
+  color: var(--catalog-ink);
+  font-size: 0.88rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.guide-notes {
+  margin: 0;
+  color: var(--catalog-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.guide-whatsapp-button {
+  align-self: center;
+  min-width: 238px;
+  min-height: 42px;
+  margin-top: auto;
+  font-size: 0.9rem;
+  padding: 0 14px;
+}
+
+@media (max-width: 560px) {
+  .catalog-shell {
+    padding: 24px 12px 42px;
+  }
+
+  .catalog-topbar {
+    gap: 22px;
+    margin-bottom: 24px;
+    padding-bottom: 22px;
+  }
+
+  h1 {
+    font-size: 2.55rem;
+  }
+
+  .catalog-subtitle {
+    font-size: 0.98rem;
+    line-height: 1.55;
+  }
+
+  .filter-button {
+    min-height: 40px;
+    padding: 0 15px;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .product-card {
+    min-height: 0;
+  }
+
+  .product-media {
+    height: 238px;
+    padding: 22px;
+  }
+
+  .product-media img {
+    width: 86%;
+    height: 86%;
+    max-width: 220px;
+    max-height: 202px;
+  }
+
+  .product-body {
+    min-height: 0;
+    padding: 22px;
+  }
+
+  .product-title {
+    min-height: 0;
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .guide-filter-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .guide-card {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .guide-specs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .guide-whatsapp-button {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .guide-tools {
+    padding: 14px;
+  }
+
+  .guide-filter-grid,
+  .guide-specs {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+
+<main id="celulars-iphones-catalog" class="catalog-shell">
+      <section class="catalog-section" aria-labelledby="catalog-title">
+        <div class="catalog-topbar">
+          <div class="catalog-heading">
+            <p class="catalog-brand">CELULARS</p>
+            <h1 id="catalog-title">Escolha seu iPhone</h1>
+            <p class="catalog-subtitle">
+              iPhones novos e eCPO eco Certified Pre-Owned selecionados pela CELULARS. Consulte disponibilidade e condições pelo WhatsApp.
+            </p>
+            <div class="exchange-bar" data-exchange-bar>
+              <div class="exchange-rate-items">
+                <span><strong>Dólar do dia:</strong> <span data-official-rate>carregando...</span></span>
+                <span><strong>Cotação CELULARS:</strong> <span data-catalog-rate>carregando...</span></span>
+              </div>
+              <p data-exchange-source>Fonte: Banco Central do Brasil - PTAX venda</p>
+              <p class="exchange-adjustment"><strong>Ajuste operacional:</strong> <span data-exchange-spread>R$ 0,15</span></p>
+            </div>
+          </div>
+
+          <div class="catalog-filter-panel" aria-label="Filtrar produtos">
+            <div>
+              <span class="filter-label">Estoque</span>
+              <div class="catalog-filters">
+                <button class="filter-button is-active" type="button" data-availability-filter="disponiveis">Disponíveis</button>
+                <button class="filter-button" type="button" data-availability-filter="todos">Todos</button>
+              </div>
+            </div>
+
+            <div>
+              <span class="filter-label">Condição</span>
+              <div class="catalog-filters">
+                <button class="filter-button is-active" type="button" data-filter="todos">Todos</button>
+                <button class="filter-button" type="button" data-filter="Novo">Novo</button>
+                <button class="filter-button" type="button" data-filter="eCPO eco Certified Pre-Owned">eCPO eco Certified Pre-Owned</button>
+              </div>
+            </div>
+
+            <div>
+              <span class="filter-label">Linha</span>
+              <div class="catalog-filters catalog-line-filters">
+                <button class="filter-button is-active" type="button" data-line-filter="todos">Todos</button>
+                <button class="filter-button" type="button" data-line-filter="iPhone 17">iPhone 17</button>
+                <button class="filter-button" type="button" data-line-filter="iPhone 16">iPhone 16</button>
+                <button class="filter-button" type="button" data-line-filter="iPhone 15">iPhone 15</button>
+                <button class="filter-button" type="button" data-line-filter="iPhone 14">iPhone 14</button>
+                <button class="filter-button" type="button" data-line-filter="iPhone 13">iPhone 13</button>
+                <button class="filter-button" type="button" data-line-filter="iPhone 12">iPhone 12</button>
+                <button class="filter-button" type="button" data-line-filter="iPhone 11">iPhone 11</button>
+                <button class="filter-button" type="button" data-line-filter="SE">SE</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="catalog-status" data-status hidden></div>
+        <div class="product-grid" data-products></div>
+      </section>
+
+      <section class="guide-section" aria-labelledby="guide-title">
+        <div class="guide-header">
+          <p class="catalog-brand">Guia</p>
+          <h2 id="guide-title">Guia de Modelos de iPhone</h2>
+          <p>
+            Pesquise modelos, anos, capacidades, cores e números de modelo dos iPhones americanos.
+          </p>
+        </div>
+
+        <div class="guide-tools" aria-label="Filtros do guia de modelos">
+          <label class="search-field">
+            <span>Buscar</span>
+            <input
+              type="search"
+              data-guide-search
+              placeholder="Pesquise por modelo, ano, capacidade ou número do modelo"
+            />
+          </label>
+
+          <div class="guide-filter-grid">
+            <label>
+              <span>Linha</span>
+              <select data-guide-filter="generation">
+                <option value="">Todas</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Ano</span>
+              <select data-guide-filter="release_year">
+                <option value="">Todos</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Capacidade</span>
+              <select data-guide-filter="capacity">
+                <option value="">Todas</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Família</span>
+              <select data-guide-filter="model_family">
+                <option value="">Todas</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="worked-toggle">
+            <input type="checkbox" data-guide-celulars-only />
+            <span>Modelos trabalhados pela CELULARS</span>
+          </label>
+        </div>
+
+        <div class="guide-count" data-guide-count></div>
+        <div class="catalog-status" data-guide-status hidden></div>
+        <div class="guide-results" data-guide-results></div>
+      </section>
+    </main>
+
+<script>
+  window.CELULARS_PRODUCTS_DATA = [
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 1,
+    "model_id": "iphone_17_pro_max",
+    "model_name": "iPhone 17 Pro Max",
+    "capacity": "256 GB",
+    "color": "Prata",
+    "condition": "Novo",
+    "price_usd": "US$ 1,299",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 17 Pro Max 256 GB Prata.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 2,
+    "model_id": "iphone_17_pro",
+    "model_name": "iPhone 17 Pro",
+    "capacity": "256 GB",
+    "color": "Azul",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 1,199",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 17 Pro 256 GB Azul.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 3,
+    "model_id": "iphone_17",
+    "model_name": "iPhone 17",
+    "capacity": "256 GB",
+    "color": "Rosa",
+    "condition": "Novo",
+    "price_usd": "US$ 899",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 17 256 GB Rosa.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 4,
+    "model_id": "iphone_16_pro_max",
+    "model_name": "iPhone 16 Pro Max",
+    "capacity": "256 GB",
+    "color": "Titânio Natural",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 1,049",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 16 Pro Max 256 GB Titânio Natural.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 5,
+    "model_id": "iphone_16_pro",
+    "model_name": "iPhone 16 Pro",
+    "capacity": "128 GB",
+    "color": "Titânio Preto",
+    "condition": "Novo",
+    "price_usd": "US$ 949",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 16 Pro 128 GB Titânio Preto.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 6,
+    "model_id": "iphone_16_plus",
+    "model_name": "iPhone 16 Plus",
+    "capacity": "128 GB",
+    "color": "Branco",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 829",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 16 Plus 128 GB Branco.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 7,
+    "model_id": "iphone_16",
+    "model_name": "iPhone 16",
+    "capacity": "128 GB",
+    "color": "Ultramarino",
+    "condition": "Novo",
+    "price_usd": "US$ 749",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 16 128 GB Ultramarino.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 8,
+    "model_id": "iphone_16e",
+    "model_name": "iPhone 16e",
+    "capacity": "128 GB",
+    "color": "Preto",
+    "condition": "Novo",
+    "price_usd": "US$ 599",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 16e 128 GB Preto.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 9,
+    "model_id": "iphone_15_pro_max",
+    "model_name": "iPhone 15 Pro Max",
+    "capacity": "256 GB",
+    "color": "Titânio Azul",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 899",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 15 Pro Max 256 GB Titânio Azul.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 10,
+    "model_id": "iphone_15_pro",
+    "model_name": "iPhone 15 Pro",
+    "capacity": "128 GB",
+    "color": "Titânio Natural",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 799",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 15 Pro 128 GB Titânio Natural.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 11,
+    "model_id": "iphone_15_plus",
+    "model_name": "iPhone 15 Plus",
+    "capacity": "128 GB",
+    "color": "Verde",
+    "condition": "Novo",
+    "price_usd": "US$ 699",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 15 Plus 128 GB Verde.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 12,
+    "model_id": "iphone_15",
+    "model_name": "iPhone 15",
+    "capacity": "128 GB",
+    "color": "Azul",
+    "condition": "Novo",
+    "price_usd": "US$ 649",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 15 128 GB Azul.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 13,
+    "model_id": "iphone_14_pro_max",
+    "model_name": "iPhone 14 Pro Max",
+    "capacity": "256 GB",
+    "color": "Roxo Profundo",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 729",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 14 Pro Max 256 GB Roxo Profundo.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 14,
+    "model_id": "iphone_14_pro",
+    "model_name": "iPhone 14 Pro",
+    "capacity": "128 GB",
+    "color": "Dourado",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 679",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 14 Pro 128 GB Dourado.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 15,
+    "model_id": "iphone_14_plus",
+    "model_name": "iPhone 14 Plus",
+    "capacity": "128 GB",
+    "color": "Meia-noite",
+    "condition": "Novo",
+    "price_usd": "US$ 579",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 14 Plus 128 GB Meia-noite.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 16,
+    "model_id": "iphone_14",
+    "model_name": "iPhone 14",
+    "capacity": "128 GB",
+    "color": "Estelar",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 529",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 14 128 GB Estelar.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 17,
+    "model_id": "iphone_13_pro_max",
+    "model_name": "iPhone 13 Pro Max",
+    "capacity": "256 GB",
+    "color": "Azul Sierra",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 599",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 13 Pro Max 256 GB Azul Sierra.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 18,
+    "model_id": "iphone_13_pro",
+    "model_name": "iPhone 13 Pro",
+    "capacity": "128 GB",
+    "color": "Grafite",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 529",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 13 Pro 128 GB Grafite.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 19,
+    "model_id": "iphone_13",
+    "model_name": "iPhone 13",
+    "capacity": "128 GB",
+    "color": "Rosa",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 449",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 13 128 GB Rosa.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 20,
+    "model_id": "iphone_12",
+    "model_name": "iPhone 12",
+    "capacity": "128 GB",
+    "color": "Azul",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 399",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 12 128 GB Azul.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 21,
+    "model_id": "iphone_11",
+    "model_name": "iPhone 11",
+    "capacity": "128 GB",
+    "color": "Preto",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 329",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 11 128 GB Preto.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 22,
+    "model_id": "iphone_se_3rd_generation",
+    "model_name": "iPhone SE",
+    "capacity": "64 GB",
+    "color": "Branco",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 249",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone SE 64 GB Branco.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "iPhone SE"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 1.1,
+    "model_id": "iphone_17_pro_max",
+    "model_name": "iPhone 17 Pro Max",
+    "capacity": "512 GB",
+    "color": "Azul",
+    "condition": "Novo",
+    "price_usd": "US$ 1,499",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 17 Pro Max 512 GB Azul Novo.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 1.2,
+    "model_id": "iphone_17_pro_max",
+    "model_name": "iPhone 17 Pro Max",
+    "capacity": "1 TB",
+    "color": "Preto",
+    "condition": "Novo",
+    "price_usd": "US$ 1,699",
+    "stock_status": "Sob consulta",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 17 Pro Max 1 TB Preto Novo.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 1.3,
+    "model_id": "iphone_17_pro_max",
+    "model_name": "iPhone 17 Pro Max",
+    "capacity": "256 GB",
+    "color": "Laranja",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 1,199",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 17 Pro Max 256 GB Laranja eCPO eco Certified Pre-Owned.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 5.1,
+    "model_id": "iphone_16_pro",
+    "model_name": "iPhone 16 Pro",
+    "capacity": "256 GB",
+    "color": "Titânio Natural",
+    "condition": "Novo",
+    "price_usd": "US$ 1,049",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 16 Pro 256 GB Titânio Natural Novo.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 5.2,
+    "model_id": "iphone_16_pro",
+    "model_name": "iPhone 16 Pro",
+    "capacity": "512 GB",
+    "color": "Titânio Preto",
+    "condition": "eCPO eco Certified Pre-Owned",
+    "price_usd": "US$ 899",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 16 Pro 512 GB Titânio Preto eCPO eco Certified Pre-Owned.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  },
+  {
+    "active": "yes",
+    "show_on_site": "yes",
+    "order": 12.1,
+    "model_id": "iphone_15",
+    "model_name": "iPhone 15",
+    "capacity": "256 GB",
+    "color": "Preto",
+    "condition": "Novo",
+    "price_usd": "US$ 749",
+    "stock_status": "Disponível",
+    "image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "whatsapp_message": "Olá, CELULARS! Tenho interesse no iPhone 15 256 GB Preto Novo.",
+    "source": "inline sample data",
+    "notes": "",
+    "line": "Outros"
+  }
+];
+  window.CELULARS_MODELS_DATA = [
+  {
+    "model_id": "iphone_17_pro_max",
+    "model_name": "iPhone 17 Pro Max",
+    "release_year": 2025,
+    "generation": "iPhone 17",
+    "model_family": "Pro Max",
+    "capacities": [
+      "256 GB",
+      "512 GB",
+      "1 TB",
+      "2 TB"
+    ],
+    "colors": [
+      "Silver",
+      "Cosmic Orange",
+      "Deep Blue"
+    ],
+    "us_model_numbers": [
+      "A3257"
+    ],
+    "display_order": 1,
+    "is_legacy": false,
+    "is_current": true,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_17_pro",
+    "model_name": "iPhone 17 Pro",
+    "release_year": 2025,
+    "generation": "iPhone 17",
+    "model_family": "Pro",
+    "capacities": [
+      "256 GB",
+      "512 GB",
+      "1 TB"
+    ],
+    "colors": [
+      "Silver",
+      "Cosmic Orange",
+      "Deep Blue"
+    ],
+    "us_model_numbers": [
+      "A3256"
+    ],
+    "display_order": 2,
+    "is_legacy": false,
+    "is_current": true,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_17",
+    "model_name": "iPhone 17",
+    "release_year": 2025,
+    "generation": "iPhone 17",
+    "model_family": "standard",
+    "capacities": [
+      "256 GB",
+      "512 GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "Mist Blue",
+      "Sage",
+      "Lavender"
+    ],
+    "us_model_numbers": [
+      "A3258"
+    ],
+    "display_order": 3,
+    "is_legacy": false,
+    "is_current": true,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_17_air",
+    "model_name": "iPhone 17 Air",
+    "release_year": 2025,
+    "generation": "iPhone 17",
+    "model_family": "Air",
+    "capacities": [
+      "256 GB",
+      "512 GB",
+      "1 TB"
+    ],
+    "colors": [
+      "Space Black",
+      "Cloud White",
+      "Light Gold",
+      "Sky Blue"
+    ],
+    "us_model_numbers": [
+      "A3260"
+    ],
+    "display_order": 4,
+    "is_legacy": false,
+    "is_current": true,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_16e",
+    "model_name": "iPhone 16e",
+    "release_year": 2025,
+    "generation": "iPhone 16",
+    "model_family": "standard",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB"
+    ],
+    "colors": [
+      "Black",
+      "White"
+    ],
+    "us_model_numbers": [
+      "A3212"
+    ],
+    "display_order": 5,
+    "is_legacy": false,
+    "is_current": true,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_16_pro_max",
+    "model_name": "iPhone 16 Pro Max",
+    "release_year": 2024,
+    "generation": "iPhone 16",
+    "model_family": "Pro Max",
+    "capacities": [
+      "256 GB",
+      "512 GB",
+      "1 TB"
+    ],
+    "colors": [
+      "Black Titanium",
+      "White Titanium",
+      "Natural Titanium",
+      "Desert Titanium"
+    ],
+    "us_model_numbers": [
+      "A3084"
+    ],
+    "display_order": 6,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_16_pro",
+    "model_name": "iPhone 16 Pro",
+    "release_year": 2024,
+    "generation": "iPhone 16",
+    "model_family": "Pro",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB",
+      "1 TB"
+    ],
+    "colors": [
+      "Black Titanium",
+      "White Titanium",
+      "Natural Titanium",
+      "Desert Titanium"
+    ],
+    "us_model_numbers": [
+      "A3083"
+    ],
+    "display_order": 7,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_16_plus",
+    "model_name": "iPhone 16 Plus",
+    "release_year": 2024,
+    "generation": "iPhone 16",
+    "model_family": "Plus",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "Pink",
+      "Teal",
+      "Ultramarine"
+    ],
+    "us_model_numbers": [
+      "A3082"
+    ],
+    "display_order": 8,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_16",
+    "model_name": "iPhone 16",
+    "release_year": 2024,
+    "generation": "iPhone 16",
+    "model_family": "standard",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB"
+    ],
+    "colors": [
+      "Black",
+      "White",
+      "Pink",
+      "Teal",
+      "Ultramarine"
+    ],
+    "us_model_numbers": [
+      "A3081"
+    ],
+    "display_order": 9,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_15_pro_max",
+    "model_name": "iPhone 15 Pro Max",
+    "release_year": 2023,
+    "generation": "iPhone 15",
+    "model_family": "Pro Max",
+    "capacities": [
+      "256 GB",
+      "512 GB",
+      "1 TB"
+    ],
+    "colors": [
+      "Black Titanium",
+      "White Titanium",
+      "Blue Titanium",
+      "Natural Titanium"
+    ],
+    "us_model_numbers": [
+      "A2849"
+    ],
+    "display_order": 10,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_15_pro",
+    "model_name": "iPhone 15 Pro",
+    "release_year": 2023,
+    "generation": "iPhone 15",
+    "model_family": "Pro",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB",
+      "1 TB"
+    ],
+    "colors": [
+      "Black Titanium",
+      "White Titanium",
+      "Blue Titanium",
+      "Natural Titanium"
+    ],
+    "us_model_numbers": [
+      "A2848"
+    ],
+    "display_order": 11,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_15_plus",
+    "model_name": "iPhone 15 Plus",
+    "release_year": 2023,
+    "generation": "iPhone 15",
+    "model_family": "Plus",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB"
+    ],
+    "colors": [
+      "Black",
+      "Blue",
+      "Green",
+      "Yellow",
+      "Pink"
+    ],
+    "us_model_numbers": [
+      "A2847"
+    ],
+    "display_order": 12,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_15",
+    "model_name": "iPhone 15",
+    "release_year": 2023,
+    "generation": "iPhone 15",
+    "model_family": "standard",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB"
+    ],
+    "colors": [
+      "Black",
+      "Blue",
+      "Green",
+      "Yellow",
+      "Pink"
+    ],
+    "us_model_numbers": [
+      "A2846"
+    ],
+    "display_order": 13,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_14_pro_max",
+    "model_name": "iPhone 14 Pro Max",
+    "release_year": 2022,
+    "generation": "iPhone 14",
+    "model_family": "Pro Max",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB",
+      "1 TB"
+    ],
+    "colors": [
+      "Silver",
+      "gold",
+      "space black",
+      "deep purple"
+    ],
+    "us_model_numbers": [
+      "A2651"
+    ],
+    "display_order": 14,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_14_pro",
+    "model_name": "iPhone 14 Pro",
+    "release_year": 2022,
+    "generation": "iPhone 14",
+    "model_family": "Pro",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB",
+      "1 TB"
+    ],
+    "colors": [
+      "Silver",
+      "gold",
+      "space black",
+      "deep purple"
+    ],
+    "us_model_numbers": [
+      "A2650"
+    ],
+    "display_order": 15,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_14_plus",
+    "model_name": "iPhone 14 Plus",
+    "release_year": 2022,
+    "generation": "iPhone 14",
+    "model_family": "Plus",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB"
+    ],
+    "colors": [
+      "Midnight",
+      "starlight",
+      "(PRODUCT)RED",
+      "blue",
+      "purple",
+      "yellow"
+    ],
+    "us_model_numbers": [
+      "A2632"
+    ],
+    "display_order": 16,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_14",
+    "model_name": "iPhone 14",
+    "release_year": 2022,
+    "generation": "iPhone 14",
+    "model_family": "standard",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB"
+    ],
+    "colors": [
+      "Midnight",
+      "starlight",
+      "(PRODUCT)RED",
+      "blue",
+      "purple",
+      "yellow"
+    ],
+    "us_model_numbers": [
+      "A2649"
+    ],
+    "display_order": 17,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_se_3rd_generation",
+    "model_name": "iPhone SE (3rd generation)",
+    "release_year": 2022,
+    "generation": "iPhone SE",
+    "model_family": "SE",
+    "capacities": [
+      "64 GB",
+      "128 GB",
+      "256 GB"
+    ],
+    "colors": [
+      "(PRODUCT)RED",
+      "starlight",
+      "midnight"
+    ],
+    "us_model_numbers": [
+      "A2595"
+    ],
+    "display_order": 18,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_13_pro_max",
+    "model_name": "iPhone 13 Pro Max",
+    "release_year": 2021,
+    "generation": "iPhone 13",
+    "model_family": "Pro Max",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB",
+      "1 TB"
+    ],
+    "colors": [
+      "Graphite",
+      "gold",
+      "silver",
+      "sierra blue",
+      "alpine green"
+    ],
+    "us_model_numbers": [
+      "A2484"
+    ],
+    "display_order": 19,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_13_pro",
+    "model_name": "iPhone 13 Pro",
+    "release_year": 2021,
+    "generation": "iPhone 13",
+    "model_family": "Pro",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB",
+      "1 TB"
+    ],
+    "colors": [
+      "Graphite",
+      "gold",
+      "silver",
+      "sierra blue",
+      "alpine green"
+    ],
+    "us_model_numbers": [
+      "A2483"
+    ],
+    "display_order": 20,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_13",
+    "model_name": "iPhone 13",
+    "release_year": 2021,
+    "generation": "iPhone 13",
+    "model_family": "standard",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB"
+    ],
+    "colors": [
+      "(PRODUCT)RED",
+      "starlight",
+      "midnight",
+      "blue",
+      "pink",
+      "green"
+    ],
+    "us_model_numbers": [
+      "A2482"
+    ],
+    "display_order": 21,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_13_mini",
+    "model_name": "iPhone 13 mini",
+    "release_year": 2021,
+    "generation": "iPhone 13",
+    "model_family": "mini",
+    "capacities": [
+      "128 GB",
+      "256 GB",
+      "512 GB"
+    ],
+    "colors": [
+      "(PRODUCT)RED",
+      "starlight",
+      "midnight",
+      "blue",
+      "pink",
+      "green"
+    ],
+    "us_model_numbers": [
+      "A2481"
+    ],
+    "display_order": 22,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_12_pro_max",
+    "model_name": "iPhone 12 Pro Max",
+    "release_year": 2020,
+    "generation": "iPhone 12",
+    "model_family": "Pro Max",
+    "capacities": [
+      "128",
+      "256",
+      "512 GB"
+    ],
+    "colors": [
+      "Silver",
+      "graphite",
+      "gold",
+      "pacific blue"
+    ],
+    "us_model_numbers": [
+      "A2342"
+    ],
+    "display_order": 23,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_12_pro",
+    "model_name": "iPhone 12 Pro",
+    "release_year": 2020,
+    "generation": "iPhone 12",
+    "model_family": "Pro",
+    "capacities": [
+      "128",
+      "256",
+      "512 GB"
+    ],
+    "colors": [
+      "Silver",
+      "graphite",
+      "gold",
+      "pacific blue"
+    ],
+    "us_model_numbers": [
+      "A2341"
+    ],
+    "display_order": 24,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_12",
+    "model_name": "iPhone 12",
+    "release_year": 2020,
+    "generation": "iPhone 12",
+    "model_family": "standard",
+    "capacities": [
+      "64",
+      "128",
+      "256 GB"
+    ],
+    "colors": [
+      "Black",
+      "white",
+      "(PRODUCT)RED",
+      "green",
+      "blue",
+      "purple"
+    ],
+    "us_model_numbers": [
+      "A2172"
+    ],
+    "display_order": 25,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_12_mini",
+    "model_name": "iPhone 12 mini",
+    "release_year": 2020,
+    "generation": "iPhone 12",
+    "model_family": "mini",
+    "capacities": [
+      "64",
+      "128",
+      "256 GB"
+    ],
+    "colors": [
+      "Black",
+      "white",
+      "(PRODUCT)RED",
+      "green",
+      "blue",
+      "purple"
+    ],
+    "us_model_numbers": [
+      "A2176"
+    ],
+    "display_order": 26,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Verified against Apple Support Identify your iPhone model page."
+  },
+  {
+    "model_id": "iphone_se_2nd_generation",
+    "model_name": "iPhone SE (2nd generation)",
+    "release_year": 2020,
+    "generation": "iPhone SE",
+    "model_family": "SE",
+    "capacities": [
+      "64",
+      "128",
+      "256 GB"
+    ],
+    "colors": [
+      "White",
+      "black",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 27,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": true,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_11_pro",
+    "model_name": "iPhone 11 Pro",
+    "release_year": 2019,
+    "generation": "iPhone 11",
+    "model_family": "Pro",
+    "capacities": [
+      "64",
+      "256",
+      "512 GB"
+    ],
+    "colors": [
+      "Silver",
+      "space gray",
+      "gold",
+      "midnight green"
+    ],
+    "us_model_numbers": [],
+    "display_order": 28,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_11_pro_max",
+    "model_name": "iPhone 11 Pro Max",
+    "release_year": 2019,
+    "generation": "iPhone 11",
+    "model_family": "Pro Max",
+    "capacities": [
+      "64",
+      "256",
+      "512 GB"
+    ],
+    "colors": [
+      "Silver",
+      "space gray",
+      "gold",
+      "midnight green"
+    ],
+    "us_model_numbers": [],
+    "display_order": 29,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_11",
+    "model_name": "iPhone 11",
+    "release_year": 2019,
+    "generation": "iPhone 11",
+    "model_family": "standard",
+    "capacities": [
+      "64",
+      "128",
+      "256 GB"
+    ],
+    "colors": [
+      "Purple",
+      "green",
+      "yellow",
+      "black",
+      "white",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 30,
+    "is_legacy": false,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_xs",
+    "model_name": "iPhone XS",
+    "release_year": 2018,
+    "generation": "iPhone XS",
+    "model_family": "standard",
+    "capacities": [
+      "64",
+      "256",
+      "512 GB"
+    ],
+    "colors": [
+      "Silver",
+      "space gray",
+      "gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 31,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_xs_max",
+    "model_name": "iPhone XS Max",
+    "release_year": 2018,
+    "generation": "iPhone XS Max",
+    "model_family": "standard",
+    "capacities": [
+      "64",
+      "256",
+      "512 GB"
+    ],
+    "colors": [
+      "Silver",
+      "space gray",
+      "gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 32,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_xr",
+    "model_name": "iPhone XR",
+    "release_year": 2018,
+    "generation": "iPhone XR",
+    "model_family": "standard",
+    "capacities": [
+      "64",
+      "128",
+      "256 GB"
+    ],
+    "colors": [
+      "Black",
+      "white",
+      "blue",
+      "yellow",
+      "coral",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 33,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_x",
+    "model_name": "iPhone X",
+    "release_year": 2017,
+    "generation": "iPhone X",
+    "model_family": "standard",
+    "capacities": [
+      "64",
+      "256 GB"
+    ],
+    "colors": [
+      "Silver",
+      "space gray"
+    ],
+    "us_model_numbers": [],
+    "display_order": 34,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_8",
+    "model_name": "iPhone 8",
+    "release_year": 2017,
+    "generation": "iPhone 8",
+    "model_family": "standard",
+    "capacities": [
+      "64",
+      "128",
+      "256 GB"
+    ],
+    "colors": [
+      "Gold",
+      "silver",
+      "space gray",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 35,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_8_plus",
+    "model_name": "iPhone 8 Plus",
+    "release_year": 2017,
+    "generation": "iPhone 8",
+    "model_family": "Plus",
+    "capacities": [
+      "64",
+      "128",
+      "256 GB"
+    ],
+    "colors": [
+      "Gold",
+      "silver",
+      "space gray",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 36,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_7",
+    "model_name": "iPhone 7",
+    "release_year": 2016,
+    "generation": "iPhone 7",
+    "model_family": "standard",
+    "capacities": [
+      "32",
+      "128",
+      "256 GB"
+    ],
+    "colors": [
+      "Black",
+      "jet black",
+      "gold",
+      "rose gold",
+      "silver",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 37,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_7_plus",
+    "model_name": "iPhone 7 Plus",
+    "release_year": 2016,
+    "generation": "iPhone 7",
+    "model_family": "Plus",
+    "capacities": [
+      "32",
+      "128",
+      "256 GB"
+    ],
+    "colors": [
+      "Black",
+      "jet black",
+      "gold",
+      "rose gold",
+      "silver",
+      "(PRODUCT)RED"
+    ],
+    "us_model_numbers": [],
+    "display_order": 38,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_se_1st_generation",
+    "model_name": "iPhone SE (1st generation)",
+    "release_year": 2016,
+    "generation": "iPhone SE",
+    "model_family": "SE",
+    "capacities": [
+      "16",
+      "32",
+      "64",
+      "128 GB"
+    ],
+    "colors": [
+      "Space gray",
+      "silver",
+      "gold",
+      "rose gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 39,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_6s",
+    "model_name": "iPhone 6s",
+    "release_year": 2015,
+    "generation": "iPhone 6",
+    "model_family": "standard",
+    "capacities": [
+      "16",
+      "32",
+      "64",
+      "128 GB"
+    ],
+    "colors": [
+      "Space gray",
+      "silver",
+      "gold",
+      "rose gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 40,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_6s_plus",
+    "model_name": "iPhone 6s Plus",
+    "release_year": 2015,
+    "generation": "iPhone 6",
+    "model_family": "Plus",
+    "capacities": [
+      "16",
+      "32",
+      "64",
+      "128 GB"
+    ],
+    "colors": [
+      "Space gray",
+      "silver",
+      "gold",
+      "rose gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 41,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_6",
+    "model_name": "iPhone 6",
+    "release_year": 2014,
+    "generation": "iPhone 6",
+    "model_family": "standard",
+    "capacities": [
+      "16",
+      "32",
+      "64",
+      "128 GB"
+    ],
+    "colors": [
+      "Space gray",
+      "silver",
+      "gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 42,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_6_plus",
+    "model_name": "iPhone 6 Plus",
+    "release_year": 2014,
+    "generation": "iPhone 6",
+    "model_family": "Plus",
+    "capacities": [
+      "16",
+      "64",
+      "128 GB"
+    ],
+    "colors": [
+      "Space gray",
+      "silver",
+      "gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 43,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_5s",
+    "model_name": "iPhone 5s",
+    "release_year": 2013,
+    "generation": "iPhone 5",
+    "model_family": "standard",
+    "capacities": [
+      "16",
+      "32",
+      "64 GB"
+    ],
+    "colors": [
+      "Space gray",
+      "silver",
+      "gold"
+    ],
+    "us_model_numbers": [],
+    "display_order": 44,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_5c",
+    "model_name": "iPhone 5c",
+    "release_year": 2013,
+    "generation": "iPhone 5",
+    "model_family": "standard",
+    "capacities": [
+      "8",
+      "16",
+      "32 GB"
+    ],
+    "colors": [
+      "White",
+      "blue",
+      "pink",
+      "green",
+      "yellow"
+    ],
+    "us_model_numbers": [],
+    "display_order": 45,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_5",
+    "model_name": "iPhone 5",
+    "release_year": 2012,
+    "generation": "iPhone 5",
+    "model_family": "standard",
+    "capacities": [
+      "16",
+      "32",
+      "64 GB"
+    ],
+    "colors": [
+      "Black and white"
+    ],
+    "us_model_numbers": [],
+    "display_order": 46,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_4s",
+    "model_name": "iPhone 4s",
+    "release_year": 2011,
+    "generation": "iPhone 4",
+    "model_family": "standard",
+    "capacities": [
+      "8",
+      "16",
+      "32",
+      "64 GB"
+    ],
+    "colors": [
+      "Black and white"
+    ],
+    "us_model_numbers": [],
+    "display_order": 47,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_4",
+    "model_name": "iPhone 4",
+    "release_year": null,
+    "generation": "iPhone 4",
+    "model_family": "standard",
+    "capacities": [
+      "8",
+      "16",
+      "32 GB"
+    ],
+    "colors": [
+      "Black and white"
+    ],
+    "us_model_numbers": [],
+    "display_order": 48,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_3gs",
+    "model_name": "iPhone 3GS",
+    "release_year": 2009,
+    "generation": "iPhone 3",
+    "model_family": "standard",
+    "capacities": [
+      "8",
+      "16",
+      "32 GB"
+    ],
+    "colors": [
+      "Black and white"
+    ],
+    "us_model_numbers": [],
+    "display_order": 49,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_3g",
+    "model_name": "iPhone 3G",
+    "release_year": null,
+    "generation": "iPhone 3",
+    "model_family": "standard",
+    "capacities": [
+      "8",
+      "16 GB"
+    ],
+    "colors": [],
+    "us_model_numbers": [],
+    "display_order": 50,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "US model numbers need verification from official Apple regional model list."
+  },
+  {
+    "model_id": "iphone_original",
+    "model_name": "iPhone",
+    "release_year": 2007,
+    "generation": "iPhone",
+    "model_family": "standard",
+    "capacities": [
+      "4 GB",
+      "8 GB",
+      "16 GB"
+    ],
+    "colors": [
+      "Silver"
+    ],
+    "us_model_numbers": [],
+    "display_order": 51,
+    "is_legacy": true,
+    "is_current": false,
+    "celulars_consultation_available": false,
+    "default_image": "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=900&q=80",
+    "notes": "Legacy original iPhone row included to complete the public guide; US model numbers need verification from Apple archive or original technical documentation."
+  }
+];
+  window.CELULARS_EXCHANGE_CONFIG = {
+    exchangeSpread: 0.15,
+    fallbackUsdBrlRate: 5.10
+  };
+</script>
+<script>
+(function () {
+  "use strict";
+
+  const feedUrl = window.CELULARS_PRODUCTS_URL || "";
+  const modelsUrl = window.CELULARS_MODELS_URL || "";
+  const productsEl = document.querySelector("[data-products]");
+  const statusEl = document.querySelector("[data-status]");
+  const officialRateEl = document.querySelector("[data-official-rate]");
+  const catalogRateEl = document.querySelector("[data-catalog-rate]");
+  const exchangeSpreadEl = document.querySelector("[data-exchange-spread]");
+  const exchangeSourceEl = document.querySelector("[data-exchange-source]");
+  const filterButtons = Array.from(document.querySelectorAll("[data-filter]"));
+  const availabilityButtons = Array.from(document.querySelectorAll("[data-availability-filter]"));
+  const lineButtons = Array.from(document.querySelectorAll("[data-line-filter]"));
+  const guideSearchEl = document.querySelector("[data-guide-search]");
+  const guideResultsEl = document.querySelector("[data-guide-results]");
+  const guideCountEl = document.querySelector("[data-guide-count]");
+  const guideStatusEl = document.querySelector("[data-guide-status]");
+  const guideFilterEls = Array.from(document.querySelectorAll("[data-guide-filter]"));
+  const guideCelularsOnlyEl = document.querySelector("[data-guide-celulars-only]");
+
+  const exchangeConfig = window.CELULARS_EXCHANGE_CONFIG || {};
+  const exchangeSpread = Number(exchangeConfig.exchangeSpread ?? 0.15);
+  const fallbackUsdBrlRate = Number(exchangeConfig.fallbackUsdBrlRate ?? 5.1);
+  const defaultImage = phoneSvgDataUri("Prata", "Novo");
+
+  let activeFilter = "todos";
+  let activeAvailabilityFilter = "disponiveis";
+  let activeLineFilter = "todos";
+  let products = [];
+  let modelDatabase = [];
+  let productLoadError = "";
+  let modelLoadError = "";
+  let exchangeInfo = {
+    officialRate: fallbackUsdBrlRate,
+    catalogRate: fallbackUsdBrlRate + exchangeSpread,
+    isFallback: true,
+    quoteDate: null
+  };
+
+  const lineOrder = {
+    "iphone 17": 1,
+    "iphone air": 2,
+    "iphone 16": 3,
+    "iphone 15": 4,
+    "iphone 14": 5,
+    "iphone 13": 6,
+    "iphone 12": 7,
+    "iphone 11": 8,
+    "iphone se": 9,
+    se: 9,
+    outros: 10
+  };
+
+  const fallbackProductRows = [
+    ["iphone_17_pro_max", "iPhone 17 Pro Max", "iPhone 17", "256 GB", "Prata", "Novo", 1299],
+    ["iphone_17_pro", "iPhone 17 Pro", "iPhone 17", "256 GB", "Azul", "eCPO eco Certified Pre-Owned", 1199],
+    ["iphone_17", "iPhone 17", "iPhone 17", "256 GB", "Rosa", "Novo", 899],
+    ["iphone_16_pro_max", "iPhone 16 Pro Max", "iPhone 16", "256 GB", "Titânio Natural", "eCPO eco Certified Pre-Owned", 1049],
+    ["iphone_16_pro", "iPhone 16 Pro", "iPhone 16", "128 GB", "Titânio Preto", "Novo", 949],
+    ["iphone_16_plus", "iPhone 16 Plus", "iPhone 16", "128 GB", "Branco", "eCPO eco Certified Pre-Owned", 829],
+    ["iphone_16", "iPhone 16", "iPhone 16", "128 GB", "Ultramarino", "Novo", 749],
+    ["iphone_16e", "iPhone 16e", "iPhone 16", "128 GB", "Preto", "Novo", 599],
+    ["iphone_15_pro_max", "iPhone 15 Pro Max", "iPhone 15", "256 GB", "Titânio Azul", "eCPO eco Certified Pre-Owned", 899],
+    ["iphone_15_pro", "iPhone 15 Pro", "iPhone 15", "128 GB", "Titânio Natural", "eCPO eco Certified Pre-Owned", 799],
+    ["iphone_15_plus", "iPhone 15 Plus", "iPhone 15", "128 GB", "Verde", "Novo", 699],
+    ["iphone_15", "iPhone 15", "iPhone 15", "128 GB", "Azul", "Novo", 649],
+    ["iphone_14_pro_max", "iPhone 14 Pro Max", "iPhone 14", "256 GB", "Roxo Profundo", "eCPO eco Certified Pre-Owned", 729],
+    ["iphone_14_pro", "iPhone 14 Pro", "iPhone 14", "128 GB", "Dourado", "eCPO eco Certified Pre-Owned", 679],
+    ["iphone_14_plus", "iPhone 14 Plus", "iPhone 14", "128 GB", "Meia-noite", "Novo", 579],
+    ["iphone_14", "iPhone 14", "iPhone 14", "128 GB", "Estelar", "eCPO eco Certified Pre-Owned", 529],
+    ["iphone_13_pro_max", "iPhone 13 Pro Max", "iPhone 13", "256 GB", "Azul Sierra", "eCPO eco Certified Pre-Owned", 599],
+    ["iphone_13_pro", "iPhone 13 Pro", "iPhone 13", "128 GB", "Grafite", "eCPO eco Certified Pre-Owned", 529],
+    ["iphone_13", "iPhone 13", "iPhone 13", "128 GB", "Rosa", "eCPO eco Certified Pre-Owned", 449],
+    ["iphone_12", "iPhone 12", "iPhone 12", "128 GB", "Azul", "eCPO eco Certified Pre-Owned", 399],
+    ["iphone_11", "iPhone 11", "iPhone 11", "128 GB", "Preto", "eCPO eco Certified Pre-Owned", 329],
+    ["iphone_se", "iPhone SE", "iPhone SE", "64 GB", "Branco", "eCPO eco Certified Pre-Owned", 249]
+  ];
+
+  const fallbackModelNames = [
+    "original iPhone", "iPhone 3G", "iPhone 3GS", "iPhone 4", "iPhone 4S", "iPhone 5", "iPhone 5S",
+    "iPhone 6", "iPhone 6 Plus", "iPhone 7", "iPhone 7 Plus", "iPhone 8", "iPhone 8 Plus",
+    "iPhone X", "iPhone XR", "iPhone XS", "iPhone XS Max", "iPhone 11", "iPhone 11 Pro",
+    "iPhone 11 Pro Max", "iPhone 12", "iPhone 12 mini", "iPhone 12 Pro", "iPhone 12 Pro Max",
+    "iPhone 13", "iPhone 13 mini", "iPhone 13 Pro", "iPhone 13 Pro Max", "iPhone 14",
+    "iPhone 14 Plus", "iPhone 14 Pro", "iPhone 14 Pro Max", "iPhone 15", "iPhone 15 Plus",
+    "iPhone 15 Pro", "iPhone 15 Pro Max", "iPhone 16", "iPhone 16 Plus", "iPhone 16 Pro",
+    "iPhone 16 Pro Max", "iPhone 16e", "iPhone 17", "iPhone 17 Air", "iPhone 17 Pro",
+    "iPhone 17 Pro Max", "iPhone SE", "iPhone SE (2nd generation)", "iPhone SE (3rd generation)"
+  ];
+
+  function normalize(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function asArray(value) {
+    if (Array.isArray(value)) return value;
+    if (!value) return [];
+    return String(value).split(",").map((item) => item.trim()).filter(Boolean);
+  }
+
+  function phoneAccentColor(color) {
+    const value = normalize(color);
+    if (value.includes("preto") || value.includes("grafite") || value.includes("meia-noite")) return "#242831";
+    if (value.includes("azul")) return "#9bb7d9";
+    if (value.includes("rosa")) return "#f3b7c5";
+    if (value.includes("verde")) return "#b8d8c2";
+    if (value.includes("roxo")) return "#b9a7d6";
+    if (value.includes("dourado")) return "#e1c48e";
+    if (value.includes("branco") || value.includes("estelar")) return "#f7f4ee";
+    if (value.includes("natural") || value.includes("titanio")) return "#d8d2c8";
+    return "#d8dee8";
+  }
+
+  function phoneSvgDataUri(color, condition) {
+    const accent = phoneAccentColor(color);
+    const ring = normalize(condition).includes("novo") ? "#a9792b" : "#123d79";
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 460" role="img">
+        <defs>
+          <linearGradient id="body" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#ffffff"/>
+            <stop offset="1" stop-color="${accent}"/>
+          </linearGradient>
+          <filter id="shadow" x="-40%" y="-30%" width="180%" height="170%">
+            <feDropShadow dx="0" dy="22" stdDeviation="18" flood-color="#0e1628" flood-opacity=".22"/>
+          </filter>
+        </defs>
+        <rect width="360" height="460" fill="none"/>
+        <g filter="url(#shadow)">
+          <rect x="106" y="34" width="148" height="392" rx="34" fill="#111827"/>
+          <rect x="115" y="43" width="130" height="374" rx="28" fill="url(#body)"/>
+          <rect x="159" y="57" width="42" height="8" rx="4" fill="#111827" opacity=".28"/>
+          <g transform="translate(132 78)">
+            <rect x="0" y="0" width="66" height="66" rx="18" fill="#f8fafc" opacity=".86"/>
+            <circle cx="20" cy="22" r="13" fill="#1f2937"/>
+            <circle cx="46" cy="22" r="13" fill="#1f2937"/>
+            <circle cx="32" cy="47" r="13" fill="#1f2937"/>
+            <circle cx="20" cy="22" r="6" fill="#94a3b8"/>
+            <circle cx="46" cy="22" r="6" fill="#94a3b8"/>
+            <circle cx="32" cy="47" r="6" fill="#94a3b8"/>
+          </g>
+          <circle cx="180" cy="254" r="25" fill="#ffffff" opacity=".42"/>
+          <path d="M180 228c10 12 21 21 21 36 0 17-10 29-21 29s-21-12-21-29c0-15 11-24 21-36Z" fill="${ring}" opacity=".78"/>
+        </g>
+      </svg>
+    `;
+
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  }
+
+  function yes(value) {
+    return ["yes", "sim", "true", "1"].includes(normalize(value));
+  }
+
+  function idFromName(name) {
+    return normalize(name).replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+  }
+
+  function familyFromName(name) {
+    const value = normalize(name);
+    if (value.includes("pro max")) return "Pro Max";
+    if (value.includes("pro")) return "Pro";
+    if (value.includes("plus")) return "Plus";
+    if (value.includes("air")) return "Air";
+    if (value.includes("mini")) return "mini";
+    if (value.includes("se")) return "SE";
+    return "standard";
+  }
+
+  function generationFromName(name) {
+    const number = String(name).match(/iPhone\s+(\d+)/i);
+    if (number) return `iPhone ${number[1]}`;
+    if (normalize(name).includes("se")) return "iPhone SE";
+    if (normalize(name).includes("air")) return "iPhone 17";
+    return name === "original iPhone" ? "iPhone" : name;
+  }
+
+  function fallbackProducts() {
+    return fallbackProductRows.map((row, index) => ({
+      active: "yes",
+      show_on_site: "yes",
+      order: index + 1,
+      model_id: row[0],
+      model_name: row[1],
+      line: row[2],
+      capacity: row[3],
+      color: row[4],
+      condition: row[5],
+      price_usd: `US$ ${Number(row[6]).toLocaleString("en-US")}`,
+      stock_status: "Disponível",
+      image: defaultImage,
+      whatsapp_message: `Olá, CELULARS! Tenho interesse no ${row[1]} ${row[3]} ${row[4]}.`,
+      source: "inline fallback",
+      notes: ""
+    }));
+  }
+
+  function fallbackModels() {
+    return fallbackModelNames.map((name, index) => {
+      const releaseYear = fallbackReleaseYear(name);
+      return {
+        model_id: idFromName(name),
+        model_name: name,
+        release_year: releaseYear,
+        generation: generationFromName(name),
+        model_family: familyFromName(name),
+        capacities: fallbackCapacities(name),
+        colors: [],
+        us_model_numbers: [],
+        display_order: index + 1,
+        is_legacy: releaseYear ? releaseYear <= 2018 : true,
+        is_current: releaseYear ? releaseYear >= 2025 : false,
+        celulars_consultation_available: releaseYear ? releaseYear >= 2020 : false,
+        notes: ""
+      };
+    });
+  }
+
+  function fallbackReleaseYear(name) {
+    const byGeneration = [
+      [/17|Air/, 2025], [/16/, 2024], [/15/, 2023], [/14/, 2022], [/13/, 2021], [/12|SE \(2nd/, 2020],
+      [/11/, 2019], [/XS|XR/, 2018], [/X|8/, 2017], [/7|SE$/, 2016], [/6S/i, 2015], [/6/, 2014],
+      [/5S|5C/i, 2013], [/5$/, 2012], [/4S/i, 2011], [/4$/, 2010], [/3GS/i, 2009], [/3G/i, 2008],
+      [/original/i, 2007]
+    ];
+    return byGeneration.find(([pattern]) => pattern.test(name))?.[1] || null;
+  }
+
+  function fallbackCapacities(name) {
+    if (/17|16|15|14|13|12|11/i.test(name)) return ["128 GB", "256 GB", "512 GB"];
+    if (/SE/i.test(name)) return ["64 GB", "128 GB", "256 GB"];
+    return [];
+  }
+
+  function variantOrder(model) {
+    const value = normalize(model);
+    if (value.includes("pro max")) return 1;
+    if (value.includes("pro")) return 2;
+    if (value.includes("plus")) return 3;
+    if (value.includes("air")) return 4;
+    if (value.includes("mini")) return 5;
+    if (value.includes(" e") || value.endsWith("e") || value.includes("se")) return 6;
+    return 7;
+  }
+
+  function sortProducts(a, b) {
+    const lineA = lineOrder[normalize(productLine(a))] || 99;
+    const lineB = lineOrder[normalize(productLine(b))] || 99;
+    const orderA = Number(a.order ?? a.ordem) || 9999;
+    const orderB = Number(b.order ?? b.ordem) || 9999;
+
+    return lineA - lineB || variantOrder(productModel(a)) - variantOrder(productModel(b)) || orderA - orderB;
+  }
+
+  function productModel(product) {
+    return product.model_name || product.modelo || "";
+  }
+
+  function productLine(product) {
+    const model = modelDatabase.find((item) => item.model_id === product.model_id);
+    return model?.generation || product.linha || "Outros";
+  }
+
+  function productCatalogLine(product) {
+    const value = normalize([productLine(product), productModel(product)].join(" "));
+    if (value.includes("iphone 17")) return "iPhone 17";
+    if (value.includes("iphone 16")) return "iPhone 16";
+    if (value.includes("iphone 15")) return "iPhone 15";
+    if (value.includes("iphone 14")) return "iPhone 14";
+    if (value.includes("iphone 13")) return "iPhone 13";
+    if (value.includes("iphone 12")) return "iPhone 12";
+    if (value.includes("iphone 11")) return "iPhone 11";
+    if (value.includes("iphone se")) return "SE";
+    return "Outros";
+  }
+
+  function productCapacity(product) {
+    return product.capacity || product.capacidade || "";
+  }
+
+  function productColor(product) {
+    return product.color || product.cor || "";
+  }
+
+  function productCondition(product) {
+    return publicConditionLabel(product.condition || product.condicao || "");
+  }
+
+  function publicConditionLabel(value) {
+    const condition = normalize(value);
+    const cpoValues = [
+      "eco certified",
+      "cpo",
+      "ecpo",
+      "certified pre owned",
+      "certified pre-owned",
+      "pre owned",
+      "pre-owned",
+      "used"
+    ];
+
+    if (condition === "novo" || condition === "new") return "Novo";
+    if (cpoValues.includes(condition) || condition.includes("certified") || condition.includes("pre owned")) {
+      return "eCPO eco Certified Pre-Owned";
+    }
+
+    return value || "";
+  }
+
+  function productStock(product) {
+    return product.stock_status || product.status || "Consultar estoque";
+  }
+
+  function isAvailableStock(product) {
+    const stock = normalize(productStock(product));
+    return ["disponivel", "em estoque", "pronta entrega", "available", "in stock"].includes(stock);
+  }
+
+  function productImage(product) {
+    const model = modelDatabase.find((item) => item.model_id === product.model_id);
+    const image = product.image || product.imagem || model?.default_image || defaultImage;
+    const isGenericDemoPhoto = String(image).includes("images.unsplash.com/photo-1592750475338");
+    return isGenericDemoPhoto ? phoneSvgDataUri(productColor(product), productCondition(product)) : image;
+  }
+
+  function isPublicProduct(product) {
+    const active = product.active ?? product.ativo;
+    const showOnSite = product.show_on_site ?? "yes";
+    return yes(active) && yes(showOnSite);
+  }
+
+  function productMatchesFilter(product) {
+    const matchesAvailability = activeAvailabilityFilter === "todos" || isAvailableStock(product);
+    const matchesCondition = activeFilter === "todos" || normalize(productCondition(product)) === normalize(activeFilter);
+    const matchesLine = activeLineFilter === "todos" || normalize(productCatalogLine(product)) === normalize(activeLineFilter);
+
+    return matchesAvailability && matchesCondition && matchesLine;
+  }
+
+  function productGroupKey(product) {
+    return normalize(productModel(product)) || product.model_id || "";
+  }
+
+  function lowestPriceVariant(variants) {
+    return [...variants].sort((a, b) => {
+      const amountA = usdAmount(a);
+      const amountB = usdAmount(b);
+      return (amountA ?? Number.MAX_SAFE_INTEGER) - (amountB ?? Number.MAX_SAFE_INTEGER) || sortProducts(a, b);
+    })[0];
+  }
+
+  function groupProductVariants(variants) {
+    const groupsByModel = new Map();
+
+    variants.forEach((variant) => {
+      const key = productGroupKey(variant);
+      if (!key) return;
+      if (!groupsByModel.has(key)) groupsByModel.set(key, []);
+      groupsByModel.get(key).push(variant);
+    });
+
+    return [...groupsByModel.values()]
+      .map((groupVariants) => {
+        const sortedVariants = [...groupVariants].sort(sortProducts);
+        const defaultVariant = lowestPriceVariant(sortedVariants);
+        return {
+          modelName: productModel(defaultVariant),
+          variants: sortedVariants,
+          defaultVariant
+        };
+      })
+      .sort((a, b) => sortProducts(a.defaultVariant, b.defaultVariant));
+  }
+
+  function uniqueProductValues(variants, getter) {
+    return [...new Map(variants.map((variant) => {
+      const value = getter(variant);
+      return [normalize(value), value];
+    }).filter(([key]) => key)).values()];
+  }
+
+  function optionButtons(name, values, selectedValue) {
+    return values.map((value) => `
+      <button
+        class="variant-option${normalize(value) === normalize(selectedValue) ? " is-selected" : ""}"
+        type="button"
+        data-variant-option="${escapeAttr(name)}"
+        data-value="${escapeAttr(value)}"
+      >${escapeHtml(value)}</button>
+    `).join("");
+  }
+
+  function chooseVariant(variants, selected, priorityOption = "") {
+    const exactMatch = variants.find((variant) =>
+      normalize(productCapacity(variant)) === normalize(selected.capacity) &&
+      normalize(productColor(variant)) === normalize(selected.color) &&
+      normalize(productCondition(variant)) === normalize(selected.condition)
+    );
+    if (exactMatch) return exactMatch;
+
+    const priorityMatches = priorityOption
+      ? variants.filter((variant) => {
+        const value = priorityOption === "capacity"
+          ? productCapacity(variant)
+          : priorityOption === "color"
+            ? productColor(variant)
+            : productCondition(variant);
+        return normalize(value) === normalize(selected[priorityOption]);
+      })
+      : [];
+
+    if (priorityMatches.length) {
+      return priorityMatches
+        .map((variant) => {
+          const score = [
+            normalize(productCapacity(variant)) === normalize(selected.capacity),
+            normalize(productColor(variant)) === normalize(selected.color),
+            normalize(productCondition(variant)) === normalize(selected.condition)
+          ].filter(Boolean).length;
+
+          return { variant, score };
+        })
+        .sort((a, b) => b.score - a.score || (usdAmount(a.variant) ?? Number.MAX_SAFE_INTEGER) - (usdAmount(b.variant) ?? Number.MAX_SAFE_INTEGER))
+        [0].variant;
+    }
+
+    const partialMatches = variants.filter((variant) =>
+      (!selected.capacity || normalize(productCapacity(variant)) === normalize(selected.capacity)) &&
+      (!selected.color || normalize(productColor(variant)) === normalize(selected.color)) &&
+      (!selected.condition || normalize(productCondition(variant)) === normalize(selected.condition))
+    );
+
+    return lowestPriceVariant(partialMatches.length ? partialMatches : variants);
+  }
+
+  function selectedCardState(article) {
+    return {
+      capacity: article.dataset.selectedCapacity || "",
+      color: article.dataset.selectedColor || "",
+      condition: article.dataset.selectedCondition || ""
+    };
+  }
+
+  function setSelectedCardState(article, variant) {
+    article.dataset.selectedCapacity = productCapacity(variant);
+    article.dataset.selectedColor = productColor(variant);
+    article.dataset.selectedCondition = productCondition(variant);
+  }
+
+  function updateVariantButtons(article, variant) {
+    article.querySelectorAll("[data-variant-option]").forEach((button) => {
+      const option = button.dataset.variantOption;
+      const selectedValue = option === "capacity"
+        ? productCapacity(variant)
+        : option === "color"
+          ? productColor(variant)
+          : productCondition(variant);
+      button.classList.toggle("is-selected", normalize(button.dataset.value) === normalize(selectedValue));
+    });
+  }
+
+  function updateProductCard(article, variant, hasMultipleVariants) {
+    setSelectedCardState(article, variant);
+    updateVariantButtons(article, variant);
+
+    const imageEl = article.querySelector("[data-product-image]");
+    const priceEl = article.querySelector("[data-product-price]");
+    const brlEl = article.querySelector("[data-product-brl]");
+    const statusEl = article.querySelector("[data-product-stock]");
+    const ctaEl = article.querySelector("[data-product-whatsapp]");
+    const brlPrice = brlText(variant);
+
+    if (imageEl) imageEl.src = productImage(variant);
+    if (priceEl) priceEl.textContent = usdText(variant);
+    if (brlEl) {
+      brlEl.textContent = brlPrice;
+      brlEl.hidden = !brlPrice;
+    }
+    if (statusEl) statusEl.textContent = productStock(variant);
+    if (ctaEl) ctaEl.href = buildWhatsAppUrl(productWhatsAppMessage(variant));
+
+    article.classList.toggle("has-multiple-variants", hasMultipleVariants);
+  }
+
+  function showStatus(message) {
+    statusEl.textContent = message;
+    statusEl.hidden = !message;
+  }
+
+  function showGuideStatus(message) {
+    if (!guideStatusEl) return;
+    guideStatusEl.textContent = message;
+    guideStatusEl.hidden = !message;
+  }
+
+  function usdAmount(product) {
+    const rawPrice = String(product.price_usd || product.preco || "").trim();
+    const match = rawPrice.match(/^US\$\s*([\d,.]+)$/i);
+    if (!match) return null;
+
+    const amount = Number(match[1].replace(/[,.]/g, ""));
+    return Number.isFinite(amount) ? amount : null;
+  }
+
+  function usdText(product) {
+    const amount = usdAmount(product);
+    if (amount == null) return String(product.price_usd || product.preco || "").trim() || "Consulte";
+    return `US$ ${amount.toLocaleString("en-US")}`;
+  }
+
+  function formatBrl(value) {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    }).format(value);
+  }
+
+  function brlText(product) {
+    const amount = usdAmount(product);
+    if (amount == null || exchangeInfo.isFallback) return "";
+    return formatBrl(amount * exchangeInfo.catalogRate);
+  }
+
+  function formatRate(value) {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
+  }
+
+  function formatDateForBcb(date) {
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${month}-${day}-${date.getFullYear()}`;
+  }
+
+  function formatQuoteDate(value) {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return new Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
+    }).format(date);
+  }
+
+  function officialRateUrl() {
+    const today = new Date();
+    const start = new Date(today);
+    start.setDate(today.getDate() - 10);
+
+    const dataInicial = encodeURIComponent(`'${formatDateForBcb(start)}'`);
+    const dataFinal = encodeURIComponent(`'${formatDateForBcb(today)}'`);
+    const moeda = encodeURIComponent("'USD'");
+
+    return `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoMoedaPeriodo(moeda=@moeda,dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@moeda=${moeda}&@dataInicial=${dataInicial}&@dataFinalCotacao=${dataFinal}&$top=100&$format=json`;
+  }
+
+  async function loadExchangeRate() {
+    try {
+      const response = await fetch(exchangeConfig.officialRateUrl || officialRateUrl(), { cache: "no-store" });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+      const quotes = Array.isArray(data.value) ? data.value : [];
+      const latest = quotes
+        .filter((quote) => Number.isFinite(Number(quote.cotacaoVenda)))
+        .sort((a, b) => String(b.dataHoraCotacao).localeCompare(String(a.dataHoraCotacao)))[0];
+
+      if (!latest) throw new Error("No PTAX venda rate found");
+
+      const officialRate = Number(latest.cotacaoVenda);
+      exchangeInfo = {
+        officialRate,
+        catalogRate: officialRate + exchangeSpread,
+        isFallback: false,
+        quoteDate: latest.dataHoraCotacao || null
+      };
+    } catch (error) {
+      exchangeInfo = {
+        officialRate: fallbackUsdBrlRate,
+        catalogRate: fallbackUsdBrlRate + exchangeSpread,
+        isFallback: true,
+        quoteDate: null
+      };
+    }
+  }
+
+  function updateExchangeBar() {
+    if (exchangeSpreadEl) exchangeSpreadEl.textContent = formatRate(exchangeSpread);
+
+    if (exchangeInfo.isFallback) {
+      if (officialRateEl) officialRateEl.textContent = "cotação indisponível";
+      if (catalogRateEl) catalogRateEl.textContent = "cotação indisponível";
+      if (exchangeSourceEl) exchangeSourceEl.textContent = "Fonte: Banco Central do Brasil - PTAX venda";
+      return;
+    }
+
+    const quoteDate = formatQuoteDate(exchangeInfo.quoteDate);
+    if (officialRateEl) officialRateEl.textContent = formatRate(exchangeInfo.officialRate);
+    if (catalogRateEl) catalogRateEl.textContent = formatRate(exchangeInfo.catalogRate);
+    if (exchangeSourceEl) {
+      exchangeSourceEl.textContent = quoteDate
+        ? `Fonte: Banco Central do Brasil - PTAX venda, ${quoteDate}`
+        : "Fonte: Banco Central do Brasil - PTAX venda";
+    }
+  }
+
+  function buildWhatsAppUrl(message) {
+    const phone = "5511999999999";
+    return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  }
+
+  function productWhatsAppMessage(product) {
+    return product.whatsapp_message || `Olá, CELULARS! Tenho interesse no ${productModel(product)} ${productCapacity(product)} ${productColor(product)}.`;
+  }
+
+  function createProductCard(group) {
+    const article = document.createElement("article");
+    article.className = "product-card";
+
+    const variants = group.variants;
+    const selectedVariant = group.defaultVariant;
+    const hasMultipleVariants = variants.length > 1;
+    const capacities = uniqueProductValues(variants, productCapacity);
+    const colors = uniqueProductValues(variants, productColor);
+    const conditions = uniqueProductValues(variants, productCondition);
+    const brlPrice = brlText(selectedVariant);
+
+    article.innerHTML = `
+      <div class="product-media">
+        <img src="${escapeAttr(productImage(selectedVariant))}" alt="" loading="lazy" aria-hidden="true" data-product-image>
+      </div>
+      <div class="product-body">
+        <h3 class="product-title">${escapeHtml(group.modelName)}</h3>
+        <div class="variant-price-block">
+          ${hasMultipleVariants ? `<span class="price-prefix">A partir de:</span>` : ""}
+          <strong class="price" data-product-price>${escapeHtml(usdText(selectedVariant))}</strong>
+          <span class="brl-price" data-product-brl ${brlPrice ? "" : "hidden"}>${escapeHtml(brlPrice)}</span>
+        </div>
+
+        <div class="variant-groups" aria-label="Selecionar variação">
+          ${capacities.length ? `
+            <div class="variant-group">
+              <span>Capacidade</span>
+              <div class="variant-options">${optionButtons("capacity", capacities, productCapacity(selectedVariant))}</div>
+            </div>
+          ` : ""}
+          ${colors.length ? `
+            <div class="variant-group">
+              <span>Cor</span>
+              <div class="variant-options">${optionButtons("color", colors, productColor(selectedVariant))}</div>
+            </div>
+          ` : ""}
+          ${conditions.length ? `
+            <div class="variant-group">
+              <span>Condição</span>
+              <div class="variant-options">${optionButtons("condition", conditions, productCondition(selectedVariant))}</div>
+            </div>
+          ` : ""}
+        </div>
+
+        <div class="product-footer">
+          <span class="stock">Status: <strong data-product-stock>${escapeHtml(productStock(selectedVariant))}</strong></span>
+          <a class="whatsapp-button" href="${buildWhatsAppUrl(productWhatsAppMessage(selectedVariant))}" target="_blank" rel="noopener" data-product-whatsapp>
+            Consultar pelo WhatsApp
+          </a>
+        </div>
+      </div>
+    `;
+
+    setSelectedCardState(article, selectedVariant);
+
+    article.querySelectorAll("[data-variant-option]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const nextState = selectedCardState(article);
+        nextState[button.dataset.variantOption] = button.dataset.value;
+        const nextVariant = chooseVariant(variants, nextState, button.dataset.variantOption);
+        updateProductCard(article, nextVariant, hasMultipleVariants);
+      });
+    });
+
+    return article;
+  }
+
+  function renderProducts() {
+    const visibleProducts = products.filter(productMatchesFilter);
+    const productGroups = groupProductVariants(visibleProducts);
+    productsEl.replaceChildren(...productGroups.map(createProductCard));
+
+    if (productLoadError && !products.length) {
+      showStatus(productLoadError);
+      return;
+    }
+
+    showStatus(productGroups.length ? "" : "Nenhum iPhone encontrado para este filtro.");
+  }
+
+  function uniqueSorted(values) {
+    return [...new Set(values.filter(Boolean))].sort((a, b) => String(a).localeCompare(String(b), "pt-BR", { numeric: true }));
+  }
+
+  function setOptions(select, values) {
+    const current = select.value;
+    const firstOption = select.querySelector("option");
+    select.replaceChildren(firstOption, ...values.map((value) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = value;
+      return option;
+    }));
+    select.value = values.includes(current) ? current : "";
+  }
+
+  function populateGuideFilters() {
+    const valuesByFilter = {
+      generation: uniqueSorted(modelDatabase.map((model) => model.generation)),
+      release_year: uniqueSorted(modelDatabase.map((model) => String(model.release_year || ""))).reverse(),
+      capacity: uniqueSorted(modelDatabase.flatMap((model) => asArray(model.capacities))),
+      model_family: uniqueSorted(modelDatabase.map((model) => model.model_family))
+    };
+
+    guideFilterEls.forEach((select) => {
+      setOptions(select, valuesByFilter[select.dataset.guideFilter] || []);
+    });
+  }
+
+  function guideSearchText(model) {
+    return normalize([
+      model.model_name,
+      model.release_year,
+      model.generation,
+      model.model_family,
+      ...asArray(model.capacities),
+      ...asArray(model.colors),
+      ...asArray(model.us_model_numbers),
+      model.notes
+    ].join(" "));
+  }
+
+  function guideFilters() {
+    return Object.fromEntries(guideFilterEls.map((select) => [select.dataset.guideFilter, select.value]));
+  }
+
+  function hasGuideSearchIntent() {
+    const filters = guideFilters();
+    return Boolean(
+      normalize(guideSearchEl?.value || "") ||
+      Object.values(filters).some(Boolean) ||
+      guideCelularsOnlyEl?.checked
+    );
+  }
+
+  function modelMatchesGuide(model) {
+    const query = normalize(guideSearchEl?.value || "");
+    const filters = guideFilters();
+
+    if (query && !guideSearchText(model).includes(query)) return false;
+    if (filters.generation && model.generation !== filters.generation) return false;
+    if (filters.release_year && String(model.release_year) !== filters.release_year) return false;
+    if (filters.capacity && !asArray(model.capacities).includes(filters.capacity)) return false;
+    if (filters.model_family && model.model_family !== filters.model_family) return false;
+    if (guideCelularsOnlyEl?.checked && !model.celulars_consultation_available) return false;
+
+    return true;
+  }
+
+  function publicGuideValues(value) {
+    return asArray(value).filter((item) => {
+      const clean = normalize(item);
+      return clean && clean !== "a verificar" && clean !== "verificar";
+    });
+  }
+
+  function guideSpec(label, value) {
+    const values = publicGuideValues(value);
+    if (!values.length) return "";
+
+    return `
+      <div>
+        <dt>${escapeHtml(label)}</dt>
+        <dd>${escapeHtml(values.join(", "))}</dd>
+      </div>
+    `;
+  }
+
+  function publicGuideNote(note) {
+    const text = String(note || "").trim();
+    if (!text) return "";
+
+    const developerNote = /fallback|replace with|verified|verification|needs verification|a verificar|apple\/official|iphone_models_database/i;
+    return developerNote.test(text) ? "" : text;
+  }
+
+  function createGuideCard(model) {
+    const article = document.createElement("article");
+    article.className = "guide-card";
+
+    const modelNumbers = asArray(model.us_model_numbers);
+    const notes = publicGuideNote(model.notes);
+    const releaseYear = model.release_year ? escapeHtml(model.release_year) : "";
+    const family = model.model_family ? escapeHtml(model.model_family) : "";
+    const meta = [releaseYear, family].filter(Boolean).join(" &bull; ");
+    const specs = [
+      guideSpec("Capacidades", model.capacities),
+      guideSpec("Cores oficiais", model.colors),
+      guideSpec("Números de modelo EUA", modelNumbers)
+    ].join("");
+    const message = `Olá, CELULARS! Quero consultar o modelo ${model.model_name}.`;
+    const ctaText = model.is_current || (model.celulars_consultation_available && !model.is_legacy)
+      ? "Consultar este modelo pelo WhatsApp"
+      : "Consultar informações pelo WhatsApp";
+
+    article.innerHTML = `
+      <div class="guide-card-top">
+        <div>
+          <h3>${escapeHtml(model.model_name)}</h3>
+          ${meta ? `<p>${meta}</p>` : ""}
+        </div>
+        <span class="guide-chip ${model.is_current ? "" : "muted"}">${model.is_current ? "Atual" : "Legado"}</span>
+      </div>
+      ${specs ? `<dl class="guide-specs">${specs}</dl>` : ""}
+      ${notes ? `<p class="guide-notes">${escapeHtml(notes)}</p>` : ""}
+      <a class="guide-whatsapp-button" href="${buildWhatsAppUrl(message)}" target="_blank" rel="noopener">
+        ${ctaText}
+      </a>
+    `;
+
+    return article;
+  }
+
+  function renderGuide() {
+    if (!hasGuideSearchIntent()) {
+      guideResultsEl.replaceChildren();
+      showGuideStatus(modelLoadError && !modelDatabase.length ? modelLoadError : "");
+      guideCountEl.classList.add("is-prompt");
+      guideCountEl.textContent = modelLoadError && !modelDatabase.length
+        ? ""
+        : "Pesquise um modelo, ano, capacidade ou número de modelo para consultar informações.";
+      return;
+    }
+
+    const results = modelDatabase.filter(modelMatchesGuide).sort((a, b) => (a.display_order || 9999) - (b.display_order || 9999));
+    guideResultsEl.replaceChildren(...results.map(createGuideCard));
+    showGuideStatus(modelLoadError && !modelDatabase.length ? modelLoadError : "");
+    guideCountEl.classList.remove("is-prompt");
+    guideCountEl.textContent = `${results.length} modelo${results.length === 1 ? "" : "s"} encontrado${results.length === 1 ? "" : "s"}`;
+  }
+
+  function normalizeProductsData(data) {
+    if (Array.isArray(data)) {
+      return data.map((item) => {
+        if (item.model_name || item.active || item.show_on_site || item.price_usd) return item;
+
+        return {
+          active: item.ativo,
+          show_on_site: "yes",
+          order: item.ordem,
+          model_id: normalize(item.modelo).replace(/[^a-z0-9]+/g, "_"),
+          model_name: item.modelo,
+          capacity: item.capacidade,
+          color: item.cor,
+          condition: item.condicao,
+          price_usd: item.preco,
+          stock_status: item.status,
+          image: item.imagem,
+          whatsapp_message: `Olá, CELULARS! Tenho interesse no ${item.modelo} ${item.capacidade} ${item.cor}.`,
+          source: "legacy dados embutidos",
+          notes: ""
+        };
+      });
+    }
+
+    return Array.isArray(data.celulars_products) ? data.celulars_products : [];
+  }
+
+  function normalizeModelsData(data) {
+    if (Array.isArray(data)) return data;
+    return Array.isArray(data.iphone_models_database) ? data.iphone_models_database : [];
+  }
+
+  async function loadProductsFeed() {
+    if (window.CELULARS_PRODUCTS_DATA) return normalizeProductsData(window.CELULARS_PRODUCTS_DATA);
+
+    const response = await fetch(feedUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    return normalizeProductsData(JSON.parse((await response.text()).replace(/^\uFEFF/, "")));
+  }
+
+  async function loadModelDatabase() {
+    if (window.CELULARS_MODELS_DATA) return normalizeModelsData(window.CELULARS_MODELS_DATA);
+
+    const response = await fetch(modelsUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    return normalizeModelsData(JSON.parse((await response.text()).replace(/^\uFEFF/, "")));
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function escapeAttr(value) {
+    return escapeHtml(value).replace(/`/g, "&#096;");
+  }
+
+  async function loadData() {
+    showStatus("Carregando iPhones...");
+
+    await loadExchangeRate();
+    updateExchangeBar();
+
+    try {
+      modelDatabase = await loadModelDatabase();
+      modelLoadError = "";
+      showGuideStatus("");
+    } catch (error) {
+      console.warn("Não foi possível carregar dados embutidos. Usando dados locais de fallback.", error);
+      try {
+        modelDatabase = fallbackModels();
+        modelLoadError = modelDatabase.length
+          ? ""
+          : "Não foi possível carregar o guia de modelos. Verifique o arquivo dados embutidos.";
+      } catch (fallbackError) {
+        console.error("Falha ao carregar fallback do guia de modelos.", fallbackError);
+        modelDatabase = [];
+        modelLoadError = "Não foi possível carregar o guia de modelos. Verifique o arquivo dados embutidos.";
+      }
+      showGuideStatus(modelLoadError);
+    }
+
+    try {
+      products = (await loadProductsFeed()).filter(isPublicProduct).sort(sortProducts);
+      productLoadError = "";
+      showStatus("");
+    } catch (error) {
+      console.warn("Não foi possível carregar dados embutidos. Usando dados locais de fallback.", error);
+      try {
+        products = fallbackProducts().filter(isPublicProduct).sort(sortProducts);
+        productLoadError = products.length
+          ? ""
+          : "Não foi possível carregar os produtos. Verifique o arquivo dados embutidos.";
+      } catch (fallbackError) {
+        console.error("Falha ao carregar fallback de produtos.", fallbackError);
+        products = [];
+        productLoadError = "Não foi possível carregar os produtos. Verifique o arquivo dados embutidos.";
+      }
+      showStatus(productLoadError);
+    }
+
+    renderProducts();
+    populateGuideFilters();
+    renderGuide();
+  }
+
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeFilter = button.dataset.filter;
+      filterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      renderProducts();
+    });
+  });
+
+  availabilityButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeAvailabilityFilter = button.dataset.availabilityFilter;
+      availabilityButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      renderProducts();
+    });
+  });
+
+  lineButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeLineFilter = button.dataset.lineFilter;
+      lineButtons.forEach((item) => item.classList.toggle("is-active", item === button));
+      renderProducts();
+    });
+  });
+
+  guideSearchEl?.addEventListener("input", renderGuide);
+  guideFilterEls.forEach((select) => select.addEventListener("change", renderGuide));
+  guideCelularsOnlyEl?.addEventListener("change", renderGuide);
+
+  loadData();
+})();
+
+</script>
