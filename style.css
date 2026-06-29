@@ -9,6 +9,7 @@
   --whatsapp-dark: #1ebe5d;
   width: 100%;
   max-width: 1240px;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: clamp(26px, 4vw, 54px) 18px;
   color: var(--ink);
