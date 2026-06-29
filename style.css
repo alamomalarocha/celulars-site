@@ -59,22 +59,35 @@
   border: 1px solid rgba(18, 61, 121, .1);
   border-radius: 16px;
   background: rgba(255, 255, 255, .82);
-  padding: 15px 16px;
-  box-shadow: 0 12px 30px rgba(14, 22, 40, .06);
+  padding: 13px 15px;
+  box-shadow: 0 10px 24px rgba(14, 22, 40, .045);
 }
 
 .exchange-rate-items {
   display: grid;
-  gap: 6px;
-  color: var(--ink);
-  font-size: .9rem;
+  gap: 5px;
+  color: #344054;
+  font-size: .82rem;
+  line-height: 1.35;
 }
 
 .exchange-card p {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: var(--muted);
-  font-size: .79rem;
+  font-size: .74rem;
   line-height: 1.35;
+}
+
+.price-reference-note {
+  margin: -4px 0 18px;
+  border: 1px solid rgba(190, 18, 60, .16);
+  border-left: 3px solid rgba(190, 18, 60, .42);
+  border-radius: 14px;
+  background: rgba(255, 241, 242, .72);
+  color: #7f1d1d;
+  padding: 11px 13px;
+  font-size: .82rem;
+  line-height: 1.45;
 }
 
 .catalog-filter-panel {
