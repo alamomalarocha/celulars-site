@@ -1,23 +1,16 @@
 # CDVS Global Image Audit Report
 
-Auditoria ampla de imagens e refer?ncias para a biblioteca visual CDVS.
+Relatorio geral atualizado da biblioteca visual CDVS.
 
-## Resumo final
+## Totais
 
-- Total de modelos verificados: 52
-- Total de cores verificadas: 209
-- Total de imagens finais prontas para uso: 47
-- Total de combina??es usando fallback/refer?ncia: 162
-- Modelos completos: 9
-- Modelos incompletos: 43
-
-## Fontes principais usadas
-
-- Apple Store / p?ginas p?blicas de produto Apple
-- Apple Certified Refurbished iPhone
-- Apple Support - Identify your iPhone model
-- Apple Newsroom para refer?ncia de modelos e fam?lias visuais
-- Fontes externas editoriais e Getty/Reddit apenas como refer?ncia, sem baixar imagens para uso p?blico
+- Modelos verificados: 52
+- Combinacoes modelo/cor verificadas: 209
+- Imagens finais prontas para uso: 54
+- Pendencias/fallback: 155
+- Modelos completos: 13
+- Modelos parcialmente completos: 0
+- Modelos totalmente em fallback: 39
 
 ## Modelos completos
 
@@ -26,67 +19,74 @@ Auditoria ampla de imagens e refer?ncias para a biblioteca visual CDVS.
 - iPhone 17 Pro
 - iPhone Air
 - iPhone 17
+- iPhone 16 Pro Max
 - iPhone 16 Pro
 - iPhone 16 Plus
 - iPhone 16
+- iPhone 15 Pro Max
+- iPhone 15 Pro
 - iPhone 15 Plus
+- iPhone 15
 
-## Modelos incompletos / fallback ativo
+## Modelos parcialmente completos
 
-- iPhone 16e: 0/2 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 16 Pro Max: 2/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 15 Pro Max: 3/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 15 Pro: 1/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 15: 4/5 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 14 Pro Max: 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 14 Pro: 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 14 Plus: 0/6 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 14: 0/6 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone SE (3rd generation): 0/3 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 13 Pro Max: 0/5 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 13 Pro: 0/5 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 13: 0/6 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 13 mini: 0/6 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 12 Pro Max: 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 12 Pro: 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 12: 0/6 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 12 mini: 0/6 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone SE (2nd generation): 0/3 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 11 Pro Max: 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 11 Pro: 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 11: 0/6 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone XS Max: 0/3 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone XS: 0/3 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone XR: 0/6 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone X: 0/2 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 8 Plus: 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 8: 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 7 Plus: 0/6 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 7: 0/6 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone SE (1st generation): 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 6s Plus: 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 6s: 0/4 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 6 Plus: 0/3 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 6: 0/3 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 5s: 0/3 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 5c: 0/5 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 5: 0/2 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 4s: 0/2 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 4: 0/2 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 3GS: 0/2 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone 3G: 0/2 cores com imagem final; demais permanecem com fallback ou refer?ncia.
-- iPhone: 0/1 cores com imagem final; demais permanecem com fallback ou refer?ncia.
+- Nenhum
 
-## Decis?es de seguran?a
+## Modelos totalmente em fallback
 
-- Nenhuma imagem Getty, Reddit, banco pago, marca d'?gua ou site jornal?stico foi integrada ao cat?logo p?blico.
-- Refer?ncias Apple Support foram registradas em `references/`, mas n?o ativadas como imagem final por cor.
-- Onde n?o h? imagem final segura, o fallback visual do cat?logo permanece ativo.
+- iPhone 16e
+- iPhone 14 Pro Max
+- iPhone 14 Pro
+- iPhone 14 Plus
+- iPhone 14
+- iPhone SE (3rd generation)
+- iPhone 13 Pro Max
+- iPhone 13 Pro
+- iPhone 13
+- iPhone 13 mini
+- iPhone 12 Pro Max
+- iPhone 12 Pro
+- iPhone 12
+- iPhone 12 mini
+- iPhone SE (2nd generation)
+- iPhone 11 Pro Max
+- iPhone 11 Pro
+- iPhone 11
+- iPhone XS Max
+- iPhone XS
+- iPhone XR
+- iPhone X
+- iPhone 8 Plus
+- iPhone 8
+- iPhone 7 Plus
+- iPhone 7
+- iPhone SE (1st generation)
+- iPhone 6s Plus
+- iPhone 6s
+- iPhone 6 Plus
+- iPhone 6
+- iPhone 5s
+- iPhone 5c
+- iPhone 5
+- iPhone 4s
+- iPhone 4
+- iPhone 3GS
+- iPhone 3G
+- iPhone
 
-## Arquivos gerados/atualizados
+## Lote prioritario 1
 
-- `CDVS_COMPLETENESS_CHECK.md`
-- `CDVS_IMAGE_LICENSE_AUDIT.md`
-- `CDVS_GLOBAL_IMAGE_AUDIT_REPORT.md`
-- `production-models/*/references/apple-support-identify-reference.md`
+As sete imagens faltantes do lote prioritario 1 foram encontradas em fonte oficial Apple Store / Apple Certified Refurbished e integradas ao CDVS.
 
+- iPhone 16 Pro Max - Black Titanium: integrada (design-system/device-visual-system/production-models/iphone-16-pro-max/exports/black-titanium/iphone-16-pro-max-black-titanium.png)
+- iPhone 16 Pro Max - Natural Titanium: integrada (design-system/device-visual-system/production-models/iphone-16-pro-max/exports/natural-titanium/iphone-16-pro-max-natural-titanium.png)
+- iPhone 15 Pro Max - Black Titanium: integrada (design-system/device-visual-system/production-models/iphone-15-pro-max/exports/black-titanium/iphone-15-pro-max-black-titanium.png)
+- iPhone 15 Pro - Black Titanium: integrada (design-system/device-visual-system/production-models/iphone-15-pro/exports/black-titanium/iphone-15-pro-black-titanium.png)
+- iPhone 15 Pro - White Titanium: integrada (design-system/device-visual-system/production-models/iphone-15-pro/exports/white-titanium/iphone-15-pro-white-titanium.png)
+- iPhone 15 Pro - Blue Titanium: integrada (design-system/device-visual-system/production-models/iphone-15-pro/exports/blue-titanium/iphone-15-pro-blue-titanium.png)
+- iPhone 15 - Black: integrada (design-system/device-visual-system/production-models/iphone-15/exports/black/iphone-15-black.png)
+
+## Observacoes de licenca
+
+- Getty, Reddit, marketplaces, bancos pagos e imagens com marca dagua permanecem fora do catalogo publico.
+- Cores sem imagem final segura continuam usando fallback visual.
