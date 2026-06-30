@@ -123,4 +123,24 @@ Validacoes da pagina iPhones:
 
 ## 8. Resultado do teste publicado
 
-Pendente de validacao apos commit, push e deploy Cloudflare.
+Validacao publicada realizada em:
+
+- `https://celulars.com.br`
+- `https://celulars.com.br/iphones.html` redirecionando corretamente para `https://celulars.com.br/iphones`
+
+Resultado publicado:
+
+- Home sem texto `CDVS` visivel.
+- Pagina iPhones com 52 cards.
+- Nenhum texto `CDVS` aparece visualmente no catalogo publico.
+- Nenhum atributo `alt` de imagem publica contem `CDVS`.
+- Nenhuma imagem de card quebrada.
+- As 7 imagens do lote prioritario 1 carregam corretamente.
+- Lightbox abre a imagem correta.
+- Filtros continuam funcionando.
+- WhatsApp continua funcionando.
+- PTAX exibida: `Cotacao de referencia (PTAX/Banco Central): R$ 5,17`
+- Data PTAX exibida: `Atualizada em 29/06/2026.`
+- Log publicado da PTAX: source `api`, quoteDate `2026-06-29`, rate `5.1717`
+- Sem erro de console.
+- Sem overflow em desktop, 768px, 430px e 390px.
