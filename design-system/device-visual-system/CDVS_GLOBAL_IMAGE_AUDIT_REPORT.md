@@ -8,12 +8,12 @@ Relatorio geral atualizado da biblioteca visual CDVS.
 - Combinacoes modelo/cor verificadas: 209
 - Imagens finais prontas para uso: 54
 - Pendencias/fallback: 155
+- Referencias oficiais internas: 155
 - Modelos completos: 13
 - Modelos parcialmente completos: 0
 - Modelos totalmente em fallback: 39
 
 ## Modelos completos
-
 - iPhone 17e
 - iPhone 17 Pro Max
 - iPhone 17 Pro
@@ -29,11 +29,9 @@ Relatorio geral atualizado da biblioteca visual CDVS.
 - iPhone 15
 
 ## Modelos parcialmente completos
-
 - Nenhum
 
 ## Modelos totalmente em fallback
-
 - iPhone 16e
 - iPhone 14 Pro Max
 - iPhone 14 Pro
@@ -74,19 +72,12 @@ Relatorio geral atualizado da biblioteca visual CDVS.
 - iPhone 3G
 - iPhone
 
-## Lote prioritario 1
+## Decisao desta rodada
+Nenhuma nova imagem foi promovida ao catalogo publico nesta rodada porque as novas fontes oficiais encontradas na Apple Support sao composites/lineups por modelo, nao assets finais individuais por cor. Elas permanecem como referencia interna CDVS. As 54 imagens finais ja aprovadas continuam integradas.
 
-As sete imagens faltantes do lote prioritario 1 foram encontradas em fonte oficial Apple Store / Apple Certified Refurbished e integradas ao CDVS.
+## Fontes oficiais consultadas
+- Apple Store / Apple public product assets ja integrados em lotes anteriores.
+- Apple Certified Refurbished.
+- Apple Support: https://support.apple.com/en-us/108044
+- Apple Newsroom para verificacao visual de linhas iPhone 14, iPhone 13, iPhone 12 e iPhone 11.
 
-- iPhone 16 Pro Max - Black Titanium: integrada (design-system/device-visual-system/production-models/iphone-16-pro-max/exports/black-titanium/iphone-16-pro-max-black-titanium.png)
-- iPhone 16 Pro Max - Natural Titanium: integrada (design-system/device-visual-system/production-models/iphone-16-pro-max/exports/natural-titanium/iphone-16-pro-max-natural-titanium.png)
-- iPhone 15 Pro Max - Black Titanium: integrada (design-system/device-visual-system/production-models/iphone-15-pro-max/exports/black-titanium/iphone-15-pro-max-black-titanium.png)
-- iPhone 15 Pro - Black Titanium: integrada (design-system/device-visual-system/production-models/iphone-15-pro/exports/black-titanium/iphone-15-pro-black-titanium.png)
-- iPhone 15 Pro - White Titanium: integrada (design-system/device-visual-system/production-models/iphone-15-pro/exports/white-titanium/iphone-15-pro-white-titanium.png)
-- iPhone 15 Pro - Blue Titanium: integrada (design-system/device-visual-system/production-models/iphone-15-pro/exports/blue-titanium/iphone-15-pro-blue-titanium.png)
-- iPhone 15 - Black: integrada (design-system/device-visual-system/production-models/iphone-15/exports/black/iphone-15-black.png)
-
-## Observacoes de licenca
-
-- Getty, Reddit, marketplaces, bancos pagos e imagens com marca dagua permanecem fora do catalogo publico.
-- Cores sem imagem final segura continuam usando fallback visual.
