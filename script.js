@@ -1323,6 +1323,61 @@
     m.images = {...colorMap,...(m.images||{})};
     IPHONE_IMAGE_MAP[m.model_name] = m.images;
   });
+  const CDVS_IMAGE_OVERRIDES = {
+  "iPhone 17e": {
+    "Black": "design-system/device-visual-system/production-models/iphone-17e/exports/black/iphone-17e-black.png",
+    "White": "design-system/device-visual-system/production-models/iphone-17e/exports/white/iphone-17e-white.png",
+    "Soft Pink": "design-system/device-visual-system/production-models/iphone-17e/exports/soft-pink/iphone-17e-soft-pink.png"
+  },
+  "iPhone 17": {
+    "Black": "design-system/device-visual-system/production-models/iphone-17/exports/black/iphone-17-black.png",
+    "White": "design-system/device-visual-system/production-models/iphone-17/exports/white/iphone-17-white.png",
+    "Mist Blue": "design-system/device-visual-system/production-models/iphone-17/exports/mist-blue/iphone-17-mist-blue.png",
+    "Sage": "design-system/device-visual-system/production-models/iphone-17/exports/sage/iphone-17-sage.png",
+    "Lavender": "design-system/device-visual-system/production-models/iphone-17/exports/lavender/iphone-17-lavender.png"
+  },
+  "iPhone Air": {
+    "Space Black": "design-system/device-visual-system/production-models/iphone-air/exports/space-black/iphone-air-space-black.png",
+    "Cloud White": "design-system/device-visual-system/production-models/iphone-air/exports/cloud-white/iphone-air-cloud-white.png",
+    "Light Gold": "design-system/device-visual-system/production-models/iphone-air/exports/light-gold/iphone-air-light-gold.png",
+    "Sky Blue": "design-system/device-visual-system/production-models/iphone-air/exports/sky-blue/iphone-air-sky-blue.png"
+  },
+  "iPhone 17 Pro": {
+    "Silver": "design-system/device-visual-system/production-models/iphone-17-pro/exports/silver/iphone-17-pro-silver.png",
+    "Cosmic Orange": "design-system/device-visual-system/production-models/iphone-17-pro/exports/cosmic-orange/iphone-17-pro-cosmic-orange.png",
+    "Deep Blue": "design-system/device-visual-system/production-models/iphone-17-pro/exports/deep-blue/iphone-17-pro-deep-blue.png"
+  },
+  "iPhone 17 Pro Max": {
+    "Silver": "design-system/device-visual-system/production-models/iphone-17-pro-max/exports/silver/iphone-17-pro-max-silver.png",
+    "Cosmic Orange": "design-system/device-visual-system/production-models/iphone-17-pro-max/exports/cosmic-orange/iphone-17-pro-max-cosmic-orange.png",
+    "Deep Blue": "design-system/device-visual-system/production-models/iphone-17-pro-max/exports/deep-blue/iphone-17-pro-max-deep-blue.png"
+  },
+  "iPhone 16": {
+    "Black": "design-system/device-visual-system/production-models/iphone-16/exports/black/iphone-16-black.png",
+    "White": "design-system/device-visual-system/production-models/iphone-16/exports/white/iphone-16-white.png",
+    "Pink": "design-system/device-visual-system/production-models/iphone-16/exports/pink/iphone-16-pink.png",
+    "Teal": "design-system/device-visual-system/production-models/iphone-16/exports/teal/iphone-16-teal.png",
+    "Ultramarine": "design-system/device-visual-system/production-models/iphone-16/exports/ultramarine/iphone-16-ultramarine.png"
+  },
+  "iPhone 16 Plus": {
+    "Black": "design-system/device-visual-system/production-models/iphone-16-plus/exports/black/iphone-16-plus-black.png",
+    "White": "design-system/device-visual-system/production-models/iphone-16-plus/exports/white/iphone-16-plus-white.png",
+    "Pink": "design-system/device-visual-system/production-models/iphone-16-plus/exports/pink/iphone-16-plus-pink.png",
+    "Teal": "design-system/device-visual-system/production-models/iphone-16-plus/exports/teal/iphone-16-plus-teal.png",
+    "Ultramarine": "design-system/device-visual-system/production-models/iphone-16-plus/exports/ultramarine/iphone-16-plus-ultramarine.png"
+  }
+};
+  Object.entries(CDVS_IMAGE_OVERRIDES).forEach(([modelName, colors])=>{
+    const model = IPHONE_MODELS.find(m=>m.model_name===modelName);
+    if(model&&model.images){
+      Object.entries(colors).forEach(([color, front])=>{
+        if(model.images[color]){
+          model.images[color]={...model.images[color],front,alt:modelName+" "+color+" CDVS"};
+        }
+      });
+      IPHONE_IMAGE_MAP[modelName]=model.images;
+    }
+  });
 
   const shellEl = document.querySelector('#celulars-iphones-catalog');
   document.querySelector('[data-condition-filter="Modelo informativo"]')?.remove();
