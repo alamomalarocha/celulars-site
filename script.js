@@ -1410,7 +1410,7 @@
     if(model&&model.images){
       Object.entries(colors).forEach(([color, front])=>{
         if(model.images[color]){
-          model.images[color]={...model.images[color],front,alt:modelName+" "+color+" CDVS"};
+          model.images[color]={...model.images[color],front,alt:modelName+" "+color};
         }
       });
       IPHONE_IMAGE_MAP[modelName]=model.images;
@@ -1443,17 +1443,20 @@
   function escapeHtml(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
   function formatUsd(v){return 'US$ '+Math.round(v).toLocaleString('en-US')}
   function formatBrl(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2,maximumFractionDigits:2})}
-  const BCB_CACHE_KEY='celulars_bcb_ptax_usd_brl_v1';
+  const BCB_CACHE_KEY='celulars_bcb_ptax_usd_brl_v2';
+  const BCB_LEGACY_CACHE_KEY='celulars_bcb_ptax_usd_brl_v1';
   const BCB_CACHE_TTL_MS=86400000;
   const FALLBACK_BCB_RATE=5.32;
   function localDateKey(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
   function bcbParamDate(d){return String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'-'+d.getFullYear()}
   function formatBcbDate(v){const s=String(v||'').slice(0,10),p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'--/--/----'}
-  function readBcbCache(){try{const c=JSON.parse(localStorage.getItem(BCB_CACHE_KEY)||'null');return c&&Number(c.rate)>0?c:null}catch(e){return null}}
-  function writeBcbCache(c){try{localStorage.setItem(BCB_CACHE_KEY,JSON.stringify(c))}catch(e){}}
+  function readBcbCache(){try{const c=JSON.parse(localStorage.getItem(BCB_CACHE_KEY)||'null');return c&&Number(c.rate)>0?{...c,cacheVersion:2}:null}catch(e){return null}}
+  function readAnyBcbCache(){const current=readBcbCache();if(current)return current;try{const c=JSON.parse(localStorage.getItem(BCB_LEGACY_CACHE_KEY)||'null');return c&&Number(c.rate)>0?{...c,cacheVersion:1}:null}catch(e){return null}}
+  function writeBcbCache(c){try{localStorage.setItem(BCB_CACHE_KEY,JSON.stringify({...c,cacheVersion:2}))}catch(e){}}
+  function logBcbStatus(source,rateInfo){try{console.info('[CELULARS PTAX]',{source,checkedAt:new Date().toISOString(),checkedKey:localDateKey(),quoteDate:rateInfo.date||String(rateInfo.dataHoraCotacao||'').slice(0,10),rate:Number(rateInfo.rate)||null})}catch(e){}}
   function updateExchangeCard(rateInfo,status){const rateEl=document.querySelector('[data-bcb-rate]'),dateEl=document.querySelector('[data-bcb-date]');if(rateEl)rateEl.textContent=formatBrl(Number(rateInfo.rate)||FALLBACK_BCB_RATE);if(dateEl){const label=status==='fallback'?'Cota\u00e7\u00e3o indispon\u00edvel temporariamente.':'Atualizada em '+formatBcbDate(rateInfo.date||rateInfo.dataHoraCotacao)+'.';dateEl.textContent=label}}
   async function fetchBcbPtax(){const end=new Date(),start=new Date();start.setDate(end.getDate()-14);const url="https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='"+bcbParamDate(start)+"'&@dataFinalCotacao='"+bcbParamDate(end)+"'&$format=json&$orderby=dataHoraCotacao desc&$top=1";const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw new Error('BCB PTAX HTTP '+res.status);const data=await res.json(),row=data&&data.value&&data.value[0];if(!row||!Number(row.cotacaoVenda))throw new Error('BCB PTAX sem cota\u00e7\u00e3o');return{rate:Number(row.cotacaoVenda),date:String(row.dataHoraCotacao).slice(0,10),dataHoraCotacao:row.dataHoraCotacao,fetchedKey:localDateKey(),fetchedAt:Date.now(),source:'Banco Central do Brasil - PTAX USD/BRL venda'}}
-  async function updateBcbExchangeRate(){const cached=readBcbCache(),today=localDateKey();if(cached&&cached.fetchedKey===today&&Date.now()-Number(cached.fetchedAt||0)<BCB_CACHE_TTL_MS){CATALOG_RATE=Number(cached.rate);updateExchangeCard(cached,'cache');renderCatalog();return}try{const fresh=await fetchBcbPtax();CATALOG_RATE=fresh.rate;writeBcbCache(fresh);updateExchangeCard(fresh,'live');renderCatalog()}catch(e){console.warn('N\u00e3o foi poss\u00edvel carregar PTAX do Banco Central.',e);if(cached){CATALOG_RATE=Number(cached.rate);updateExchangeCard(cached,'saved');renderCatalog()}else{CATALOG_RATE=FALLBACK_BCB_RATE;updateExchangeCard({rate:FALLBACK_BCB_RATE,date:''},'fallback');renderCatalog()}}}
+  async function updateBcbExchangeRate(){const cached=readBcbCache(),saved=readAnyBcbCache(),today=localDateKey();if(cached&&cached.fetchedKey===today&&Date.now()-Number(cached.fetchedAt||0)<BCB_CACHE_TTL_MS){CATALOG_RATE=Number(cached.rate);updateExchangeCard(cached,'cache');logBcbStatus('cache',cached);renderCatalog();return}try{const fresh=await fetchBcbPtax();CATALOG_RATE=fresh.rate;writeBcbCache(fresh);updateExchangeCard(fresh,'live');logBcbStatus('api',fresh);renderCatalog()}catch(e){console.warn('N\u00e3o foi poss\u00edvel carregar PTAX do Banco Central.',e);if(saved){CATALOG_RATE=Number(saved.rate);updateExchangeCard(saved,'saved');logBcbStatus('saved-cache',saved);renderCatalog()}else{CATALOG_RATE=FALLBACK_BCB_RATE;const fallback={rate:FALLBACK_BCB_RATE,date:''};updateExchangeCard(fallback,'fallback');logBcbStatus('fallback',fallback);renderCatalog()}}}
   function capacityBump(m,c){const i=(m.capacities||[]).findIndex(v=>normalize(v)===normalize(c));return [0,120,260,520][i]||0}
   function modelPrice(m,s){if(!m.commercial)return null;return Math.max(99,Number(m.base_price_usd||0)+capacityBump(m,s.capacity)-(normalize(s.condition).includes('ecpo')?80:0))}
   function colorHex(c){const k=normalize(c),map=[[/cosmic orange|coral/,'#d97845'],[/deep blue|blue titanium|pacific blue|sierra blue|mist blue|sky blue|blue|ultramarine/,'#6f8fb8'],[/space black|black titanium|space gray|graphite|midnight|jet black|black/,'#2d3036'],[/white titanium|cloud white|starlight|white/,'#eef1f4'],[/natural titanium|desert titanium|light gold|gold/,'#c9b28b'],[/silver/,'#d7dbe1'],[/soft pink|pink|rose gold/,'#e5b6bd'],[/sage|green|alpine green|midnight green|teal/,'#7f9b8b'],[/lavender|purple|deep purple/,'#8d79a6'],[/yellow/,'#e4ca68'],[/red|product/,'#b33a3a']];return(map.find(([rx])=>rx.test(k))||[null,'#cfd6df'])[1]}
