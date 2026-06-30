@@ -74,4 +74,24 @@ Resultado:
 
 ## Resultado publicado
 
-Pendente de validacao apos push do commit desta etapa.
+Validado no publicado apos deploy:
+
+- `https://celulars.com.br`
+- `https://celulars.com.br/iphones`
+- `https://celulars.com.br/sobre`
+- `https://celulars.com.br/contato`
+- `https://celulars.com.br/iphones?ptax-spread-check=efcd76b`
+
+Resultado:
+
+- Bloco de cotacao presente nas 4 paginas.
+- PTAX original exibida com 4 casas: `R$ 5,1717`.
+- Cotacao CELULARS exibida com 4 casas: `R$ 5,3217`.
+- Ajuste operacional exibido com 4 casas: `R$ 0,1500`.
+- Data exibida: `Atualizada em 29/06/2026.`
+- Pagina iPhones manteve 52 cards.
+- Valores BRL recalculados com PTAX + spread.
+- Nenhum texto tecnico CDVS visivel no site publico.
+- Nenhum `alt` publico com `CDVS`.
+- Sem overflow no desktop.
+- O lightbox foi ajustado para nao nascer com `src=""`, evitando leitura de imagem vazia durante validacoes.
