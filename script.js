@@ -1365,6 +1365,37 @@
     "Pink": "design-system/device-visual-system/production-models/iphone-16-plus/exports/pink/iphone-16-plus-pink.png",
     "Teal": "design-system/device-visual-system/production-models/iphone-16-plus/exports/teal/iphone-16-plus-teal.png",
     "Ultramarine": "design-system/device-visual-system/production-models/iphone-16-plus/exports/ultramarine/iphone-16-plus-ultramarine.png"
+  },
+  "iPhone 16 Pro": {
+    "White Titanium": "design-system/device-visual-system/production-models/iphone-16-pro/exports/white-titanium/iphone-16-pro-white-titanium.png",
+    "Desert Titanium": "design-system/device-visual-system/production-models/iphone-16-pro/exports/desert-titanium/iphone-16-pro-desert-titanium.png",
+    "Natural Titanium": "design-system/device-visual-system/production-models/iphone-16-pro/exports/natural-titanium/iphone-16-pro-natural-titanium.png",
+    "Black Titanium": "design-system/device-visual-system/production-models/iphone-16-pro/exports/black-titanium/iphone-16-pro-black-titanium.png"
+  },
+  "iPhone 16 Pro Max": {
+    "White Titanium": "design-system/device-visual-system/production-models/iphone-16-pro-max/exports/white-titanium/iphone-16-pro-max-white-titanium.png",
+    "Desert Titanium": "design-system/device-visual-system/production-models/iphone-16-pro-max/exports/desert-titanium/iphone-16-pro-max-desert-titanium.png"
+  },
+  "iPhone 15": {
+    "Pink": "design-system/device-visual-system/production-models/iphone-15/exports/pink/iphone-15-pink.png",
+    "Blue": "design-system/device-visual-system/production-models/iphone-15/exports/blue/iphone-15-blue.png",
+    "Green": "design-system/device-visual-system/production-models/iphone-15/exports/green/iphone-15-green.png",
+    "Yellow": "design-system/device-visual-system/production-models/iphone-15/exports/yellow/iphone-15-yellow.png"
+  },
+  "iPhone 15 Plus": {
+    "Pink": "design-system/device-visual-system/production-models/iphone-15-plus/exports/pink/iphone-15-plus-pink.png",
+    "Yellow": "design-system/device-visual-system/production-models/iphone-15-plus/exports/yellow/iphone-15-plus-yellow.png",
+    "Blue": "design-system/device-visual-system/production-models/iphone-15-plus/exports/blue/iphone-15-plus-blue.png",
+    "Green": "design-system/device-visual-system/production-models/iphone-15-plus/exports/green/iphone-15-plus-green.png",
+    "Black": "design-system/device-visual-system/production-models/iphone-15-plus/exports/black/iphone-15-plus-black.png"
+  },
+  "iPhone 15 Pro": {
+    "Natural Titanium": "design-system/device-visual-system/production-models/iphone-15-pro/exports/natural-titanium/iphone-15-pro-natural-titanium.png"
+  },
+  "iPhone 15 Pro Max": {
+    "White Titanium": "design-system/device-visual-system/production-models/iphone-15-pro-max/exports/white-titanium/iphone-15-pro-max-white-titanium.png",
+    "Natural Titanium": "design-system/device-visual-system/production-models/iphone-15-pro-max/exports/natural-titanium/iphone-15-pro-max-natural-titanium.png",
+    "Blue Titanium": "design-system/device-visual-system/production-models/iphone-15-pro-max/exports/blue-titanium/iphone-15-pro-max-blue-titanium.png"
   }
 };
   Object.entries(CDVS_IMAGE_OVERRIDES).forEach(([modelName, colors])=>{
