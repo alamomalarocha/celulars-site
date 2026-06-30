@@ -58,7 +58,7 @@
 .exchange-card {
   border: 1px solid rgba(18, 61, 121, .1);
   border-radius: 16px;
-  background: rgba(255, 255, 255, .82);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .92), rgba(247, 250, 254, .86));
   padding: 13px 15px;
   box-shadow: 0 10px 24px rgba(14, 22, 40, .045);
 }
@@ -80,11 +80,11 @@
 
 .price-reference-note {
   margin: -4px 0 18px;
-  border: 1px solid rgba(190, 18, 60, .16);
-  border-left: 3px solid rgba(190, 18, 60, .42);
+  border: 1px solid rgba(18, 61, 121, .14);
+  border-left: 3px solid rgba(18, 61, 121, .38);
   border-radius: 14px;
-  background: rgba(255, 241, 242, .72);
-  color: #7f1d1d;
+  background: rgba(237, 245, 255, .62);
+  color: #344054;
   padding: 11px 13px;
   font-size: .82rem;
   line-height: 1.45;
@@ -408,10 +408,10 @@
 
 .card-reference-note {
   margin: 0;
-  border: 1px solid rgba(179, 58, 58, .16);
+  border: 1px solid rgba(18, 61, 121, .12);
   border-radius: 10px;
-  background: rgba(179, 58, 58, .045);
-  color: #7a3440;
+  background: rgba(237, 245, 255, .46);
+  color: #475467;
   padding: 8px 10px;
   font-size: .72rem;
   font-weight: 650;
