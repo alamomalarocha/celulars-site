@@ -1,0 +1,23 @@
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/iphones
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/iphones.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/sobre
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/sobre.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/contato
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/contato.html
+  Cache-Control: no-cache, no-store, must-revalidate
