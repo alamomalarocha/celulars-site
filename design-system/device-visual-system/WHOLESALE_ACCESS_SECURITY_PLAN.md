@@ -33,6 +33,19 @@ Recomendacao principal: Cloudflare Access com liberacao por e-mails aprovados de
 
 Alternativa futura: Cloudflare Pages Functions ou Worker para validar sessao e entregar dados protegidos.
 
+## Fases do projeto
+
+1. Fase 1 - Pagina visual criada.
+2. Fase 2 - Estrutura sample criada.
+3. Fase 3 - Preparacao para Cloudflare Access.
+4. Fase 4 - Ativar Cloudflare Access no painel da Cloudflare.
+5. Fase 5 - Limpar e transformar a planilha real em `wholesale-inventory.json`.
+6. Fase 6 - Publicar tabela real somente apos protecao confirmada.
+
+## Status da Fase 3
+
+O projeto esta preparado para receber uma camada real de Cloudflare Access antes de qualquer dado comercial sensivel. A pagina `atacado.html` continua publica apenas com linguagem comercial, interface visual e dados de exemplo zerados. Nenhum arquivo real `data/wholesale-inventory.json` deve ser criado antes da protecao estar ativa e testada.
+
 ## Diretriz para tabela real
 
 A tabela real de atacado so deve ser implementada apos autenticacao segura. Ela nao deve ser escondida apenas com CSS, nem ficar presente no HTML publico, nem ser entregue em JavaScript publico sem controle de acesso.
