@@ -91,19 +91,36 @@ No new image file was added.
 
 Existing local assets used:
 
-- `assets/images/iphones/iphone-17-pro-max-silver.webp`
-- `assets/images/iphones/iphone-17-pro-deep-blue.webp`
-- `assets/images/iphones/iphone-17-mist-blue.webp`
-- `assets/images/iphones/iphone-air-space-black.webp`
 - `brand-assets/celulars-official-logos/header/celulars-logo-horizontal-blue.png`
 
 No hotlinking was introduced.
+
+## Weak Image Cleanup
+
+The small iPhone product images previously shown in hero panels, visual strips and small clusters were removed from the public layout because they looked too small, disconnected from the composition and visually less premium.
+
+Hidden from the visual layout:
+
+- Home hero product image block.
+- Home multi-phone cluster.
+- iPhones top multi-phone cluster.
+- Atacado small product image strip.
+- Sobre hero product image block.
+- Contato small phone image.
+
+The physical files remain in the repository for future reuse, but the current public layout no longer displays those weak small image compositions.
+
+Images maintained visually:
+
+- The full CELULARS horizontal logo in the Home hero.
+- The standalone CELULARS symbol in the global header.
 
 ## Text Reorganization
 
 - Home hero text was shortened and clarified.
 - The new Home clarity section reduces the need for the user to infer what CELULARS offers.
 - PTAX/reference notes remain available but visually less dominant.
+- Small disconnected image compositions were removed so sections read as cleaner typography, structured cards and compact commercial information.
 
 ## Validation
 
@@ -128,6 +145,10 @@ Checklist:
 - No broken images: passed
 - No console errors: passed
 - No horizontal overflow: passed
+- Weak/small product images visible: none found
+- Hero title clipping: not found
+- Hero buttons larger: passed
+- Compact rate-card positioning: passed
 
 Published validation was run using:
 

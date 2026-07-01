@@ -8,14 +8,15 @@
 }
 
 #celulars-home .cel-home-hero {
-  grid-template-columns: minmax(0, 1fr) minmax(250px, .58fr) minmax(250px, .42fr) !important;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 320px) !important;
   align-items: start !important;
-  gap: clamp(18px, 3vw, 34px) !important;
+  gap: clamp(20px, 4vw, 44px) !important;
 }
 
 #celulars-home .cel-home-hero h1 {
-  font-size: clamp(38px, 5.4vw, 64px) !important;
-  line-height: 1.01 !important;
+  max-width: 820px !important;
+  font-size: clamp(36px, 5vw, 60px) !important;
+  line-height: 1.08 !important;
 }
 
 #celulars-home .cel-home-hero p {
@@ -35,6 +36,35 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   margin: 0 0 clamp(20px, 3vw, 34px);
+}
+
+#celulars-home .cel-hero-visual,
+#celulars-sobre .cel-hero-visual,
+#celulars-iphones-catalog .cel-iphone-cluster,
+#celulars-atacado .cel-visual-strip img,
+#celulars-contato .cel-contact-iphone {
+  display: none !important;
+}
+
+#celulars-home .cel-home-hero,
+#celulars-sobre .cel-hero,
+#celulars-contato .cel-hero,
+#celulars-atacado .cel-atacado-hero {
+  min-height: 0 !important;
+}
+
+.cel-visual-showcase,
+.cel-visual-strip {
+  grid-template-columns: 1fr !important;
+}
+
+.cel-visual-showcase {
+  padding: clamp(18px, 3vw, 30px) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(245,248,252,.92)) !important;
+}
+
+.cel-visual-strip {
+  padding: 18px !important;
 }
 
 .cel-clarity-card {
@@ -77,7 +107,7 @@
 
 .cel-ptax-reference,
 .exchange-card {
-  max-width: 330px !important;
+  max-width: 315px !important;
   margin: 0 !important;
   align-self: start !important;
   justify-self: end !important;
@@ -157,11 +187,11 @@
 
 #celulars-sobre .cel-hero,
 #celulars-contato .cel-hero {
-  grid-template-columns: minmax(0, 1fr) minmax(240px, .55fr) minmax(250px, .42fr) !important;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 315px) !important;
 }
 
 #celulars-atacado .cel-atacado-hero {
-  grid-template-columns: minmax(0, 1fr) minmax(300px, .72fr) minmax(250px, .38fr) !important;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, .72fr) minmax(250px, 315px) !important;
 }
 
 #celulars-iphones-catalog .catalog-header {
