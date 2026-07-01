@@ -1,0 +1,215 @@
+/* Direction correction: clearer hero, stronger CELULARS identity and compact PTAX card. */
+.cel-full-logo {
+  display: block;
+  width: min(280px, 78vw);
+  height: auto;
+  margin: 0 0 20px;
+  object-fit: contain;
+}
+
+#celulars-home .cel-home-hero {
+  grid-template-columns: minmax(0, 1fr) minmax(250px, .58fr) minmax(250px, .42fr) !important;
+  align-items: start !important;
+  gap: clamp(18px, 3vw, 34px) !important;
+}
+
+#celulars-home .cel-home-hero h1 {
+  font-size: clamp(38px, 5.4vw, 64px) !important;
+  line-height: 1.01 !important;
+}
+
+#celulars-home .cel-home-hero p {
+  max-width: 620px !important;
+  font-size: clamp(1rem, 1.4vw, 1.12rem) !important;
+}
+
+#celulars-home .cel-home-hero .cel-btn {
+  min-height: 54px !important;
+  border-radius: 16px !important;
+  padding: 0 24px !important;
+  font-size: 1rem !important;
+}
+
+.cel-clarity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 clamp(20px, 3vw, 34px);
+}
+
+.cel-clarity-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 13px;
+  align-items: start;
+  border: 1px solid rgba(18, 61, 121, .1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 12px 26px rgba(14, 22, 40, .045);
+  padding: 17px;
+}
+
+.cel-clarity-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 13px;
+  background: #edf5ff;
+  color: #123d79;
+  font-weight: 900;
+}
+
+.cel-clarity-card h3 {
+  margin: 0;
+  color: #111827;
+  font-size: .98rem;
+  line-height: 1.22;
+  font-weight: 900;
+}
+
+.cel-clarity-card p {
+  margin: 6px 0 0;
+  color: #667085;
+  font-size: .88rem;
+  line-height: 1.45;
+}
+
+.cel-ptax-reference,
+.exchange-card {
+  max-width: 330px !important;
+  margin: 0 !important;
+  align-self: start !important;
+  justify-self: end !important;
+  border-radius: 18px !important;
+  border-left-width: 1px !important;
+  background: rgba(255, 255, 255, .94) !important;
+  box-shadow: 0 14px 32px rgba(14, 22, 40, .07) !important;
+  padding: 14px !important;
+}
+
+.cel-ptax-reference:before,
+.exchange-card:before {
+  content: "Cotação CELULARS";
+  display: block;
+  color: #123d79;
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.cel-ptax-lines,
+.exchange-rate-items {
+  gap: 4px !important;
+  font-size: .76rem !important;
+}
+
+.cel-ptax-lines span:first-child,
+.exchange-rate-items span:first-child {
+  display: grid;
+  gap: 3px;
+  color: #667085;
+}
+
+.cel-ptax-lines span:first-child strong,
+.exchange-rate-items span:first-child strong {
+  color: #0d2f61 !important;
+  font-size: 1.45rem !important;
+  line-height: 1 !important;
+  font-weight: 950 !important;
+}
+
+.cel-ptax-lines span:nth-child(2),
+.exchange-rate-items span:nth-child(2) {
+  color: #667085 !important;
+  font-size: .72rem !important;
+}
+
+.cel-ptax-date,
+.exchange-card p {
+  font-size: .69rem !important;
+  color: #7b8797 !important;
+}
+
+.cel-ptax-note,
+.price-reference-note,
+.operation-note {
+  font-size: .74rem !important;
+  line-height: 1.4 !important;
+}
+
+.cel-ptax-note {
+  margin-top: 8px !important;
+  color: #667085 !important;
+}
+
+.cel-hero-with-rate,
+.catalog-header,
+.cel-atacado-hero {
+  align-items: start !important;
+}
+
+.cel-hero-with-rate .cel-ptax-reference {
+  grid-column: 3;
+}
+
+#celulars-sobre .cel-hero,
+#celulars-contato .cel-hero {
+  grid-template-columns: minmax(0, 1fr) minmax(240px, .55fr) minmax(250px, .42fr) !important;
+}
+
+#celulars-atacado .cel-atacado-hero {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, .72fr) minmax(250px, .38fr) !important;
+}
+
+#celulars-iphones-catalog .catalog-header {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 330px) !important;
+}
+
+#celulars-iphones-catalog .catalog-subtitle {
+  max-width: 760px !important;
+}
+
+.cel-visual-showcase {
+  margin-top: clamp(12px, 2vw, 22px) !important;
+}
+
+@media (max-width: 980px) {
+  #celulars-home .cel-home-hero,
+  #celulars-sobre .cel-hero,
+  #celulars-contato .cel-hero,
+  #celulars-atacado .cel-atacado-hero,
+  #celulars-iphones-catalog .catalog-header {
+    grid-template-columns: 1fr !important;
+  }
+
+  .cel-ptax-reference,
+  .exchange-card {
+    max-width: 100% !important;
+    justify-self: stretch !important;
+  }
+
+  .cel-hero-with-rate .cel-ptax-reference {
+    grid-column: auto;
+  }
+
+  .cel-clarity-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cel-full-logo {
+    width: min(245px, 74vw);
+  }
+}
+
+@media (max-width: 620px) {
+  #celulars-home .cel-home-hero .cel-btn {
+    min-height: 52px !important;
+  }
+
+  .cel-clarity-card {
+    padding: 15px;
+  }
+}
