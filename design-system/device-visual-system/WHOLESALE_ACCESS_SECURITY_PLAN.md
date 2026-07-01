@@ -46,6 +46,40 @@ Alternativa futura: Cloudflare Pages Functions ou Worker para validar sessao e e
 
 O projeto esta preparado para receber uma camada real de Cloudflare Access antes de qualquer dado comercial sensivel. A pagina `atacado.html` continua publica apenas com linguagem comercial, interface visual e dados de exemplo zerados. Nenhum arquivo real `data/wholesale-inventory.json` deve ser criado antes da protecao estar ativa e testada.
 
+## Primeira versao da tabela real protegida
+
+A primeira versao da tabela real deve ser somente de iPhones e deve permanecer publicada apenas porque `/atacado` esta protegido por Cloudflare Access.
+
+Colunas permitidas:
+
+- Modelo
+- Capacidade
+- Cor
+- Grade
+- QTY
+- Preco Unit.
+- Total
+
+Colunas proibidas:
+
+- Cost
+- Profit
+- Margem
+- Total Asset
+- formulas
+- erros como `#VALUE!`
+- dados internos operacionais
+
+Produtos fora do escopo inicial:
+
+- Apple Watch
+- iPad
+- MacBook
+- acessorios
+- misc
+
+O arquivo `data/wholesale-inventory.json` deve conter apenas registros comerciais aprovados para exibicao B2B. Se nao houver dados reais validados, ele deve permanecer como uma lista vazia (`[]`).
+
 ## Diretriz para tabela real
 
 A tabela real de atacado so deve ser implementada apos autenticacao segura. Ela nao deve ser escondida apenas com CSS, nem ficar presente no HTML publico, nem ser entregue em JavaScript publico sem controle de acesso.

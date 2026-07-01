@@ -4,7 +4,7 @@ Este documento define o formato ideal para a futura tabela real de atacado da CE
 
 ## Importante
 
-O arquivo real `data/wholesale-inventory.json` ainda nao deve ser criado nem publicado. Ele so deve existir depois que a protecao Cloudflare Access estiver ativa e testada.
+O arquivo real `data/wholesale-inventory.json` so deve ser usado porque a rota `/atacado` esta protegida por Cloudflare Access. Se nao houver dados comerciais validados, o arquivo deve permanecer como uma lista vazia (`[]`).
 
 ## Formato recomendado
 
@@ -15,11 +15,8 @@ O arquivo real `data/wholesale-inventory.json` ainda nao deve ser criado nem pub
     "capacity": "256 GB",
     "color": "Blue",
     "grade": "A+",
-    "condition": "New",
-    "qty": 0,
-    "unit_price_usd": 0,
-    "location": "Miami",
-    "notes": ""
+    "qty": 10,
+    "unit_price_usd": 1155
   }
 ]
 ```
@@ -30,12 +27,20 @@ O arquivo real `data/wholesale-inventory.json` ainda nao deve ser criado nem pub
 - `capacity`
 - `color`
 - `grade`
-- `condition`
 - `qty`
 - `unit_price_usd`
-- `total_usd`, calculado no front-end protegido ou no build
-- `location`
-- `notes`
+
+O total nao precisa ser salvo manualmente no JSON. Ele deve ser calculado pela tabela:
+
+```text
+total_usd = qty * unit_price_usd
+```
+
+Exemplo:
+
+```text
+10 x US$ 1,155 = US$ 11,550
+```
 
 ## Campos que nao devem entrar na tabela publica
 
@@ -47,6 +52,7 @@ O arquivo real `data/wholesale-inventory.json` ainda nao deve ser criado nem pub
 - dados quebrados
 - colunas operacionais internas
 - produtos nao aprovados para exibicao
+- produtos fora do escopo inicial, como Watch, iPad, MacBook, acessorios e misc
 
 ## Regras de limpeza antes da publicacao
 
