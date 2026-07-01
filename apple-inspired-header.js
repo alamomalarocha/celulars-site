@@ -1,5 +1,5 @@
 (function () {
-  const iconPath = "brand-assets/celulars-official-logos/icon/celulars-icon-512.webp";
+  const iconPath = "brand-assets/celulars-official-logos/icon/celulars-symbol-clean-512.webp";
   const brandImage = document.querySelector(".cel-global-brand img");
   const nav = document.querySelector(".cel-global-nav");
 
