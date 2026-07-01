@@ -50,6 +50,10 @@ O projeto esta preparado para receber uma camada real de Cloudflare Access antes
 
 A primeira versao da tabela real deve ser somente de iPhones e deve permanecer publicada apenas porque `/atacado` esta protegido por Cloudflare Access.
 
+Esta tabela segue um padrao comercial completo de iPhones 12 ao 17. Ela ainda nao e o controle de estoque definitivo da CELULARS. Itens sem quantidade ou preco confirmados devem permanecer com `qty: 0` e `unit_price_usd: 0` ate revisao comercial.
+
+O controle de estoque real, com dados operacionais completos, sera uma etapa futura e nao deve ser confundido com esta tabela comercial provisoria de atacado.
+
 Colunas permitidas:
 
 - Modelo

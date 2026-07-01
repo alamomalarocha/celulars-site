@@ -6,6 +6,17 @@ Este documento define o formato ideal para a futura tabela real de atacado da CE
 
 O arquivo real `data/wholesale-inventory.json` so deve ser usado porque a rota `/atacado` esta protegida por Cloudflare Access. Se nao houver dados comerciais validados, o arquivo deve permanecer como uma lista vazia (`[]`).
 
+Na fase de tabela padrao, o arquivo pode conter todas as combinacoes comerciais de iPhones 12 ao 17. Onde nao houver dado claro da tabela bruta, usar:
+
+```json
+{
+  "qty": 0,
+  "unit_price_usd": 0
+}
+```
+
+Essa tabela e uma base comercial provisoria, nao o controle de estoque definitivo.
+
 ## Formato recomendado
 
 ```json
