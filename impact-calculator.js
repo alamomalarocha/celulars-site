@@ -1,10 +1,10 @@
 (function(){
-  // Atualizar estes valores com os numeros oficiais internos da CELULARS.
+  // Estimativa interna CELULARS. Nao representa certificacao ambiental ou auditoria externa.
   const CELULARS_IMPACT_CONFIG = {
-    startDate: "2026-01-01",
-    estimatedDevicesPerWeek: 0,
-    co2KgPerDevice: 0,
-    ewasteKgPerDevice: 0
+    startDate: "2016-07-01",
+    estimatedDevicesPerWeek: 2500,
+    co2KgPerDevice: 70,
+    ewasteKgPerDevice: 0.2
   };
 
   window.CELULARS_IMPACT_CONFIG = window.CELULARS_IMPACT_CONFIG || CELULARS_IMPACT_CONFIG;
@@ -42,8 +42,7 @@
     const kg = Math.max(0, Number(value) || 0);
     if (kg >= 1000) {
       return (kg / 1000).toLocaleString("pt-BR", {
-        minimumFractionDigits: 1,
-        maximumFractionDigits: 1
+        maximumFractionDigits: 0
       }) + " t" + (suffix ? " " + suffix : "");
     }
     return Math.floor(kg).toLocaleString("pt-BR") + " kg" + (suffix ? " " + suffix : "");
@@ -76,13 +75,23 @@
     };
   }
 
+  function rhythmTotals(configValue){
+    const devicesPerWeek = numberValue(configValue.estimatedDevicesPerWeek);
+    return {
+      week: devicesPerWeek,
+      fortnight: devicesPerWeek * 2,
+      month: devicesPerWeek * 52 / 12,
+      year: devicesPerWeek * 52
+    };
+  }
+
   function metricText(metric, totals, configured){
     if (!configured) return "Dados em configura\u00e7\u00e3o";
     if (metric === "devices") return formatInteger(totals.devices);
     if (metric === "co2") return formatMassKg(totals.co2, "CO\u2082");
     if (metric === "ewaste") return formatMassKg(totals.ewaste);
     if (metric === "next") return formatCountdown(totals.next);
-    if (metric === "live") return "● LIVE";
+    if (metric === "live") return "\u25cf LIVE";
     return "Dados em configura\u00e7\u00e3o";
   }
 
@@ -93,6 +102,7 @@
     const currentConfig = config();
     const configured = isConfigured(currentConfig);
     const totals = impactTotals(currentConfig);
+    const rhythm = rhythmTotals(currentConfig);
 
     blocks.forEach(function(block){
       block.toggleAttribute("data-impact-running", configured);
@@ -101,9 +111,16 @@
         el.textContent = metricText(el.getAttribute("data-cel-impact-value"), totals, configured);
       });
 
+      block.querySelectorAll("[data-cel-impact-rhythm]").forEach(function(el){
+        const rhythmKey = el.getAttribute("data-cel-impact-rhythm");
+        el.textContent = configured && Object.prototype.hasOwnProperty.call(rhythm, rhythmKey)
+          ? formatInteger(rhythm[rhythmKey])
+          : "0";
+      });
+
       block.querySelectorAll("[data-cel-impact-updated]").forEach(function(el){
         el.textContent = configured
-          ? "Estimativa em atualiza\u00e7\u00e3o autom\u00e1tica desde " + currentConfig.startDate + "."
+          ? "Estimativas internas calculadas com base em uma m\u00e9dia operacional de " + formatInteger(currentConfig.estimatedDevicesPerWeek) + " iPhones por semana e fator configur\u00e1vel de CO\u2082e por aparelho. Os resultados s\u00e3o referenciais e podem variar conforme modelo, lote, condi\u00e7\u00e3o, metodologia de c\u00e1lculo e mercado."
           : "Dados em configura\u00e7\u00e3o. Atualizar estes valores com os n\u00fameros oficiais internos da CELULARS.";
       });
     });

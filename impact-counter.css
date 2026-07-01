@@ -154,6 +154,49 @@
   line-height: 1.28;
 }
 
+.cel-impact-rhythm {
+  margin-top: 14px;
+  border: 1px solid rgba(23, 107, 77, .12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .72);
+  padding: 13px 14px;
+}
+
+.cel-impact-rhythm-title {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--impact-green);
+  font-size: .74rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.cel-impact-rhythm-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.cel-impact-rhythm-grid span {
+  min-width: 0;
+  border-radius: 13px;
+  background: #f7fbf8;
+  color: #475467;
+  padding: 9px 10px;
+  font-size: .78rem;
+  font-weight: 760;
+  line-height: 1.2;
+}
+
+.cel-impact-rhythm-grid strong {
+  display: block;
+  color: var(--impact-ink);
+  font-size: .98rem;
+  font-weight: 900;
+  line-height: 1.05;
+}
+
 .cel-impact-footnote {
   margin-top: 14px;
   font-size: .79rem;
@@ -172,6 +215,10 @@
   .cel-impact-side-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .cel-impact-rhythm-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 560px) {
@@ -186,5 +233,9 @@
 
   .cel-impact-card-main {
     min-height: 120px;
+  }
+
+  .cel-impact-rhythm-grid {
+    grid-template-columns: 1fr;
   }
 }
