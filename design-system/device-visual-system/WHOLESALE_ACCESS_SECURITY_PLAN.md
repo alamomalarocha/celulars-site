@@ -16,6 +16,9 @@ O login atual e apenas uma interface visual preparada para futura autenticacao s
 4. Nenhum dado sensivel de atacado foi colocado em CSS ou JavaScript publico.
 5. O botao `Entrar` apenas mostra a mensagem de acesso restrito.
 6. A solicitacao de acesso acontece pelo WhatsApp institucional da CELULARS.
+7. A estrutura visual da tabela de atacado foi preparada apenas com exemplos zerados.
+8. Dados reais ainda nao foram publicados.
+9. O arquivo `data/wholesale-inventory.sample.json` foi criado apenas para referencia de estrutura.
 
 ## Proxima etapa recomendada
 
@@ -26,9 +29,15 @@ Proteger `/atacado` ou uma rota futura `/wholesale` usando uma solucao segura, c
 - Cloudflare Workers
 - Backend de autenticacao proprio
 
+Recomendacao principal: Cloudflare Access com liberacao por e-mails aprovados de clientes B2B.
+
+Alternativa futura: Cloudflare Pages Functions ou Worker para validar sessao e entregar dados protegidos.
+
 ## Diretriz para tabela real
 
 A tabela real de atacado so deve ser implementada apos autenticacao segura. Ela nao deve ser escondida apenas com CSS, nem ficar presente no HTML publico, nem ser entregue em JavaScript publico sem controle de acesso.
+
+A tabela real deve ser carregada somente depois da validacao de acesso do cliente B2B. A estrutura atual em `atacado.html` e uma previa visual com dados ficticios e precos zerados.
 
 ## Modelo recomendado de acesso
 
@@ -37,6 +46,7 @@ A tabela real de atacado so deve ser implementada apos autenticacao segura. Ela 
 - Registrar data e criterio de aprovacao.
 - Evitar senha compartilhada publica.
 - Evitar credenciais fixas no codigo.
+- Nunca colocar senha fixa ou tabela real no front-end publico.
 
 ## Observacao operacional
 
