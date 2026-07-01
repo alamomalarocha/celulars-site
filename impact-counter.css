@@ -1,0 +1,151 @@
+.cel-impact-section {
+  --impact-ink: #111827;
+  --impact-muted: #667085;
+  --impact-blue: #123d79;
+  --impact-blue-soft: #edf5ff;
+  --impact-line: rgba(18, 61, 121, .12);
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--impact-line);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(247, 250, 254, .88));
+  box-shadow: 0 14px 34px rgba(14, 22, 40, .055);
+  color: var(--impact-ink);
+  padding: clamp(20px, 3vw, 30px);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.cel-impact-section,
+.cel-impact-section * {
+  box-sizing: border-box;
+}
+
+.cel-impact-section.is-compact {
+  margin: clamp(20px, 3vw, 34px) 0;
+}
+
+.cel-impact-section.is-full {
+  margin: clamp(22px, 4vw, 44px) 0;
+}
+
+.cel-impact-header {
+  display: grid;
+  gap: 10px;
+  max-width: 860px;
+}
+
+.cel-impact-kicker {
+  color: var(--impact-blue);
+  font-size: .72rem;
+  font-weight: 850;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.cel-impact-header h2 {
+  margin: 0;
+  color: var(--impact-ink);
+  font-size: clamp(24px, 3vw, 38px);
+  line-height: 1.08;
+  font-weight: 860;
+  letter-spacing: 0;
+}
+
+.cel-impact-header p,
+.cel-impact-copy p,
+.cel-impact-footnote {
+  margin: 0;
+  color: var(--impact-muted);
+  font-size: .94rem;
+  line-height: 1.58;
+}
+
+.cel-impact-copy {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  max-width: 920px;
+}
+
+.cel-impact-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.cel-impact-section.is-full .cel-impact-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.cel-impact-card {
+  min-width: 0;
+  border: 1px solid rgba(18, 61, 121, .1);
+  border-radius: 16px;
+  background: #fff;
+  padding: 15px;
+}
+
+.cel-impact-value {
+  display: block;
+  color: var(--impact-blue);
+  font-size: clamp(1.28rem, 2.4vw, 2rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.cel-impact-label {
+  display: block;
+  margin-top: 7px;
+  color: #344054;
+  font-size: .85rem;
+  font-weight: 820;
+  line-height: 1.28;
+}
+
+.cel-impact-footnote {
+  margin-top: 14px;
+  font-size: .78rem;
+}
+
+.cel-impact-principles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.cel-impact-principles li {
+  border: 1px solid rgba(18, 61, 121, .09);
+  border-radius: 14px;
+  background: var(--impact-blue-soft);
+  color: #344054;
+  padding: 12px;
+  font-size: .84rem;
+  font-weight: 760;
+  line-height: 1.36;
+}
+
+@media (max-width: 900px) {
+  .cel-impact-grid,
+  .cel-impact-section.is-full .cel-impact-grid,
+  .cel-impact-principles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .cel-impact-section {
+    border-radius: 18px;
+    padding: 16px;
+  }
+
+  .cel-impact-grid,
+  .cel-impact-section.is-full .cel-impact-grid,
+  .cel-impact-principles {
+    grid-template-columns: 1fr;
+  }
+}
