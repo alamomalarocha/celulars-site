@@ -1,64 +1,91 @@
 # CELULARS Impact Counter Report
 
+## Escopo
+
+Implementacao do contador de impacto estimado do reuso somente na Home e simplificacao da pagina iPhones para manter apenas um CTA principal de WhatsApp antes dos filtros e da tabela.
+
 ## Arquivos alterados
 
 - `index.html`
-- `sobre.html`
 - `iphones.html`
+- `sobre.html`
+- `contato.html`
+- `style.css`
+- `script.js`
 - `impact-counter.css`
 - `impact-calculator.js`
+- `design-system/device-visual-system/CELULARS_IMPACT_COUNTER_REPORT.md`
 
-## Onde a secao foi adicionada
+## Local do contador
 
-- Home (`index.html`): bloco compacto depois da area "Escolha o melhor caminho".
-- Sobre (`sobre.html`): bloco completo depois da secao de responsabilidade/ciclo responsavel.
-- iPhones (`iphones.html`): bloco compacto abaixo do aviso de precos/cotacao e antes dos filtros da tabela.
+O contador fica somente na Home, apos a area inicial de acesso rapido e antes das secoes comerciais seguintes. O bloco usa identidade CELULARS com detalhe verde discreto, folha em SVG simples, cards de metricas e selo LIVE.
+
+O contador foi removido das paginas:
+
+- iPhones
+- Sobre
+- Contato
+
+## Configuracao
+
+```js
+const CELULARS_IMPACT_CONFIG = {
+  startDate: "2026-01-01",
+  estimatedDevicesPerWeek: 0,
+  co2KgPerDevice: 0,
+  ewasteKgPerDevice: 0
+};
+```
+
+Comentario no codigo:
+
+`Atualizar estes valores com os numeros oficiais internos da CELULARS.`
 
 ## Formula usada
 
-O contador calcula o impacto acumulado a partir de uma data inicial configuravel:
-
-```text
-semanas = dias desde startDate / 7
-totalDevices = floor(semanas * estimatedEcpoUnitsPerWeek)
-co2AvoidedKg = totalDevices * co2KgPerDevice
-ewasteAvoidedKg = totalDevices * ewasteKgPerDevice
-waterSavedLiters = totalDevices * waterLitersPerDevice
-```
-
-Os valores sao atualizados automaticamente ao carregar a pagina.
-
-## Valores configurados
-
-Arquivo: `impact-calculator.js`
-
-```js
-startDate: "2026-01-01"
-estimatedEcpoUnitsPerWeek: 0
-co2KgPerDevice: 0
-ewasteKgPerDevice: 0
-waterLitersPerDevice: 0
-```
+- Tempo decorrido = agora - `startDate`
+- Aparelhos por segundo = `estimatedDevicesPerWeek / 604800`
+- Aparelhos reaproveitados = tempo decorrido em segundos x aparelhos por segundo
+- CO2 estimado evitado = aparelhos x `co2KgPerDevice`
+- Residuo eletronico evitado = aparelhos x `ewasteKgPerDevice`
+- Proximo aparelho estimado em = tempo restante ate o proximo ciclo calculado pela frequencia semanal
 
 ## Status dos valores
 
-Status: pendentes de numeros oficiais internos da CELULARS.
+Os valores atuais estao zerados porque os numeros oficiais internos da CELULARS ainda estao pendentes.
 
-Como os valores-base ainda estao zerados, o site exibe "Dados em configuracao" e nao mostra numeros ambientais inventados.
+Com valores zerados, o contador nao exibe numeros falsos e mostra:
 
-## Observacoes
+`Dados em configuracao`
 
-- Nao foi copiado texto ou layout de terceiros.
-- Nao foi usada marca Rebright.
-- Nao foi feita promessa de carbono neutro.
-- Nao foi declarada certificacao ambiental.
-- PTAX, precos, WhatsApp, menu e tabela de iPhones foram mantidos.
+Quando os tres campos numericos forem maiores que zero, o contador passa a atualizar automaticamente e o indicador exibe LIVE.
 
-## Resultado dos testes locais
+## Transparencia
 
-- `index.html`: bloco de impacto exibido; PTAX visivel; sem overflow.
-- `iphones.html`: bloco compacto exibido; tabela preservada com 26 linhas; filtros, ficha tecnica e WhatsApp preservados; PTAX visivel; sem imagens; sem texto CDVS; sem overflow.
-- `sobre.html`: bloco completo exibido com texto adicional, principios e cinco metricas; PTAX visivel; sem overflow.
-- `contato.html`: pagina carregou sem alteracao visual relevante e sem overflow.
-- Breakpoints testados na pagina iPhones: desktop, 768px, 430px e 390px.
-- Resultado com valores zerados: exibicao correta de "Dados em configuracao", sem numeros falsos.
+Texto exibido na Home:
+
+`Estimativas internas calculadas com base no volume medio semanal de aparelhos eCPO trabalhados pela CELULARS. Os resultados sao referenciais e podem variar conforme modelo, lote, condicao e metodologia de calculo.`
+
+## IPhones
+
+A pagina iPhones manteve a tabela premium de iPhone 12 a iPhone 17, sem imagens, sem CDVS publico, sem status, sem ficha tecnica e sem coluna Acao. O CTA de WhatsApp agora aparece uma unica vez no topo da pagina, antes dos filtros e da tabela.
+
+## Validacao
+
+Validacao local e publicada executadas para:
+
+- Home
+- iPhones
+- Sobre
+- Contato
+
+Resultados registrados no fechamento da tarefa.
+
+### Resultado local
+
+- Home: contador presente, folha SVG presente, valores zerados exibindo `Dados em configuracao`, sem overflow.
+- iPhones: 26 linhas principais de iPhone 12 a iPhone 17, ordem de `iPhone 17 Pro Max` ate `iPhone 12 mini`, somente um CTA de WhatsApp no topo, sem coluna Acao, sem impacto ambiental, sem CDVS publico e sem overflow.
+- Sobre: contador removido, sem overflow.
+- Contato: sem contador, sem overflow.
+- Breakpoints validados: desktop, 768px, 430px e 390px.
+- Console: sem erros durante a validacao local.

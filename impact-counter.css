@@ -1,18 +1,20 @@
 .cel-impact-section {
-  --impact-ink: #111827;
+  --impact-ink: #101828;
   --impact-muted: #667085;
-  --impact-blue: #123d79;
-  --impact-blue-soft: #edf5ff;
-  --impact-line: rgba(18, 61, 121, .12);
+  --impact-green: #176b4d;
+  --impact-green-soft: #ecfdf3;
+  --impact-green-line: rgba(23, 107, 77, .16);
+  --impact-blue: #1e4db7;
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid var(--impact-line);
-  border-radius: 22px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, .94), rgba(247, 250, 254, .88));
-  box-shadow: 0 14px 34px rgba(14, 22, 40, .055);
+  border: 1px solid var(--impact-green-line);
+  border-radius: 24px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fffb 52%, #eefaf3 100%);
+  box-shadow: 0 18px 42px rgba(16, 24, 40, .065);
   color: var(--impact-ink);
-  padding: clamp(20px, 3vw, 30px);
+  padding: clamp(22px, 3.4vw, 36px);
   font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow: hidden;
 }
 
 .cel-impact-section,
@@ -21,131 +23,168 @@
 }
 
 .cel-impact-section.is-compact {
-  margin: clamp(20px, 3vw, 34px) 0;
+  margin: clamp(24px, 4vw, 46px) 0;
 }
 
-.cel-impact-section.is-full {
-  margin: clamp(22px, 4vw, 44px) 0;
+.cel-impact-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: start;
 }
 
 .cel-impact-header {
   display: grid;
   gap: 10px;
-  max-width: 860px;
+  max-width: 820px;
 }
 
 .cel-impact-kicker {
-  color: var(--impact-blue);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  color: var(--impact-green);
   font-size: .72rem;
   font-weight: 850;
-  letter-spacing: .11em;
+  letter-spacing: .1em;
   text-transform: uppercase;
+}
+
+.cel-impact-leaf {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--impact-green-soft);
+  border: 1px solid var(--impact-green-line);
+}
+
+.cel-impact-leaf svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--impact-green);
+  stroke-width: 2;
 }
 
 .cel-impact-header h2 {
   margin: 0;
   color: var(--impact-ink);
-  font-size: clamp(24px, 3vw, 38px);
-  line-height: 1.08;
-  font-weight: 860;
+  font-size: clamp(25px, 3vw, 40px);
+  line-height: 1.06;
+  font-weight: 880;
   letter-spacing: 0;
 }
 
 .cel-impact-header p,
-.cel-impact-copy p,
 .cel-impact-footnote {
   margin: 0;
   color: var(--impact-muted);
-  font-size: .94rem;
+  font-size: .95rem;
   line-height: 1.58;
 }
 
-.cel-impact-copy {
-  display: grid;
-  gap: 10px;
-  margin-top: 14px;
-  max-width: 920px;
+.cel-impact-live {
+  justify-self: end;
+  border: 1px solid var(--impact-green-line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .78);
+  color: var(--impact-green);
+  padding: 9px 12px;
+  font-size: .76rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  white-space: nowrap;
 }
 
-.cel-impact-grid {
+.cel-impact-section:not([data-impact-running]) .cel-impact-live {
+  color: var(--impact-muted);
+}
+
+.cel-impact-dashboard {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: minmax(230px, .9fr) minmax(0, 1.45fr);
   gap: 12px;
-  margin-top: 18px;
+  margin-top: 22px;
 }
 
-.cel-impact-section.is-full .cel-impact-grid {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+.cel-impact-side-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .cel-impact-card {
   min-width: 0;
-  border: 1px solid rgba(18, 61, 121, .1);
-  border-radius: 16px;
-  background: #fff;
-  padding: 15px;
+  border: 1px solid rgba(23, 107, 77, .12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .82);
+  padding: 16px;
+}
+
+.cel-impact-card-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 150px;
+  background: linear-gradient(150deg, #ffffff, #f1fbf5);
 }
 
 .cel-impact-value {
   display: block;
-  color: var(--impact-blue);
-  font-size: clamp(1.28rem, 2.4vw, 2rem);
-  font-weight: 900;
+  color: var(--impact-green);
+  font-size: clamp(1.32rem, 2.5vw, 2.08rem);
+  font-weight: 920;
   line-height: 1.08;
   letter-spacing: 0;
 }
 
+.cel-impact-card-main .cel-impact-value {
+  font-size: clamp(2rem, 4.5vw, 4rem);
+}
+
 .cel-impact-label {
   display: block;
-  margin-top: 7px;
+  margin-top: 8px;
   color: #344054;
-  font-size: .85rem;
+  font-size: .86rem;
   font-weight: 820;
   line-height: 1.28;
 }
 
 .cel-impact-footnote {
   margin-top: 14px;
-  font-size: .78rem;
-}
-
-.cel-impact-principles {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 16px;
-  padding: 0;
-  list-style: none;
-}
-
-.cel-impact-principles li {
-  border: 1px solid rgba(18, 61, 121, .09);
-  border-radius: 14px;
-  background: var(--impact-blue-soft);
-  color: #344054;
-  padding: 12px;
-  font-size: .84rem;
-  font-weight: 760;
-  line-height: 1.36;
+  font-size: .79rem;
 }
 
 @media (max-width: 900px) {
-  .cel-impact-grid,
-  .cel-impact-section.is-full .cel-impact-grid,
-  .cel-impact-principles {
+  .cel-impact-shell,
+  .cel-impact-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .cel-impact-live {
+    justify-self: start;
+  }
+
+  .cel-impact-side-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 560px) {
   .cel-impact-section {
-    border-radius: 18px;
-    padding: 16px;
+    border-radius: 20px;
+    padding: 18px;
   }
 
-  .cel-impact-grid,
-  .cel-impact-section.is-full .cel-impact-grid,
-  .cel-impact-principles {
+  .cel-impact-side-grid {
     grid-template-columns: 1fr;
+  }
+
+  .cel-impact-card-main {
+    min-height: 120px;
   }
 }

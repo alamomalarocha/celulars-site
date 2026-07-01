@@ -106,9 +106,31 @@
   font-weight: 860;
 }
 
-#celulars-iphones-catalog .cel-impact-kicker {
-  letter-spacing: .02em;
-  text-transform: none;
+.catalog-primary-cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  margin: -4px 0 18px;
+  border: 1px solid rgba(37, 211, 102, .22);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(240, 253, 244, .84), rgba(255, 255, 255, .92));
+  padding: 13px;
+}
+
+.catalog-primary-cta p {
+  margin: 0;
+  color: #344054;
+  font-size: .86rem;
+  line-height: 1.45;
+}
+
+.catalog-primary-cta .whatsapp-button {
+  width: fit-content;
+  min-width: 210px;
+  min-height: 42px;
+  justify-self: end;
+  white-space: nowrap;
 }
 
 .catalog-filter-panel {
@@ -786,7 +808,7 @@
 
 .catalog-table th:nth-child(1),
 .catalog-table td:nth-child(1) {
-  width: 22%;
+  width: 21%;
 }
 
 .catalog-table th:nth-child(2),
@@ -796,22 +818,17 @@
 
 .catalog-table th:nth-child(3),
 .catalog-table td:nth-child(3) {
-  width: 23%;
+  width: 26%;
 }
 
 .catalog-table th:nth-child(4),
 .catalog-table td:nth-child(4) {
-  width: 19%;
+  width: 23%;
 }
 
 .catalog-table th:nth-child(5),
 .catalog-table td:nth-child(5) {
-  width: 19%;
-}
-
-.catalog-table th:nth-child(6),
-.catalog-table td:nth-child(6) {
-  width: 10%;
+  width: 23%;
 }
 
 .catalog-table.is-single-condition th:nth-child(1),
@@ -826,17 +843,12 @@
 
 .catalog-table.is-single-condition th:nth-child(3),
 .catalog-table.is-single-condition td:nth-child(3) {
-  width: 30%;
+  width: 34%;
 }
 
 .catalog-table.is-single-condition th:nth-child(4),
 .catalog-table.is-single-condition td:nth-child(4) {
-  width: 25%;
-}
-
-.catalog-table.is-single-condition th:nth-child(5),
-.catalog-table.is-single-condition td:nth-child(5) {
-  width: 13%;
+  width: 34%;
 }
 
 .catalog-table-row {
@@ -984,19 +996,6 @@
   overflow-wrap: anywhere;
 }
 
-.table-actions {
-  display: grid;
-  gap: 8px;
-}
-
-.table-actions .whatsapp-button {
-  width: fit-content;
-  min-height: 32px;
-  border-radius: 9px;
-  padding: 0 11px;
-  font-size: .74rem;
-}
-
 .legacy-consult-section {
   margin-top: 30px;
 }
@@ -1015,12 +1014,6 @@
   color: #667085;
   font-size: .9rem;
   line-height: 1.5;
-}
-
-.legacy-consult-note .whatsapp-button {
-  width: fit-content;
-  margin-top: 12px;
-  padding-inline: 18px;
 }
 
 .legacy-consult-grid {
@@ -1086,9 +1079,6 @@
     padding: 0 8px;
   }
 
-  .table-actions .whatsapp-button {
-    font-size: .74rem;
-  }
 }
 
 @media (max-width: 860px) {
@@ -1150,21 +1140,22 @@
     content: none;
   }
 
-  .catalog-table td[data-label="Ação"] {
-    display: block;
-    border-bottom: 0;
-  }
-
-  .table-actions {
-    grid-template-columns: 1fr;
-  }
-
   .legacy-consult-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 460px) {
+  .catalog-primary-cta {
+    grid-template-columns: 1fr;
+  }
+
+  .catalog-primary-cta .whatsapp-button {
+    width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+  }
+
   .section-heading {
     align-items: flex-start;
     flex-direction: column;
