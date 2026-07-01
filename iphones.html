@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CELULARS iPhone Catalog</title><link rel="stylesheet" href="visual-review.css?v=visual1"></head><style>#celulars-iphones-catalog {
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CELULARS iPhone Catalog</title><link rel="stylesheet" href="visual-review.css?v=visual1"><link rel="stylesheet" href="apple-inspired-header.css?v=apple1"></head><style>#celulars-iphones-catalog {
   --ink: #111827;
   --muted: #667085;
   --line: rgba(18, 61, 121, .11);
@@ -1177,7 +1177,7 @@
 }
 </style><body><header class="cel-global-header" role="banner">
   <div class="cel-global-nav">
-    <a class="cel-global-brand" href="index.html" aria-label="CELULARS Home"><img src="brand-assets/celulars-official-logos/header/celulars-logo-horizontal-blue.png" alt="CELULARS"></a>
+    <a class="cel-global-brand" href="index.html" aria-label="CELULARS Home"><img src="brand-assets/celulars-official-logos/icon/celulars-icon-512.webp" alt="CELULARS"></a>
     <nav class="cel-global-links" aria-label="Navega&ccedil;&atilde;o principal">
       <a href="index.html">Home</a>
       <a class="is-active" href="iphones.html">iPhones</a>
@@ -3731,6 +3731,7 @@
   function setActive(btns,active){btns.forEach(b=>b.classList.toggle('is-active',b===active))}
   conditionButtons.forEach(b=>b.addEventListener('click',()=>{activeCondition=b.dataset.conditionFilter;setActive(conditionButtons,b);renderCatalog()}));lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});renderCatalog();updateBcbExchangeRate();
 })();
-</script></body></html>
+</script><script src="apple-inspired-header.js?v=apple1"></script>
+</body></html>
 
 

@@ -1,0 +1,184 @@
+.cel-global-header {
+  padding: 6px clamp(14px, 3vw, 28px) !important;
+  background: rgba(255, 255, 255, .82) !important;
+  border-bottom: 1px solid rgba(17, 24, 39, .08) !important;
+  backdrop-filter: saturate(180%) blur(18px) !important;
+}
+
+.cel-global-nav {
+  max-width: 1040px !important;
+  min-height: 38px !important;
+  justify-content: center !important;
+  gap: clamp(14px, 3vw, 34px) !important;
+}
+
+.cel-global-brand {
+  width: 34px !important;
+  min-width: 34px !important;
+  height: 34px !important;
+  justify-content: center !important;
+  border-radius: 10px;
+}
+
+.cel-global-brand img {
+  width: 30px !important;
+  height: 30px !important;
+  object-fit: contain !important;
+}
+
+.cel-global-links {
+  gap: clamp(8px, 2vw, 22px) !important;
+}
+
+.cel-global-links a {
+  min-height: 30px !important;
+  padding: 0 2px !important;
+  background: transparent !important;
+  color: rgba(17, 24, 39, .78) !important;
+  font-size: .78rem !important;
+  font-weight: 650 !important;
+  letter-spacing: 0 !important;
+}
+
+.cel-global-links a:hover,
+.cel-global-links a.is-active {
+  color: #123d79 !important;
+}
+
+.cel-global-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cel-global-search-button {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(17, 24, 39, .78);
+  cursor: pointer;
+}
+
+.cel-global-search-button:hover,
+.cel-global-search-button[aria-expanded="true"] {
+  background: rgba(18, 61, 121, .08);
+  color: #123d79;
+}
+
+.cel-global-search-button svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+.cel-global-search-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 10000;
+  display: none;
+  width: min(360px, calc(100vw - 28px));
+  border: 1px solid rgba(18, 61, 121, .12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, .98);
+  box-shadow: 0 18px 40px rgba(14, 22, 40, .14);
+  padding: 12px;
+}
+
+.cel-global-search-panel.is-open {
+  display: block;
+}
+
+.cel-global-search-panel input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(18, 61, 121, .14);
+  border-radius: 12px;
+  padding: 0 12px;
+  font: inherit;
+  font-size: .88rem;
+  outline: none;
+}
+
+.cel-global-search-panel input:focus {
+  border-color: rgba(18, 61, 121, .45);
+  box-shadow: 0 0 0 3px rgba(18, 61, 121, .08);
+}
+
+.cel-global-search-results {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.cel-global-search-results a {
+  display: block;
+  border-radius: 10px;
+  color: #344054;
+  padding: 9px 10px;
+  text-decoration: none;
+  font-size: .84rem;
+  font-weight: 720;
+}
+
+.cel-global-search-results a:hover {
+  background: #edf5ff;
+  color: #123d79;
+}
+
+.cel-global-search-empty {
+  display: block;
+  color: #667085;
+  font-size: .82rem;
+  padding: 9px 10px;
+}
+
+@media (max-width: 720px) {
+  .cel-global-header {
+    padding: 7px 10px !important;
+  }
+
+  .cel-global-nav {
+    gap: 8px !important;
+  }
+
+  .cel-global-brand {
+    width: 31px !important;
+    min-width: 31px !important;
+    height: 31px !important;
+  }
+
+  .cel-global-brand img {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .cel-global-links {
+    gap: 7px !important;
+  }
+
+  .cel-global-links a {
+    min-height: 28px !important;
+    font-size: .7rem !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .cel-global-nav {
+    gap: 6px !important;
+  }
+
+  .cel-global-links {
+    gap: 5px !important;
+  }
+
+  .cel-global-links a {
+    font-size: .66rem !important;
+  }
+}
