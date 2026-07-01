@@ -90,6 +90,11 @@
   line-height: 1.45;
 }
 
+#celulars-iphones-catalog .cel-impact-kicker {
+  letter-spacing: .02em;
+  text-transform: none;
+}
+
 .catalog-filter-panel {
   display: grid;
   gap: 11px;
@@ -765,37 +770,57 @@
 
 .catalog-table th:nth-child(1),
 .catalog-table td:nth-child(1) {
-  width: 18%;
+  width: 22%;
 }
 
 .catalog-table th:nth-child(2),
 .catalog-table td:nth-child(2) {
-  width: 6.5%;
+  width: 7%;
 }
 
 .catalog-table th:nth-child(3),
 .catalog-table td:nth-child(3) {
-  width: 20%;
+  width: 23%;
 }
 
 .catalog-table th:nth-child(4),
 .catalog-table td:nth-child(4) {
-  width: 16%;
+  width: 19%;
 }
 
 .catalog-table th:nth-child(5),
 .catalog-table td:nth-child(5) {
-  width: 16%;
+  width: 19%;
 }
 
 .catalog-table th:nth-child(6),
 .catalog-table td:nth-child(6) {
-  width: 9%;
+  width: 10%;
 }
 
-.catalog-table th:nth-child(7),
-.catalog-table td:nth-child(7) {
-  width: 14.5%;
+.catalog-table.is-single-condition th:nth-child(1),
+.catalog-table.is-single-condition td:nth-child(1) {
+  width: 24%;
+}
+
+.catalog-table.is-single-condition th:nth-child(2),
+.catalog-table.is-single-condition td:nth-child(2) {
+  width: 8%;
+}
+
+.catalog-table.is-single-condition th:nth-child(3),
+.catalog-table.is-single-condition td:nth-child(3) {
+  width: 30%;
+}
+
+.catalog-table.is-single-condition th:nth-child(4),
+.catalog-table.is-single-condition td:nth-child(4) {
+  width: 25%;
+}
+
+.catalog-table.is-single-condition th:nth-child(5),
+.catalog-table.is-single-condition td:nth-child(5) {
+  width: 13%;
 }
 
 .catalog-table-row {
@@ -866,9 +891,9 @@
 }
 
 .color-list {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 6px;
+  align-items: start;
 }
 
 .color-static {
@@ -882,7 +907,9 @@
   padding: 0 9px;
   font-size: .74rem;
   font-weight: 760;
-  line-height: 1;
+  line-height: 1.15;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .price-block {
@@ -913,7 +940,7 @@
 
 .price-line {
   display: grid;
-  grid-template-columns: minmax(54px, .75fr) minmax(0, 1fr);
+  grid-template-columns: minmax(54px, .7fr) minmax(0, 1.4fr);
   gap: 6px 8px;
   align-items: baseline;
   border-top: 1px solid rgba(18, 61, 121, .07);
@@ -934,17 +961,10 @@
 
 .price-line strong {
   color: #1d2939;
-  font-size: .8rem;
+  font-size: .78rem;
   font-weight: 880;
   line-height: 1.18;
-}
-
-.price-line em {
-  grid-column: 2;
-  color: #667085;
-  font-size: .72rem;
-  font-style: normal;
-  font-weight: 680;
+  overflow-wrap: anywhere;
 }
 
 .table-actions {
@@ -952,7 +972,6 @@
   gap: 8px;
 }
 
-.table-actions .tech-button,
 .table-actions .whatsapp-button {
   min-height: 38px;
   border-radius: 11px;

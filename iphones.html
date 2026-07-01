@@ -105,6 +105,11 @@
   line-height: 1.45;
 }
 
+#celulars-iphones-catalog .cel-impact-kicker {
+  letter-spacing: .02em;
+  text-transform: none;
+}
+
 .catalog-filter-panel {
   display: grid;
   gap: 11px;
@@ -780,37 +785,57 @@
 
 .catalog-table th:nth-child(1),
 .catalog-table td:nth-child(1) {
-  width: 18%;
+  width: 22%;
 }
 
 .catalog-table th:nth-child(2),
 .catalog-table td:nth-child(2) {
-  width: 6.5%;
+  width: 7%;
 }
 
 .catalog-table th:nth-child(3),
 .catalog-table td:nth-child(3) {
-  width: 20%;
+  width: 23%;
 }
 
 .catalog-table th:nth-child(4),
 .catalog-table td:nth-child(4) {
-  width: 16%;
+  width: 19%;
 }
 
 .catalog-table th:nth-child(5),
 .catalog-table td:nth-child(5) {
-  width: 16%;
+  width: 19%;
 }
 
 .catalog-table th:nth-child(6),
 .catalog-table td:nth-child(6) {
-  width: 9%;
+  width: 10%;
 }
 
-.catalog-table th:nth-child(7),
-.catalog-table td:nth-child(7) {
-  width: 14.5%;
+.catalog-table.is-single-condition th:nth-child(1),
+.catalog-table.is-single-condition td:nth-child(1) {
+  width: 24%;
+}
+
+.catalog-table.is-single-condition th:nth-child(2),
+.catalog-table.is-single-condition td:nth-child(2) {
+  width: 8%;
+}
+
+.catalog-table.is-single-condition th:nth-child(3),
+.catalog-table.is-single-condition td:nth-child(3) {
+  width: 30%;
+}
+
+.catalog-table.is-single-condition th:nth-child(4),
+.catalog-table.is-single-condition td:nth-child(4) {
+  width: 25%;
+}
+
+.catalog-table.is-single-condition th:nth-child(5),
+.catalog-table.is-single-condition td:nth-child(5) {
+  width: 13%;
 }
 
 .catalog-table-row {
@@ -881,9 +906,9 @@
 }
 
 .color-list {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 6px;
+  align-items: start;
 }
 
 .color-static {
@@ -897,7 +922,9 @@
   padding: 0 9px;
   font-size: .74rem;
   font-weight: 760;
-  line-height: 1;
+  line-height: 1.15;
+  width: fit-content;
+  max-width: 100%;
 }
 
 .price-block {
@@ -928,7 +955,7 @@
 
 .price-line {
   display: grid;
-  grid-template-columns: minmax(54px, .75fr) minmax(0, 1fr);
+  grid-template-columns: minmax(54px, .7fr) minmax(0, 1.4fr);
   gap: 6px 8px;
   align-items: baseline;
   border-top: 1px solid rgba(18, 61, 121, .07);
@@ -949,17 +976,10 @@
 
 .price-line strong {
   color: #1d2939;
-  font-size: .8rem;
+  font-size: .78rem;
   font-weight: 880;
   line-height: 1.18;
-}
-
-.price-line em {
-  grid-column: 2;
-  color: #667085;
-  font-size: .72rem;
-  font-style: normal;
-  font-weight: 680;
+  overflow-wrap: anywhere;
 }
 
 .table-actions {
@@ -967,7 +987,6 @@
   gap: 8px;
 }
 
-.table-actions .tech-button,
 .table-actions .whatsapp-button {
   min-height: 38px;
   border-radius: 11px;
@@ -1174,7 +1193,6 @@
     grid-template-columns: 1fr;
   }
 }
-
 </style><script>(function clientMain(){
   "use strict";
   const IPHONE_MODELS = [
@@ -2482,22 +2500,12 @@
   }
   IPHONE_MODELS.forEach(m=>{m.specs={...DEFAULT_SPECS,...specsForModel(m),...(m.specs||{})}});
 
-  const shellEl = document.querySelector('#celulars-iphones-catalog');
   document.querySelector('[data-condition-filter="Modelo informativo"]')?.remove();
   const gridEl = document.querySelector('[data-catalog-grid]');
   const statusEl = document.querySelector('[data-status]');
   const conditionButtons = [...document.querySelectorAll('[data-condition-filter]')];
   const lineButtons = [...document.querySelectorAll('[data-line-filter]')];
   const searchInput = document.querySelector('[data-search-filter]');
-  const techModalEl = document.createElement('div');
-  techModalEl.className = 'tech-modal';
-  techModalEl.hidden = true;
-  techModalEl.setAttribute('aria-hidden','true');
-  techModalEl.innerHTML = '<section class="tech-panel" role="dialog" aria-modal="true" aria-labelledby="tech-title"><header class="tech-header"><div><span class="tech-kicker">CELULARS</span><h2 class="tech-title" id="tech-title" data-tech-title></h2></div><button class="tech-close" type="button" aria-label="Fechar ficha t\u00e9cnica" data-tech-close>&times;</button></header><div class="tech-body" data-tech-body></div><div class="tech-actions"><button class="tech-button" type="button" data-tech-close>Fechar</button><a class="whatsapp-button" href="#" target="_blank" rel="noopener" data-tech-whatsapp></a></div></section>';
-  shellEl.appendChild(techModalEl);
-  const techTitleEl = techModalEl.querySelector('[data-tech-title]');
-  const techBodyEl = techModalEl.querySelector('[data-tech-body]');
-  const techWhatsappEl = techModalEl.querySelector('[data-tech-whatsapp]');
   const STANDARD_CONDITIONS = ['Novo','eCPO eco Certified Pre-Owned'];
   IPHONE_MODELS.forEach(m=>{m.conditions=[...STANDARD_CONDITIONS];m.stock_status='Disponível'});
   let activeCondition = 'todos', activeLine = 'todos', activeSearch = '';
@@ -2524,40 +2532,29 @@
   async function fetchBcbPtax(){const end=new Date(),start=new Date();start.setDate(end.getDate()-14);const url="https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='"+bcbParamDate(start)+"'&@dataFinalCotacao='"+bcbParamDate(end)+"'&$format=json&$orderby=dataHoraCotacao desc&$top=1";const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw new Error('BCB PTAX HTTP '+res.status);const data=await res.json(),row=data&&data.value&&data.value[0];if(!row||!Number(row.cotacaoVenda))throw new Error('BCB PTAX sem cota\u00e7\u00e3o');return{rate:Number(row.cotacaoVenda),date:String(row.dataHoraCotacao).slice(0,10),dataHoraCotacao:row.dataHoraCotacao,fetchedKey:localDateKey(),fetchedAt:Date.now(),source:'Banco Central do Brasil - PTAX USD/BRL venda'}}
   async function updateBcbExchangeRate(){const cached=readBcbCache(),today=localDateKey();if(cached&&cached.fetchedKey===today&&Date.now()-Number(cached.fetchedAt||0)<BCB_CACHE_TTL_MS){CATALOG_RATE=referenceRateFrom(cached);updateExchangeCard(cached,'cache');logBcbStatus('cache',cached);renderCatalog();return}try{const fresh=await fetchBcbPtax();CATALOG_RATE=referenceRateFrom(fresh);writeBcbCache(fresh);updateExchangeCard(fresh,'live');logBcbStatus('api',fresh);renderCatalog()}catch(e){console.warn('Não foi possível carregar PTAX do Banco Central.',e);const saved=readBcbCache()||readLegacyBcbCache();if(saved){CATALOG_RATE=referenceRateFrom(saved);updateExchangeCard(saved,'saved');logBcbStatus('saved-cache',saved);renderCatalog()}else{const fallback={rate:FALLBACK_BCB_RATE,date:''};CATALOG_RATE=referenceRateFrom(fallback);updateExchangeCard(fallback,'fallback');logBcbStatus('fallback',fallback);renderCatalog()}}}
   function isMainTableModel(m){return MAIN_TABLE_MODELS.has(m.model_name)}
-  function basePrice(m){const p=Number(m.base_price_usd);return p>0?p:null}
   function capacityPriceRecord(m,capacity){const maps=[m.price_by_capacity,m.prices_by_capacity,m.priceByCapacity].filter(Boolean),target=normalize(capacity);for(const map of maps){for(const key of Object.keys(map)){if(normalize(key)===target)return map[key]||{}}}return{}}
   function capacityConditionPrice(m,capacity,condition){const rec=capacityPriceRecord(m,capacity),ecpo=normalize(condition).includes('ecpo'),keys=ecpo?['ecpo_usd','price_ecpo_usd','ecpo','cpo_usd']:['new_usd','novo_usd','price_new_usd','novo'];for(const key of keys){const p=Number(rec[key]);if(p>0)return p}return null}
   function colorHex(c){const k=normalize(c),map=[[/cosmic orange|coral/,'#d97845'],[/deep blue|blue titanium|pacific blue|sierra blue|mist blue|sky blue|blue|ultramarine/,'#6f8fb8'],[/space black|black titanium|space gray|graphite|midnight|jet black|black/,'#2d3036'],[/white titanium|cloud white|starlight|white/,'#eef1f4'],[/natural titanium|desert titanium|light gold|gold/,'#c9b28b'],[/silver/,'#d7dbe1'],[/soft pink|pink|rose gold/,'#e5b6bd'],[/sage|green|alpine green|midnight green|teal/,'#7f9b8b'],[/lavender|purple|deep purple/,'#8d79a6'],[/yellow/,'#e4ca68'],[/red|product/,'#b33a3a']];return(map.find(([rx])=>rx.test(k))||[null,'#cfd6df'])[1]}
   function buildWhatsAppUrl(msg){return 'https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(msg)}
-  function messageFor(m,s){return s.capacity&&s.color&&s.condition?'Olá, tenho interesse no '+m.model_name+', capacidade '+s.capacity+', cor '+s.color+', condição '+s.condition+', pela CELULARS. Gostaria de confirmar cores disponíveis, disponibilidade, preço final e condições de compra.':s.capacity?'Olá, tenho interesse no '+m.model_name+', capacidade '+s.capacity+', pela CELULARS. Gostaria de confirmar cores disponíveis, condição, preço final e condições de compra.':'Olá, tenho interesse no '+m.model_name+' pela CELULARS. Gostaria de confirmar capacidades, cores, disponibilidade, preço final e condições de compra.'}
-  function techMessageFor(m,s){return 'Olá, vi a ficha técnica do '+m.model_name+', '+s.capacity+', cor '+s.color+', condição '+s.condition+', no site da CELULARS. Gostaria de confirmar disponibilidade, preço final e condições de compra.'}
   function matchesModelFilters(m){return isMainTableModel(m)&&(activeCondition==='todos'||m.conditions.some(c=>normalize(c)===normalize(activeCondition)))&&(activeLine==='todos'||normalize(m.line)===normalize(activeLine))}
   function matchesModelSearch(m){if(!activeSearch)return true;const hay=[m.model_name,m.year,m.line,m.capacities.join(' '),m.colors.join(' '),m.conditions.join(' ')].join(' ');return normalize(hay).includes(normalize(activeSearch))}
   function tableModelsFor(models){return models.filter(matchesModelFilters).filter(matchesModelSearch)}
   function colorList(colors){return'<div class="color-list">'+colors.map(c=>'<span class="color-static"><span class="color-swatch" style="--swatch:'+escapeHtml(colorHex(c))+'" aria-hidden="true"></span><span>'+escapeHtml(c)+'</span></span>').join('')+'</div>'}
-  function renderBasePriceSummary(m){const p=basePrice(m);return p?'<span class="price-prefix">A partir de</span><strong>'+formatUsd(p)+'</strong><span>'+formatBrl(p*CATALOG_RATE)+'</span>':'<span class="price-prefix">A partir de</span><strong class="price-consult">Sob consulta</strong><span>Confirmação via WhatsApp</span>'}
-  function renderConditionPriceLine(m,capacity,condition){const p=capacityConditionPrice(m,capacity,condition);return'<div class="price-line"><span>'+escapeHtml(capacity)+'</span>'+(p?'<strong>'+formatUsd(p)+'</strong><em>'+formatBrl(p*CATALOG_RATE)+'</em>':'<strong>Sob consulta</strong>')+'</div>'}
+  function renderConditionPriceLine(m,capacity,condition){const p=capacityConditionPrice(m,capacity,condition)||0,brl=p>0?p*CATALOG_RATE:0;return'<div class="price-line"><span>'+escapeHtml(capacity)+'</span><strong>'+formatUsd(p)+' / '+formatBrl(brl)+'</strong></div>'}
   function renderPriceBlock(m,condition){const label=normalize(condition).includes('ecpo')?'eCPO':'Novo';return'<div class="price-block"><h3>'+label+'</h3><div class="price-lines">'+m.capacities.map(capacity=>renderConditionPriceLine(m,capacity,condition)).join('')+'</div></div>'}
-  function renderPriceCells(m){return{ecpo:renderPriceBlock(m,'eCPO eco Certified Pre-Owned'),novo:renderPriceBlock(m,'Novo')}}
-  function selectedPriceText(m,s){const p=capacityConditionPrice(m,s.capacity,s.condition),general=basePrice(m);if(p)return formatUsd(p)+' / '+formatBrl(p*CATALOG_RATE);return general?'Sob consulta; referência geral a partir de '+formatUsd(general)+' / '+formatBrl(general*CATALOG_RATE):'Sob consulta'}
-  function statusClass(m){return'is-available'}
-  function selectedState(a){return{capacity:a.dataset.capacity,color:a.dataset.color,condition:a.dataset.condition}}
-  function updateCard(a,m){const action=a.querySelector('[data-action]'),summary=a.querySelector('[data-price-summary]');if(summary)summary.innerHTML=renderBasePriceSummary(m);if(action)action.href=buildWhatsAppUrl(genericMessageFor(m))}
-  function techSection(title,rows){const body=rows.filter(r=>r[1]!==undefined&&r[1]!==null&&String(r[1]).trim()!=='').map(r=>'<div><dt>'+escapeHtml(r[0])+'</dt><dd>'+escapeHtml(r[1])+'</dd></div>').join('');return'<section class="tech-section"><h3>'+escapeHtml(title)+'</h3><dl class="tech-list">'+body+'</dl></section>'}
-  function openTechModal(a,m){const s=selectedState(a),sp=m.specs||DEFAULT_SPECS,priceText=selectedPriceText(m,s),note='Preços, disponibilidade e conversão em reais são apenas referência e precisam ser confirmados via WhatsApp.';techTitleEl.textContent='Ficha técnica \u2014 '+m.model_name;techBodyEl.innerHTML=techSection('Visão geral',[["Modelo",m.model_name],["Ano de lançamento",m.year],["Família / linha",m.family+' / '+m.line],["Status",m.stock_status||'Disponível'],["Condição selecionada",s.condition],["Preço",priceText]])+techSection('Capacidades',[["Opções",m.capacities.join(', ')],["Selecionada",s.capacity]])+techSection('Cores oficiais',[["Cores",m.colors.join(', ')],["Selecionada",s.color]])+techSection('Tela',[["Tamanho",sp.screen_size||sp.screen],["Tecnologia",sp.display_technology],["Resolução",sp.resolution],["Taxa de atualização / ProMotion",sp.refresh_rate]])+techSection('Chip / Performance',[["Processador / chip",sp.chip],["Neural Engine",sp.neural_engine]])+techSection('Câmeras',[["Sistema traseiro",sp.rear_camera],["Câmera frontal",sp.front_camera],["Vídeo",sp.video]])+techSection('Segurança',[["Autenticação",sp.security],["Botão Home",sp.home_button]])+techSection('Conectividade',[["Rede",sp.network],["Wi-Fi",sp.wifi],["Bluetooth",sp.bluetooth],["SIM / eSIM",sp.sim_esim]])+techSection('Bateria e carregamento',[["Conector",sp.connector],["Carregamento sem fio / MagSafe",sp.wireless_charging]])+techSection('Sistema',[["iOS original",sp.original_ios],["Suporte iOS",sp.ios_support_note]])+'<section class="tech-section"><h3>Observações CELULARS</h3><p class="tech-note">'+escapeHtml(note)+'</p></section>';techWhatsappEl.textContent='Consultar pelo WhatsApp';techWhatsappEl.href=buildWhatsAppUrl(techMessageFor(m,s));techModalEl.hidden=false;techModalEl.setAttribute('aria-hidden','false');techModalEl.querySelector('[data-tech-close]').focus()}
-  function closeTechModal(){techModalEl.hidden=true;techModalEl.setAttribute('aria-hidden','true')}
-  function rowDataAttrs(m,i,s){return'class="catalog-table-row" data-model-index="'+i+'" data-capacity="'+escapeHtml(s.capacity)+'" data-color="'+escapeHtml(s.color)+'" data-condition="'+escapeHtml(s.condition)+'"'}
-  function renderModelCell(m){return'<div class="model-cell"><strong>'+escapeHtml(m.model_name)+'</strong><span data-price-summary>'+renderBasePriceSummary(m)+'</span><small>Capacidades: '+escapeHtml(m.capacities.join(', '))+'</small></div>'}
+  function visibleConditionKeys(){if(normalize(activeCondition).includes('ecpo'))return['ecpo'];if(normalize(activeCondition).includes('novo'))return['novo'];return['ecpo','novo']}
+  function conditionFromKey(key){return key==='ecpo'?'eCPO eco Certified Pre-Owned':'Novo'}
+  function conditionHeader(key){return key==='ecpo'?'eCPO':'Novo'}
+  function rowDataAttrs(m,i){return'class="catalog-table-row" data-model-index="'+i+'"'}
+  function renderModelCell(m){return'<div class="model-cell"><strong>'+escapeHtml(m.model_name)+'</strong></div>'}
   function genericMessageFor(m){return'Olá, tenho interesse no '+m.model_name+' pela CELULARS. Gostaria de confirmar capacidades, cores disponíveis, condição eCPO ou Novo, preço final e condições de compra.'}
-  function defaultStateFor(m){return{capacity:m.capacities[0]||'',color:m.colors[0]||'',condition:activeCondition==='todos'?'Novo':activeCondition}}
-  function renderActions(m){return'<div class="table-actions"><button class="tech-button" type="button" data-tech-trigger>Ver ficha técnica</button><a class="whatsapp-button" href="'+buildWhatsAppUrl(genericMessageFor(m))+'" target="_blank" rel="noopener" data-action>Consultar pelo WhatsApp</a></div>'}
-  function renderCatalogRow(m){const s=defaultStateFor(m),cells=renderPriceCells(m),i=IPHONE_MODELS.indexOf(m);return'<tr '+rowDataAttrs(m,i,s)+'><td data-label="Modelo">'+renderModelCell(m)+'</td><td data-label="Ano"><span class="year-badge">'+m.year+'</span></td><td data-label="Cores disponíveis">'+colorList(m.colors)+'</td><td data-label="eCPO" data-price-cell="ecpo">'+cells.ecpo+'</td><td data-label="Novo" data-price-cell="novo">'+cells.novo+'</td><td data-label="Status"><span class="status-pill '+statusClass(m)+'">Status: '+escapeHtml(m.stock_status||'Consultar disponibilidade')+'</span></td><td data-label="Ação">'+renderActions(m)+'</td></tr>'}
-  function renderTable(models){return'<div class="catalog-table-wrap"><table class="catalog-table"><thead><tr><th>Modelo</th><th>Ano</th><th>Cores disponíveis</th><th>eCPO</th><th>Novo</th><th>Status</th><th>Ação</th></tr></thead><tbody>'+models.map(renderCatalogRow).join('')+'</tbody></table></div>'}
+  function renderActions(m){return'<div class="table-actions"><a class="whatsapp-button" href="'+buildWhatsAppUrl(genericMessageFor(m))+'" target="_blank" rel="noopener" data-action>Consultar pelo WhatsApp</a></div>'}
+  function renderCatalogRow(m,conditions){const i=IPHONE_MODELS.indexOf(m),priceCells=conditions.map(key=>'<td data-label="'+conditionHeader(key)+'" data-price-cell="'+key+'">'+renderPriceBlock(m,conditionFromKey(key))+'</td>').join('');return'<tr '+rowDataAttrs(m,i)+'><td data-label="Modelo">'+renderModelCell(m)+'</td><td data-label="Ano"><span class="year-badge">'+m.year+'</span></td><td data-label="Cores disponíveis">'+colorList(m.colors)+'</td>'+priceCells+'<td data-label="Ação">'+renderActions(m)+'</td></tr>'}
+  function renderTable(models){const conditions=visibleConditionKeys(),conditionHeads=conditions.map(key=>'<th>'+conditionHeader(key)+'</th>').join(''),tableClass='catalog-table '+(conditions.length===1?'is-single-condition':'');return'<div class="catalog-table-wrap"><table class="'+tableClass+'"><thead><tr><th>Modelo</th><th>Ano</th><th>Cores disponíveis</th>'+conditionHeads+'<th>Ação</th></tr></thead><tbody>'+models.map(m=>renderCatalogRow(m,conditions)).join('')+'</tbody></table></div>'}
   function renderLegacyConsult(){return'<section class="legacy-consult-section legacy-consult-note"><div class="section-heading"><span>Consulta especial</span><strong>Modelos anteriores sob consulta</strong></div><p>Modelos anteriores ao iPhone 12 podem ser consultados diretamente pelo WhatsApp, conforme disponibilidade.</p><a class="whatsapp-button" href="'+buildWhatsAppUrl('Olá, tenho interesse em consultar modelos anteriores ao iPhone 12 pela CELULARS. Gostaria de confirmar disponibilidade, condição, preço final e condições de compra.')+'" target="_blank" rel="noopener">Consultar pelo WhatsApp</a></section>'}
   function renderCatalogLayout(rows){let html='';if(rows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>Tabela principal</span><strong>iPhone 12 ao iPhone 17</strong></div>'+renderTable(rows)+'</section>';html+=renderLegacyConsult();html+='<p class="table-reference-note">Preços, disponibilidade e conversão em reais são apenas referência e precisam ser confirmados via WhatsApp.</p>';return html}
-  function wireCatalogControls(){gridEl.querySelectorAll('[data-model-index]').forEach(a=>{const m=IPHONE_MODELS[Number(a.dataset.modelIndex)];a.addEventListener('click',e=>{const b=e.target.closest('[data-option]');if(!b||!a.contains(b))return;a.dataset[b.dataset.option]=b.dataset.value;updateCard(a,m)});a.querySelectorAll('[data-tech-trigger]').forEach(b=>b.addEventListener('click',()=>openTechModal(a,m)))})}
+  function wireCatalogControls(){}
   function renderCatalog(){const models=tableModelsFor(IPHONE_MODELS);gridEl.innerHTML=renderCatalogLayout(models);wireCatalogControls();statusEl.hidden=!!models.length;statusEl.textContent=models.length?'':'Nenhum iPhone encontrado para este filtro.'}
   function setActive(btns,active){btns.forEach(b=>b.classList.toggle('is-active',b===active))}
-  conditionButtons.forEach(b=>b.addEventListener('click',()=>{activeCondition=b.dataset.conditionFilter;setActive(conditionButtons,b);renderCatalog()}));lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});techModalEl.addEventListener('click',e=>{if(e.target===techModalEl||e.target.closest('[data-tech-close]'))closeTechModal()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&techModalEl?.hidden===false)closeTechModal()});renderCatalog();updateBcbExchangeRate();
-})();
-</script><script src="impact-calculator.js?v=impact1"></script></body></html>
+  conditionButtons.forEach(b=>b.addEventListener('click',()=>{activeCondition=b.dataset.conditionFilter;setActive(conditionButtons,b);renderCatalog()}));lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});renderCatalog();updateBcbExchangeRate();
+})();</script><script src="impact-calculator.js?v=impact1"></script></body></html>
