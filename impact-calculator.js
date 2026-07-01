@@ -1,15 +1,23 @@
 (function(){
-  // Estimativa interna CELULARS. Nao representa certificacao ambiental ou auditoria externa.
+  // Valores editaveis. Estimativa interna CELULARS, sem certificacao ambiental ou auditoria externa.
   const CELULARS_IMPACT_CONFIG = {
-    startDate: "2016-07-01",
-    estimatedDevicesPerWeek: 2500,
+    startDate: "2016-01-01",
+    baseDevicesPerSecond: 3,
+    growthPercent: 0.05,
     co2KgPerDevice: 70,
-    ewasteKgPerDevice: 0.2
+    ewasteKgPerDevice: 0.2,
+    batteryUnitsPerDevice: 1
   };
 
   window.CELULARS_IMPACT_CONFIG = window.CELULARS_IMPACT_CONFIG || CELULARS_IMPACT_CONFIG;
 
-  const WEEK_SECONDS = 7 * 24 * 60 * 60;
+  const SECOND = 1;
+  const MINUTE = 60;
+  const HOUR = 60 * 60;
+  const DAY = 24 * HOUR;
+  const WEEK = 7 * DAY;
+  const MONTH = 30.4375 * DAY;
+  const YEAR = 365 * DAY;
 
   function numberValue(value){
     return Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -21,7 +29,7 @@
 
   function startTime(configValue){
     const start = new Date(String(configValue.startDate || "") + "T00:00:00");
-    return Number.isNaN(start.getTime()) ? Date.now() : start.getTime();
+    return Number.isNaN(start.getTime()) ? new Date("2016-01-01T00:00:00").getTime() : start.getTime();
   }
 
   function elapsedSeconds(configValue){
@@ -29,70 +37,107 @@
   }
 
   function isConfigured(configValue){
-    return numberValue(configValue.estimatedDevicesPerWeek) > 0 &&
+    return numberValue(configValue.baseDevicesPerSecond) > 0 &&
       numberValue(configValue.co2KgPerDevice) > 0 &&
-      numberValue(configValue.ewasteKgPerDevice) > 0;
+      numberValue(configValue.ewasteKgPerDevice) > 0 &&
+      numberValue(configValue.batteryUnitsPerDevice) > 0;
+  }
+
+  function adjustedDevicesPerSecond(configValue){
+    const growthMultiplier = 1 + (numberValue(configValue.growthPercent) / 100);
+    return numberValue(configValue.baseDevicesPerSecond) * growthMultiplier;
   }
 
   function formatInteger(value){
-    return Math.floor(value).toLocaleString("pt-BR");
+    return Math.floor(Math.max(0, Number(value) || 0)).toLocaleString("pt-BR");
   }
 
-  function formatMassKg(value, suffix){
-    const kg = Math.max(0, Number(value) || 0);
-    if (kg >= 1000) {
-      return (kg / 1000).toLocaleString("pt-BR", {
-        maximumFractionDigits: 0
-      }) + " t" + (suffix ? " " + suffix : "");
-    }
-    return Math.floor(kg).toLocaleString("pt-BR") + " kg" + (suffix ? " " + suffix : "");
+  function formatDecimal(value, digits){
+    return (Math.max(0, Number(value) || 0)).toLocaleString("pt-BR", {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits
+    });
   }
 
-  function formatCountdown(seconds){
-    const total = Math.max(0, Math.ceil(seconds));
-    const hours = Math.floor(total / 3600);
-    const minutes = Math.floor((total % 3600) / 60);
-    const secs = total % 60;
-    if (hours > 0) {
-      return String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
+  function formatMetric(value){
+    const number = Math.max(0, Number(value) || 0);
+    if (number >= 100) return formatInteger(number);
+    return formatDecimal(number, 2);
+  }
+
+  function formatTonnes(kg, suffix, digits){
+    const tonnes = Math.max(0, Number(kg) || 0) / 1000;
+    const precision = Number.isFinite(Number(digits)) ? Number(digits) : 0;
+    return tonnes.toLocaleString("pt-BR", {
+      minimumFractionDigits: precision,
+      maximumFractionDigits: precision
+    }) + " t" + (suffix ? " " + suffix : "");
+  }
+
+  function formatDate(dateString){
+    const date = new Date(String(dateString || "") + "T00:00:00");
+    if (Number.isNaN(date.getTime())) return "01/01/2016";
+    return date.toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  }
+
+  function formatUptime(configValue){
+    const start = new Date(startTime(configValue));
+    const now = new Date();
+    let years = now.getFullYear() - start.getFullYear();
+    let months = now.getMonth() - start.getMonth();
+    let days = now.getDate() - start.getDate();
+
+    if (days < 0) {
+      months -= 1;
+      const previousMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+      days += previousMonth.getDate();
     }
-    return String(minutes).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
+
+    if (months < 0) {
+      years -= 1;
+      months += 12;
+    }
+
+    const hours = now.getHours();
+    return years + " anos, " + months + " meses, " + days + " dias, " + hours + " horas";
   }
 
   function impactTotals(configValue){
-    const devicesPerWeek = numberValue(configValue.estimatedDevicesPerWeek);
-    const devicesPerSecond = devicesPerWeek / WEEK_SECONDS;
+    const rate = adjustedDevicesPerSecond(configValue);
     const elapsed = elapsedSeconds(configValue);
-    const devices = elapsed * devicesPerSecond;
-    const secondsPerDevice = devicesPerWeek > 0 ? WEEK_SECONDS / devicesPerWeek : 0;
-    const nextSeconds = secondsPerDevice > 0 ? secondsPerDevice - (elapsed % secondsPerDevice) : 0;
+    const devices = elapsed * rate;
 
     return {
+      rate: rate,
+      elapsed: elapsed,
       devices: devices,
       co2: devices * numberValue(configValue.co2KgPerDevice),
       ewaste: devices * numberValue(configValue.ewasteKgPerDevice),
-      next: nextSeconds
+      batteries: devices * numberValue(configValue.batteryUnitsPerDevice)
     };
   }
 
-  function rhythmTotals(configValue){
-    const devicesPerWeek = numberValue(configValue.estimatedDevicesPerWeek);
+  function rhythmTotals(rate){
     return {
-      week: devicesPerWeek,
-      fortnight: devicesPerWeek * 2,
-      month: devicesPerWeek * 52 / 12,
-      year: devicesPerWeek * 52
+      second: rate * SECOND,
+      minute: rate * MINUTE,
+      hour: rate * HOUR,
+      day: rate * DAY,
+      week: rate * WEEK,
+      month: rate * MONTH,
+      year: rate * YEAR
     };
   }
 
   function metricText(metric, totals, configured){
-    if (!configured) return "Dados em configura\u00e7\u00e3o";
-    if (metric === "devices") return formatInteger(totals.devices);
-    if (metric === "co2") return formatMassKg(totals.co2, "CO\u2082");
-    if (metric === "ewaste") return formatMassKg(totals.ewaste);
-    if (metric === "next") return formatCountdown(totals.next);
+    if (!configured) return "Calculando...";
+    if (metric === "devices") return formatInteger(totals.devices) + "+";
+    if (metric === "co2") return formatTonnes(totals.co2, "CO\u2082e", 1);
+    if (metric === "ewaste") return formatTonnes(totals.ewaste, "", 3);
+    if (metric === "batteries") return formatInteger(totals.batteries) + "+";
+    if (metric === "currentRate") return formatMetric(totals.rate);
     if (metric === "live") return "\u25cf LIVE";
-    return "Dados em configura\u00e7\u00e3o";
+    return "Calculando...";
   }
 
   function updateImpactCounters(){
@@ -102,7 +147,7 @@
     const currentConfig = config();
     const configured = isConfigured(currentConfig);
     const totals = impactTotals(currentConfig);
-    const rhythm = rhythmTotals(currentConfig);
+    const rhythm = rhythmTotals(totals.rate);
 
     blocks.forEach(function(block){
       block.toggleAttribute("data-impact-running", configured);
@@ -114,23 +159,34 @@
       block.querySelectorAll("[data-cel-impact-rhythm]").forEach(function(el){
         const rhythmKey = el.getAttribute("data-cel-impact-rhythm");
         el.textContent = configured && Object.prototype.hasOwnProperty.call(rhythm, rhythmKey)
-          ? formatInteger(rhythm[rhythmKey])
+          ? formatMetric(rhythm[rhythmKey])
           : "0";
       });
 
+      block.querySelectorAll("[data-cel-impact-start]").forEach(function(el){
+        el.textContent = formatDate(currentConfig.startDate);
+      });
+
+      block.querySelectorAll("[data-cel-impact-uptime]").forEach(function(el){
+        el.textContent = formatUptime(currentConfig);
+      });
+
       block.querySelectorAll("[data-cel-impact-updated]").forEach(function(el){
-        el.textContent = configured
-          ? "Estimativas internas calculadas com base em uma m\u00e9dia operacional de " + formatInteger(currentConfig.estimatedDevicesPerWeek) + " iPhones por semana e fator configur\u00e1vel de CO\u2082e por aparelho. Os resultados s\u00e3o referenciais e podem variar conforme modelo, lote, condi\u00e7\u00e3o, metodologia de c\u00e1lculo e mercado."
-          : "Dados em configura\u00e7\u00e3o. Atualizar estes valores com os n\u00fameros oficiais internos da CELULARS.";
+        el.textContent = "Estimativas internas calculadas com base em ritmo operacional configuravel de " +
+          formatMetric(totals.rate) + " iPhones por segundo, historico desde " +
+          formatDate(currentConfig.startDate) + " e fatores medios de reaproveitamento por aparelho. Os numeros sao referenciais e podem variar conforme modelo, lote, condicao, metodologia e mercado.";
       });
     });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", updateImpactCounters);
-  } else {
+  function startLiveCounter(){
     updateImpactCounters();
+    window.setInterval(updateImpactCounters, 1000);
   }
 
-  setInterval(updateImpactCounters, 1000);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startLiveCounter);
+  } else {
+    startLiveCounter();
+  }
 })();

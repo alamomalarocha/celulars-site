@@ -1,64 +1,146 @@
 # CELULARS Impact Counter Report
 
-## Scope
+## Purpose
 
-The live reuse impact counter is enabled only on the Home page (`index.html`).
+Refactor the Home impact block into a live internal estimate counter for CELULARS reuse activity.
 
-It is not displayed on:
+The counter appears only on `index.html`.
 
-- `iphones.html`
-- `atacado.html`
-- `sobre.html`
-- `contato.html`
+## Configuration
 
-## Internal Baseline
+Configured in `impact-calculator.js`:
 
 ```js
-startDate: "2016-07-01"
-estimatedDevicesPerWeek: 2500
-co2KgPerDevice: 70
-ewasteKgPerDevice: 0.2
+const CELULARS_IMPACT_CONFIG = {
+  startDate: "2016-01-01",
+  baseDevicesPerSecond: 3,
+  growthPercent: 0.05,
+  co2KgPerDevice: 70,
+  ewasteKgPerDevice: 0.2,
+  batteryUnitsPerDevice: 1
+};
 ```
 
-These values are CELULARS internal operating estimates and are configurable in `impact-calculator.js`.
+## Formulas
 
-## Calculation
+- `secondsSinceStart = now - startDate`
+- `growthMultiplier = 1 + (growthPercent / 100)`
+- `adjustedDevicesPerSecond = baseDevicesPerSecond * growthMultiplier`
+- `devicesTotal = secondsSinceStart * adjustedDevicesPerSecond`
+- `devicesPerMinute = adjustedDevicesPerSecond * 60`
+- `devicesPerHour = adjustedDevicesPerSecond * 60 * 60`
+- `devicesPerDay = devicesPerHour * 24`
+- `devicesPerWeek = devicesPerDay * 7`
+- `devicesPerMonth = devicesPerDay * 30.4375`
+- `devicesPerYear = devicesPerDay * 365`
+- `co2AvoidedKg = devicesTotal * co2KgPerDevice`
+- `ewasteAvoidedKg = devicesTotal * ewasteKgPerDevice`
+- `batteryUnitsSaved = devicesTotal * batteryUnitsPerDevice`
 
-- Devices reused = elapsed seconds since `2016-07-01` multiplied by `2500 / 604800`.
-- CO2e estimated avoided = devices reused multiplied by `70 kg`.
-- E-waste estimated avoided = devices reused multiplied by `0.2 kg`.
-- Next estimated device interval = `604800 / 2500`, approximately `241.92` seconds, displayed as about `04:02`.
+## Display
 
-## Rhythm Display
+Main card:
 
-- 2,500 per week
-- 5,000 per fortnight
-- 10,833 per month
-- 130,000 per year
+- Aparelhos reaproveitados
+- Live counter increasing over time
+- Since 2016 label
 
-The monthly value uses `2500 * 52 / 12`.
+Secondary cards:
 
-## Transparency Text
+- CO2 estimado evitado, displayed in tonnes
+- Resíduo eletrônico evitado, displayed in tonnes
+- Baterias reaproveitadas
+- Ritmo atual, displayed as iPhones per second
 
-The Home page states that the numbers are internal estimates based on an average operational volume of 2,500 iPhones per week and a configurable CO2e factor per device.
+Rhythm block:
 
-It also states that the numbers do not represent environmental certification or external audit.
+- Por segundo
+- Por minuto
+- Por hora
+- Por dia
+- Por semana
+- Por mês
+- Por ano
 
-## Implementation
+Time block:
 
-Files changed:
+- Operação estimada desde: 01/01/2016
+- Tempo acumulado since start date
 
-- `index.html`
-- `impact-calculator.js`
-- `impact-counter.css`
+## Transparency
 
-The counter updates every second in the browser and does not affect PTAX, iPhone pricing, the wholesale page, WhatsApp links, or catalog logic.
+This counter is an internal CELULARS estimate.
 
-## Validation Notes
+It does not represent:
 
-Required validation:
+- environmental certification;
+- external audit;
+- official carbon reduction guarantee;
+- Apple certification, partnership or endorsement.
 
-- Home shows live impact values and no visible `Dados em configuracao` text.
-- Other public pages do not show the impact counter.
-- No horizontal overflow at desktop, 768px, 430px, or 390px.
-- Existing PTAX, iPhones, Atacado, and WhatsApp flows remain unchanged.
+## Pages
+
+Validated intent:
+
+- Home: counter visible
+- iPhones: counter not visible
+- Atacado: counter not visible
+- Sobre: counter not visible
+- Contato: counter not visible
+
+## Validation
+
+Local browser validation was run at:
+
+- desktop: 1280 px
+- tablet: 768 px
+- mobile: 430 px
+- mobile: 390 px
+
+Results:
+
+- Counter appears only on Home: passed.
+- Counter does not appear on iPhones, Atacado, Sobre or Contato: passed.
+- `Dados em configuração` is not visible: passed.
+- Main devices counter increases in real time: passed.
+- CO2 estimate increases in real time: passed.
+- E-waste estimate increases in real time: passed.
+- Battery estimate increases in real time: passed.
+- Rhythm values appear for second, minute, hour, day, week, month and year: passed.
+- Start date appears as `01/01/2016`: passed.
+- Accumulated operation time appears and updates: passed.
+- LIVE badge appears: passed.
+- PTAX continues working: passed.
+- iPhones table continues working: passed.
+- Atacado local page remains functional and published Atacado remains protected by Cloudflare Access: pending published validation.
+- WhatsApp links remain active: passed.
+- No console errors: passed.
+- No horizontal overflow at tested breakpoints: passed.
+
+Example local readings during validation:
+
+- Devices: changed from `994.453.559+` to `994.453.568+`.
+- CO2: changed from `69.611.749,2 t CO2e` to `69.611.749,8 t CO2e`.
+- E-waste: changed from `198.890,712 t` to `198.890,714 t`.
+- Batteries: changed from `994.453.559+` to `994.453.568+`.
+
+Published validation was run using:
+
+- `https://celulars.com.br?impact-live-v2=1`
+- `https://celulars.com.br/iphones?impact-live-v2=1`
+- `https://celulars.com.br/sobre?impact-live-v2=1`
+- `https://celulars.com.br/contato?impact-live-v2=1`
+- `https://celulars.com.br/atacado?impact-live-v2=1`
+
+Published results:
+
+- Home counter visible and increasing: passed.
+- Devices changed from `994.453.934+` to `994.453.937+`.
+- CO2 displayed as `69.611.775,6 t CO2e`.
+- E-waste displayed as `198.890,787 t`.
+- Batteries displayed as `994.453.937+`.
+- Rhythm values displayed for second, minute, hour, day, week, month and year: passed.
+- Start date displayed as `01/01/2016`: passed.
+- No `Dados em configuração`: passed.
+- iPhones, Sobre and Contato do not show the counter: passed.
+- Published Atacado remains protected by Cloudflare Access. A CSP warning from Cloudflare's own sign-in page was observed and is unrelated to CELULARS site code.
