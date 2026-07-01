@@ -1,10 +1,10 @@
 # iPhone 12-17 Missing Price Matrix
 
-Escopo da tabela comercial atual: somente modelos do iPhone 12 ao iPhone 17, com uma linha por capacidade.
+Escopo da tabela comercial atual: somente modelos do iPhone 12 ao iPhone 17, com uma linha/card por modelo e matriz interna de precos por capacidade.
 
 Regra: nenhum preco foi inventado. As colunas eCPO e Novo ficam como `Sob consulta` quando nao ha preco especifico por capacidade em `price_by_capacity`.
 
-Resumo: 26 modelos, 83 combinacoes modelo/capacidade, 166 campos de preco especifico pendentes.
+Resumo: 26 modelos, 83 combinacoes modelo/capacidade dentro dos cards, 166 campos de preco especifico pendentes.
 
 | Modelo | Capacidade | Preco eCPO faltando | Preco Novo faltando |
 |---|---:|:---:|:---:|
