@@ -90,6 +90,22 @@
   line-height: 1.45;
 }
 
+.operation-note {
+  margin: -6px 0 20px;
+  border: 1px solid rgba(18, 61, 121, .11);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .84);
+  color: #475467;
+  padding: 11px 13px;
+  font-size: .82rem;
+  line-height: 1.45;
+}
+
+.operation-note strong {
+  color: var(--blue-dark);
+  font-weight: 860;
+}
+
 #celulars-iphones-catalog .cel-impact-kicker {
   letter-spacing: .02em;
   text-transform: none;
@@ -731,10 +747,10 @@
 .catalog-table-wrap {
   width: 100%;
   overflow: hidden;
-  border: 1px solid rgba(18, 61, 121, .1);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, .94);
-  box-shadow: 0 16px 38px rgba(14, 22, 40, .07);
+  border: 1px solid rgba(18, 61, 121, .12);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(14, 22, 40, .055);
 }
 
 .catalog-table {
@@ -748,7 +764,7 @@
 .catalog-table td {
   vertical-align: top;
   border-bottom: 1px solid rgba(18, 61, 121, .08);
-  padding: 15px 12px;
+  padding: 12px 10px;
   text-align: left;
 }
 
@@ -756,7 +772,7 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  background: #f7faff;
+  background: #f6f8fb;
   color: #667085;
   font-size: .68rem;
   font-weight: 880;
@@ -840,7 +856,7 @@
 
 .model-cell strong {
   color: var(--ink);
-  font-size: 1rem;
+  font-size: .96rem;
   font-weight: 880;
   line-height: 1.18;
 }
@@ -891,21 +907,22 @@
 }
 
 .color-list {
-  display: grid;
-  gap: 6px;
-  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
 }
 
 .color-static {
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
+  min-height: 24px;
   border: 1px solid rgba(18, 61, 121, .11);
   border-radius: 999px;
   background: #fff;
   color: #475467;
-  padding: 0 9px;
-  font-size: .74rem;
+  padding: 0 7px;
+  font-size: .7rem;
   font-weight: 760;
   line-height: 1.15;
   width: fit-content;
@@ -914,14 +931,14 @@
 
 .price-block {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
   min-width: 0;
   border: 1px solid rgba(18, 61, 121, .12);
-  border-radius: 15px;
-  background: linear-gradient(180deg, #fff, #f9fbff);
+  border-radius: 11px;
+  background: #fbfdff;
   color: #475467;
-  padding: 11px;
+  padding: 9px;
 }
 
 .price-block h3 {
@@ -941,10 +958,10 @@
 .price-line {
   display: grid;
   grid-template-columns: minmax(54px, .7fr) minmax(0, 1.4fr);
-  gap: 6px 8px;
+  gap: 5px 7px;
   align-items: baseline;
   border-top: 1px solid rgba(18, 61, 121, .07);
-  padding-top: 6px;
+  padding-top: 5px;
 }
 
 .price-line:first-child {
@@ -954,14 +971,14 @@
 
 .price-line span {
   color: #667085;
-  font-size: .75rem;
+  font-size: .72rem;
   font-weight: 820;
   white-space: nowrap;
 }
 
 .price-line strong {
   color: #1d2939;
-  font-size: .78rem;
+  font-size: .74rem;
   font-weight: 880;
   line-height: 1.18;
   overflow-wrap: anywhere;
@@ -973,9 +990,11 @@
 }
 
 .table-actions .whatsapp-button {
-  min-height: 38px;
-  border-radius: 11px;
-  font-size: .82rem;
+  width: fit-content;
+  min-height: 32px;
+  border-radius: 9px;
+  padding: 0 11px;
+  font-size: .74rem;
 }
 
 .legacy-consult-section {
@@ -1056,18 +1075,6 @@
   padding-top: 12px;
 }
 
-.table-reference-note {
-  margin: 18px 0 0;
-  border: 1px solid rgba(185, 28, 28, .16);
-  border-radius: 15px;
-  background: rgba(254, 242, 242, .74);
-  color: #7f1d1d;
-  padding: 12px 14px;
-  font-size: .82rem;
-  font-weight: 700;
-  line-height: 1.45;
-}
-
 @media (max-width: 1120px) {
   .catalog-table th,
   .catalog-table td {
@@ -1079,9 +1086,8 @@
     padding: 0 8px;
   }
 
-  .table-actions .tech-button,
   .table-actions .whatsapp-button {
-    font-size: .78rem;
+    font-size: .74rem;
   }
 }
 
