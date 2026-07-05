@@ -1,8 +1,9 @@
 .cel-global-header {
-  padding: 6px clamp(14px, 3vw, 28px) !important;
-  background: rgba(255, 255, 255, .88) !important;
-  border-bottom: 1px solid rgba(29, 29, 31, .08) !important;
-  backdrop-filter: saturate(180%) blur(18px) !important;
+  padding: 5px clamp(14px, 3vw, 28px) !important;
+  background: rgba(251, 251, 253, .86) !important;
+  border-bottom: 1px solid rgba(29, 29, 31, .075) !important;
+  box-shadow: none !important;
+  backdrop-filter: saturate(180%) blur(20px) !important;
 }
 
 .cel-global-nav {
@@ -39,7 +40,7 @@
   background: transparent !important;
   color: rgba(29, 29, 31, .78) !important;
   font-size: .9rem !important;
-  font-weight: 680 !important;
+  font-weight: 620 !important;
   letter-spacing: 0 !important;
 }
 
@@ -49,7 +50,7 @@
 
 .cel-global-links a.is-active {
   color: #1d1d1f !important;
-  background: rgba(29, 29, 31, .055) !important;
+  background: rgba(29, 29, 31, .045) !important;
 }
 
 .cel-global-search {
@@ -94,7 +95,7 @@
   border: 1px solid rgba(29, 29, 31, .1);
   border-radius: 18px;
   background: rgba(255, 255, 255, .98);
-  box-shadow: 0 18px 40px rgba(14, 22, 40, .14);
+  box-shadow: 0 18px 40px rgba(14, 22, 40, .08);
   padding: 12px;
 }
 
