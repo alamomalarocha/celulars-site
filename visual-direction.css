@@ -38,14 +38,6 @@
   margin: 0 0 clamp(20px, 3vw, 34px);
 }
 
-#celulars-home .cel-hero-visual,
-#celulars-sobre .cel-hero-visual,
-#celulars-iphones-catalog .cel-iphone-cluster,
-#celulars-atacado .cel-visual-strip img,
-#celulars-contato .cel-contact-iphone {
-  display: none !important;
-}
-
 #celulars-home .cel-home-hero,
 #celulars-sobre .cel-hero,
 #celulars-contato .cel-hero,
@@ -65,6 +57,16 @@
 
 .cel-visual-strip {
   padding: 18px !important;
+}
+
+#celulars-home .cel-home-hero,
+#celulars-sobre .cel-hero {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+#celulars-home .cel-home-copy,
+#celulars-sobre .cel-hero-copy {
+  max-width: 820px !important;
 }
 
 .cel-clarity-card {
@@ -311,7 +313,6 @@
 .cel-note,
 .cel-final-cta,
 .cel-contact-highlight,
-.cel-phone-stage,
 .cel-atacado-login-card,
 .cel-section,
 .cel-locked-card,

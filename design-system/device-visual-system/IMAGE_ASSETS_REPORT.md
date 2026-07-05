@@ -30,3 +30,26 @@ All files below are local project assets stored under `assets/images/iphones/`.
 - Do not imply Apple partnership, certification, authorization, or endorsement.
 - Do not hotlink external image URLs.
 - Keep images as visual product references only.
+
+## Imagens de aparelhos removidas temporariamente
+
+Data: 2026-07-05
+
+As imagens de aparelhos iPhone foram removidas temporariamente da exibição pública do site. Os arquivos físicos foram preservados no projeto para referência e uso futuro, mas não são mais renderizados nas páginas publicadas.
+
+### Imagens que deixaram de ser usadas
+
+| Arquivo | Onde aparecia | Status atual |
+|---|---|---|
+| `assets/images/iphones/iphone-17-pro-max-silver.webp` | Home hero, Home linha atual, Atacado | Removida da exibição pública |
+| `assets/images/iphones/iphone-17-pro-deep-blue.webp` | Home linha atual, Sobre hero | Removida da exibição pública |
+| `assets/images/iphones/iphone-17-mist-blue.webp` | Home linha atual | Removida da exibição pública |
+| `assets/images/iphones/iphone-air-space-black.webp` | Contato, antigo showcase iPhones | Removida da exibição pública |
+
+### Confirmações
+
+- A logo completa CELULARS da Home foi preservada.
+- O ícone original do header foi preservado.
+- Logos e assets institucionais em `brand-assets/` foram preservados.
+- Nenhum arquivo físico de imagem de aparelho foi apagado.
+- Novas imagens de aparelho serão preparadas manualmente depois, com outro padrão visual.
