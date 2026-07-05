@@ -4,7 +4,11 @@ Este documento define o formato ideal para a futura tabela real de atacado da CE
 
 ## Importante
 
+Este schema e apenas referencia. Dados reais nao devem ser publicados diretamente no frontend publico.
+
 O arquivo real `data/wholesale-inventory.json` so deve ser usado porque a rota `/atacado` esta protegida por Cloudflare Access. Se nao houver dados comerciais validados, o arquivo deve permanecer como uma lista vazia (`[]`).
+
+Mesmo com `/atacado` protegido, arquivos estaticos em `/data/` podem continuar acessiveis diretamente se forem publicados no site. A etapa segura para dados reais e mover o inventario para um endpoint protegido por backend, Pages Functions, Worker, D1, KV, R2 ou solucao equivalente.
 
 Na fase de tabela padrao, o arquivo pode conter todas as combinacoes comerciais de iPhones 12 ao 17. Onde nao houver dado claro da tabela bruta, usar:
 

@@ -102,3 +102,26 @@ A tabela real deve ser carregada somente depois da validacao de acesso do client
 ## Observacao operacional
 
 A pagina publica de atacado deve explicar o processo comercial e orientar o cliente a solicitar acesso pelo WhatsApp. Dados de lote, preco, margem, disponibilidade e tabela de atacado devem permanecer fora do site publico ate a camada segura estar ativa.
+
+## HOTFIX - Inventario real removido do frontend publico
+
+Em 2026-07-05, o arquivo `data/wholesale-inventory.json` foi zerado para `[]` como medida imediata de seguranca.
+
+Motivo:
+
+- A rota `/atacado` pode ser protegida por Cloudflare Access, mas isso nao protege automaticamente arquivos estaticos em `/data/`.
+- Um arquivo publico como `/data/wholesale-inventory.json` pode ser acessado diretamente se estiver publicado no frontend.
+- Inventario real, quantidade, preco por lote ou qualquer dado comercial sensivel nao deve ficar em arquivo estatico publico.
+
+Estado apos o hotfix:
+
+- `data/wholesale-inventory.json` permanece vazio.
+- `atacado.html` mostra apenas a estrutura visual e uma mensagem de tabela em preparacao.
+- A pagina nao deve exibir linhas reais, precos reais, quantidades reais ou estoque real.
+- `_headers` adiciona `X-Robots-Tag: noindex, nofollow` e `Cache-Control: no-store` para o JSON, mas isso e apenas mitigacao de indexacao/cache.
+
+Proxima etapa segura:
+
+- Mover o inventario real para Cloudflare Pages Functions, Worker, D1, KV, R2 ou outro backend protegido.
+- Entregar dados reais somente depois de validar o cliente B2B no servidor.
+- Manter no frontend publico apenas sample, schema ou estrutura sem dados reais.

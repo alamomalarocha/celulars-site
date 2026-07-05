@@ -21,3 +21,7 @@
 
 /contato.html
   Cache-Control: no-cache, no-store, must-revalidate
+
+/data/wholesale-inventory.json
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
