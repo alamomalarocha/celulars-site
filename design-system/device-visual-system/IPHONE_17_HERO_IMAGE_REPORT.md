@@ -49,12 +49,14 @@
 
 - Arquivo WebP usado no site: `assets/images/iphones/hero/iphone-17-lineup-hero.webp`
 - Arquivo PNG de apoio: `assets/images/iphones/hero/iphone-17-lineup-hero.png`
-- Tipo: arte propria CELULARS, vetorial/raster gerada por codigo local com base em referencias oficiais.
+- Tipo: composicao raster local preparada para a CELULARS a partir de referencia visual oficial/fornecida da linha iPhone 17 Pro, com recorte superior dos aparelhos para manter cameras, tela e cores sem exibir logotipo Apple.
 - Uso: hero da Home em `index.html`.
 
 ## Decisao de uso
 
-As imagens oficiais da Apple foram usadas apenas como referencia visual para modelo, familia, camera e cores. A imagem publicada nao e hotlink, nao e copia direta de asset Apple e nao inclui logo Apple.
+As paginas oficiais da Apple foram usadas para confirmar modelos, familias, cameras e cores. O arquivo publicado e local, nao usa hotlink, nao exibe logotipo Apple e nao sugere parceria, autorizacao ou afiliacao com a Apple.
+
+O hero publicado usa a familia iPhone 17 Pro / iPhone 17 Pro Max como vitrine principal, nas cores Silver, Cosmic Orange e Deep Blue, por ser a referencia visual mais premium e clara entre os assets disponiveis.
 
 ## Confirmacoes
 
@@ -63,7 +65,7 @@ As imagens oficiais da Apple foram usadas apenas como referencia visual para mod
 - Nao ha texto sobre os aparelhos.
 - Nao ha sugestao de parceria, autorizacao ou afiliacao com a Apple.
 - Nao foram usados iPhones de linhas antigas como referencia de composicao.
-- A composicao e propria da CELULARS e nao copia o layout exato da Apple.
+- A composicao foi ajustada para uso editorial/comercial da CELULARS e nao copia o layout exato da Apple.
 - A imagem foi aplicada somente na Home.
 
 ## Observacoes
