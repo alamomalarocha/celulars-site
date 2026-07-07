@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CELULARS iPhone Catalog</title><link rel="stylesheet" href="visual-review.css?v=visual2"><link rel="stylesheet" href="apple-inspired-header.css?v=apple8"><link rel="stylesheet" href="visual-direction.css?v=direction7"></head><style>#celulars-iphones-catalog {
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CELULARS iPhone Catalog</title><link rel="stylesheet" href="visual-review.css?v=visual2"><link rel="stylesheet" href="apple-inspired-header.css?v=apple9"><link rel="stylesheet" href="visual-direction.css?v=direction8"></head><style>#celulars-iphones-catalog {
   --ink: #1d1d1f;
   --muted: #6e6e73;
   --line: rgba(29, 29, 31, .09);
@@ -1302,13 +1302,6 @@
         </div>
       </div>
       <label class="catalog-search"><span class="filter-label">Busca</span><input type="search" data-search-filter placeholder="Buscar por modelo, capacidade, cor ou categoria" autocomplete="off"></label>
-    </div>
-    <div class="exchange-card" aria-live="polite" data-exchange-card>
-      <div class="exchange-rate-items">
-        <span>Cota&ccedil;&atilde;o de refer&ecirc;ncia CELULARS: <strong data-cel-reference-rate data-bcb-rate>R$ 5,4700</strong></span>
-        <span>Base PTAX/Banco Central: <strong data-cel-ptax-rate>R$ 5,3200</strong> + ajuste operacional: <strong data-cel-spread-rate>R$ 0,1500</strong></span>
-      </div>
-      <p data-cel-ptax-date data-bcb-date>Atualizando cota&ccedil;&atilde;o PTAX USD/BRL...</p>
     </div>
     <div class="catalog-status" data-status hidden></div>
     <div class="catalog-grid" data-catalog-grid></div>
@@ -3988,6 +3981,6 @@
   function renderCatalog(){const newRows=newModelsFor(IPHONE_MODELS).flatMap(capacityRowsFor),ecpoRows=ecpoModelsFor(IPHONE_MODELS);gridEl.innerHTML=renderCatalogLayout(newRows,ecpoRows);wireCatalogControls();const total=newRows.length+ecpoRows.length;statusEl.hidden=!!total;statusEl.textContent=total?'':'Nenhum iPhone encontrado para este filtro.'}
   function setActive(btns,active){btns.forEach(b=>b.classList.toggle('is-active',b===active))}
   categoryButtons.forEach(b=>b.addEventListener('click',()=>{activeCategory=b.dataset.categoryFilter;setActive(categoryButtons,b);renderCatalog()}));lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});renderCatalog();updateBcbExchangeRate();
-})();</script><script src="apple-inspired-header.js?v=apple7"></script>
-<script src="visual-direction.js?v=direction1"></script>
+})();</script><script src="apple-inspired-header.js?v=apple8"></script>
+<script src="visual-direction.js?v=direction3"></script>
 </body></html>
