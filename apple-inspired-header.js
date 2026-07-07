@@ -14,7 +14,7 @@
   const searchItems = [
     { label: "Home", url: "index.html", terms: "home inicio celulars" },
     { label: "iPhones", url: "iphones.html", terms: "iphone iphones modelos 17 16 15 14 13 12 novo ecpo catalogo" },
-    { label: "Atacado", url: "atacado.html", terms: "atacado b2b revenda lojista empresa comercial volume" },
+    { label: "Acessos", url: "acessos.html", terms: "acessos acesso atacado b2b revenda lojista empresa comercial volume funcionario equipe administrativo" },
     { label: "Sobre", url: "sobre.html", terms: "sobre celulars miami girtab operacao empresa" },
     { label: "Contato / WhatsApp", url: "contato.html", terms: "contato whatsapp telefone atendimento suporte" }
   ];
@@ -26,7 +26,7 @@
     '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>',
     "</button>",
     '<div class="cel-global-search-panel" role="search" aria-label="Busca CELULARS">',
-    '<input type="search" placeholder="Buscar iPhone, eCPO, Atacado..." aria-label="Buscar no site CELULARS">',
+    '<input type="search" placeholder="Buscar iPhone, eCPO, Acessos..." aria-label="Buscar no site CELULARS">',
     '<div class="cel-global-search-results"></div>',
     "</div>"
   ].join("");

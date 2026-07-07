@@ -1258,8 +1258,8 @@
     <nav class="cel-global-links" aria-label="Navega&ccedil;&atilde;o principal">
       <a href="index.html">Home</a>
       <a class="is-active" href="iphones.html">iPhones</a>
-      <a href="atacado.html">Atacado</a>
       <a href="sobre.html">Sobre</a>
+      <a href="acessos.html">Acessos</a>
       <a href="contato.html">Contato</a>
     </nav>
   </div>
@@ -1270,7 +1270,7 @@
       <div>
         <span class="eyebrow">CELULARS</span>
         <h1 id="catalog-title">Escolha seu iPhone</h1>
-        <p class="catalog-subtitle">A CELULARS trabalha com iPhones novos da linha 17 e iPhones eCPO eco Certified Pre-Owned do iPhone 12 ao 17. Consulte modelos, capacidades, cores, pre&ccedil;os de refer&ecirc;ncia e disponibilidade pelo WhatsApp institucional.</p>
+        <p class="catalog-subtitle">A CELULARS trabalha com iPhones novos da linha 17 e iPhones eCPO P1 / Grade A do iPhone 12 ao 17 para varejo. Consulte modelos, capacidades, cores, pre&ccedil;os de refer&ecirc;ncia e disponibilidade pelo WhatsApp institucional.</p>
       </div>
       <div class="exchange-card" aria-live="polite" data-exchange-card>
         <div class="exchange-rate-items">
@@ -1282,6 +1282,7 @@
     </div>
     <div class="price-reference-note" role="note">Modelos novos usam refer&ecirc;ncia baseada no pre&ccedil;o oficial Apple acrescido da taxa da Fl&oacute;rida/Miami-Dade. Modelos eCPO t&ecirc;m pre&ccedil;o sob consulta conforme lote, condi&ccedil;&atilde;o, grade e disponibilidade. Valores em reais usam a Cota&ccedil;&atilde;o CELULARS vigente.</div>
     <div class="operation-note" role="note"><strong>Atendimento organizado e seguro:</strong> A CELULARS trabalha com atendimento pr&eacute;vio pelo WhatsApp. Retirada em Miami somente para pedidos previamente confirmados, sem escolha de aparelhos, negocia&ccedil;&atilde;o ou pagamento presencial no local.</div>
+    <div class="operation-note" role="note"><strong>Compra para revenda ou empresa?</strong> Os pre&ccedil;os e condi&ccedil;&otilde;es de atacado s&atilde;o exclusivos para clientes comerciais aprovados. Para solicitar acesso, envie seus dados de pessoa jur&iacute;dica para an&aacute;lise pela CELULARS. <a href="acessos.html">Solicitar acesso de atacado</a>.</div>
     <div class="catalog-primary-cta" role="note">
       <p>Para confirmar modelos novos e eCPO, capacidades, cores, pre&ccedil;os, disponibilidade e condi&ccedil;&otilde;es de compra, fale diretamente com a CELULARS pelo WhatsApp institucional.</p>
       <a class="whatsapp-button" href="https://wa.me/17865466540?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20comprar%20iPhone%20pela%20CELULARS.%20Gostaria%20de%20consultar%20modelos%20novos%20e%20eCPO%2C%20capacidades%2C%20cores%2C%20pre%C3%A7os%2C%20disponibilidade%20e%20condi%C3%A7%C3%B5es%20de%20compra." target="_blank" rel="noopener">Consultar pelo WhatsApp</a>
@@ -3984,11 +3985,11 @@
   function renderTable(rows){return'<div class="catalog-table-wrap"><table class="catalog-table is-iphone17-pricing"><thead><tr><th>Modelo</th><th>Capacidade</th><th>Cores</th><th>Condição</th><th>Preço Apple</th><th>Taxa FL 7%</th><th>Preço CELULARS US$</th><th>Preço CELULARS R$</th><th>WhatsApp</th></tr></thead><tbody>'+rows.map(renderCatalogRow).join('')+'</tbody></table></div>'}
   function renderEcpoRow(m){return'<tr class="catalog-table-row" data-model="'+escapeHtml(m.model_name)+'"><td data-label="Modelo">'+renderEcpoModelCell(m)+'</td><td data-label="Ano"><span class="year-badge">'+escapeHtml(m.year)+'</span></td><td data-label="Capacidades"><div class="capacity-list">'+m.capacities.map(c=>'<span class="capacity-pill">'+escapeHtml(c)+'</span>').join('')+'</div></td><td data-label="Cores">'+colorList(m.colors||[])+'</td><td data-label="Condição"><span class="condition-pill is-ecpo">eCPO</span></td><td data-label="Consulta"><span class="review-price">Preço sob consulta</span></td></tr>'}
   function renderEcpoTable(models){return'<div class="catalog-table-wrap"><table class="catalog-table is-ecpo-consult"><thead><tr><th>Modelo</th><th>Ano</th><th>Capacidades</th><th>Cores</th><th>Condição</th><th>Consulta</th></tr></thead><tbody>'+models.map(renderEcpoRow).join('')+'</tbody></table></div>'}
-  function renderCatalogLayout(newRows,ecpoRows){let html='';if(newRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>Novos</span><strong>iPhones novos linha 17</strong></div><p class="section-note">Modelos novos da linha iPhone 17 com valores de referência baseados no preço oficial Apple acrescido da taxa da Flórida/Miami-Dade. A conversão em reais usa a Cotação CELULARS vigente.</p>'+renderTable(newRows)+'</section>';if(ecpoRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>eCPO</span><strong>iPhones eCPO do 12 ao 17</strong></div><p class="section-note">Aparelhos eCPO eco Certified Pre-Owned selecionados pela CELULARS. Preços, disponibilidade, grade, condição e lote são confirmados pelo WhatsApp conforme estoque do momento.</p>'+renderEcpoTable(ecpoRows)+'</section>';return html}
+  function renderCatalogLayout(newRows,ecpoRows){let html='';if(newRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>Novos</span><strong>iPhones novos linha 17</strong></div><p class="section-note">Modelos novos da linha iPhone 17 com valores de referência baseados no preço oficial Apple acrescido da taxa da Flórida/Miami-Dade. A conversão em reais usa a Cotação CELULARS vigente.</p>'+renderTable(newRows)+'</section>';if(ecpoRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>eCPO</span><strong>iPhones eCPO P1 / Grade A do 12 ao 17</strong></div><p class="section-note">Aparelhos eCPO P1 / Grade A selecionados pela CELULARS para varejo. Preços, disponibilidade, grade, condição e lote são confirmados pelo WhatsApp conforme estoque do momento.</p>'+renderEcpoTable(ecpoRows)+'</section>';return html}
   function wireCatalogControls(){}
   function renderCatalog(){const newRows=newModelsFor(IPHONE_MODELS).flatMap(capacityRowsFor),ecpoRows=ecpoModelsFor(IPHONE_MODELS);gridEl.innerHTML=renderCatalogLayout(newRows,ecpoRows);wireCatalogControls();const total=newRows.length+ecpoRows.length;statusEl.hidden=!!total;statusEl.textContent=total?'':'Nenhum iPhone encontrado para este filtro.'}
   function setActive(btns,active){btns.forEach(b=>b.classList.toggle('is-active',b===active))}
   categoryButtons.forEach(b=>b.addEventListener('click',()=>{activeCategory=b.dataset.categoryFilter;setActive(categoryButtons,b);renderCatalog()}));lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});renderCatalog();updateBcbExchangeRate();
-})();</script><script src="apple-inspired-header.js?v=apple5"></script>
+})();</script><script src="apple-inspired-header.js?v=apple6"></script>
 <script src="visual-direction.js?v=direction1"></script>
 </body></html>
