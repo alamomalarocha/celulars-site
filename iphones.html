@@ -22,11 +22,9 @@
 }
 
 .catalog-header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 390px);
-  gap: 22px;
-  align-items: end;
-  margin-bottom: 18px;
+  display: block;
+  max-width: 780px;
+  margin-bottom: 16px;
 }
 
 .eyebrow {
@@ -57,24 +55,25 @@
 
 .exchange-card {
   border: 1px solid rgba(29, 29, 31, .09);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, .9);
-  padding: 13px 15px;
-  box-shadow: 0 8px 24px rgba(14, 22, 40, .035);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .68);
+  padding: 9px 11px;
+  box-shadow: none;
+  margin: -8px 0 18px;
 }
 
 .exchange-rate-items {
   display: grid;
   gap: 5px;
   color: #344054;
-  font-size: .82rem;
+  font-size: .78rem;
   line-height: 1.35;
 }
 
 .exchange-card p {
   margin: 6px 0 0;
   color: var(--muted);
-  font-size: .74rem;
+  font-size: .7rem;
   line-height: 1.35;
 }
 
@@ -1272,13 +1271,6 @@
         <h1 id="catalog-title">Escolha seu iPhone</h1>
         <p class="catalog-subtitle">A CELULARS trabalha com iPhones novos da linha 17 e iPhones eCPO P1 / Grade A do iPhone 12 ao 17 para varejo. Consulte modelos, capacidades, cores, pre&ccedil;os de refer&ecirc;ncia e disponibilidade pelo WhatsApp institucional.</p>
       </div>
-      <div class="exchange-card" aria-live="polite" data-exchange-card>
-        <div class="exchange-rate-items">
-          <span>Cota&ccedil;&atilde;o de refer&ecirc;ncia CELULARS: <strong data-cel-reference-rate data-bcb-rate>R$ 5,4700</strong></span>
-          <span>Base PTAX/Banco Central: <strong data-cel-ptax-rate>R$ 5,3200</strong> + ajuste operacional: <strong data-cel-spread-rate>R$ 0,1500</strong></span>
-        </div>
-        <p data-cel-ptax-date data-bcb-date>Atualizando cota&ccedil;&atilde;o PTAX USD/BRL...</p>
-      </div>
     </div>
     <div class="price-reference-note" role="note">Modelos novos usam refer&ecirc;ncia baseada no pre&ccedil;o oficial Apple acrescido da taxa da Fl&oacute;rida/Miami-Dade. Modelos eCPO t&ecirc;m pre&ccedil;o sob consulta conforme lote, condi&ccedil;&atilde;o, grade e disponibilidade. Valores em reais usam a Cota&ccedil;&atilde;o CELULARS vigente.</div>
     <div class="operation-note" role="note"><strong>Atendimento organizado e seguro:</strong> A CELULARS trabalha com atendimento pr&eacute;vio pelo WhatsApp. Retirada em Miami somente para pedidos previamente confirmados, sem escolha de aparelhos, negocia&ccedil;&atilde;o ou pagamento presencial no local.</div>
@@ -1311,6 +1303,13 @@
       </div>
       <label class="catalog-search"><span class="filter-label">Busca</span><input type="search" data-search-filter placeholder="Buscar por modelo, capacidade, cor ou categoria" autocomplete="off"></label>
     </div>
+    <div class="exchange-card" aria-live="polite" data-exchange-card>
+      <div class="exchange-rate-items">
+        <span>Cota&ccedil;&atilde;o de refer&ecirc;ncia CELULARS: <strong data-cel-reference-rate data-bcb-rate>R$ 5,4700</strong></span>
+        <span>Base PTAX/Banco Central: <strong data-cel-ptax-rate>R$ 5,3200</strong> + ajuste operacional: <strong data-cel-spread-rate>R$ 0,1500</strong></span>
+      </div>
+      <p data-cel-ptax-date data-bcb-date>Atualizando cota&ccedil;&atilde;o PTAX USD/BRL...</p>
+    </div>
     <div class="catalog-status" data-status hidden></div>
     <div class="catalog-grid" data-catalog-grid></div>
   </section>
@@ -1338,11 +1337,9 @@
 }
 
 .catalog-header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 390px);
-  gap: 22px;
-  align-items: end;
-  margin-bottom: 18px;
+  display: block;
+  max-width: 780px;
+  margin-bottom: 16px;
 }
 
 .eyebrow {
@@ -1373,24 +1370,25 @@
 
 .exchange-card {
   border: 1px solid rgba(29, 29, 31, .09);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, .9);
-  padding: 13px 15px;
-  box-shadow: 0 8px 24px rgba(14, 22, 40, .035);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .68);
+  padding: 9px 11px;
+  box-shadow: none;
+  margin: -8px 0 18px;
 }
 
 .exchange-rate-items {
   display: grid;
   gap: 5px;
   color: #344054;
-  font-size: .82rem;
+  font-size: .78rem;
   line-height: 1.35;
 }
 
 .exchange-card p {
   margin: 6px 0 0;
   color: var(--muted);
-  font-size: .74rem;
+  font-size: .7rem;
   line-height: 1.35;
 }
 
