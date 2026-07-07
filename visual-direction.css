@@ -547,33 +547,51 @@
 
 /* iPhone 17 hero visual: original CELULARS artwork based on official Apple references. */
 #celulars-home .cel-home-hero {
-  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-columns: minmax(0, 1.05fr) minmax(360px, .95fr) !important;
   align-items: center !important;
-  gap: clamp(18px, 3vw, 34px) !important;
+  gap: clamp(28px, 5vw, 72px) !important;
 }
 
 #celulars-home .cel-home-copy {
-  max-width: 720px !important;
+  width: 100% !important;
+  max-width: 680px !important;
+  min-width: 0 !important;
+  justify-self: start !important;
+}
+
+#celulars-home .cel-home-hero h1 {
+  max-width: 680px !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: manual !important;
 }
 
 .cel-iphone17-hero-visual {
-  width: 100%;
+  width: 100% !important;
   margin: 0;
-  max-width: 920px;
-  justify-self: start;
+  max-width: 590px;
+  min-width: 0 !important;
+  justify-self: end;
   align-self: center;
 }
 
 .cel-iphone17-hero-visual img {
   display: block;
-  width: 100%;
+  width: 100% !important;
+  max-width: 100% !important;
   height: auto;
-  aspect-ratio: 1600 / 760;
   object-fit: contain;
   object-position: center;
   border-radius: 28px;
   background: #f8f8fa;
   box-shadow: 0 18px 48px rgba(0, 0, 0, .045);
+}
+
+#celulars-home .cel-home-shell > .cel-ptax-reference {
+  width: min(100%, 920px) !important;
+  max-width: 920px !important;
+  margin: clamp(16px, 2.5vw, 26px) 0 clamp(24px, 3vw, 34px) !important;
+  justify-self: stretch !important;
 }
 
 #celulars-home .cel-actions {
@@ -617,10 +635,14 @@
     grid-template-columns: 1fr !important;
   }
 
+  #celulars-home .cel-home-copy {
+    max-width: 720px !important;
+  }
+
   .cel-iphone17-hero-visual {
     order: 2;
-    justify-self: stretch;
-    max-width: 100%;
+    justify-self: center;
+    max-width: 760px;
   }
 
   .cel-iphone17-hero-visual img {

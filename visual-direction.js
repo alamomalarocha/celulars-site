@@ -1,12 +1,5 @@
 (function () {
   function moveRateCard() {
-    const homeHero = document.querySelector("#celulars-home .cel-home-hero");
-    const homeRate = document.querySelector("#celulars-home .cel-ptax-reference");
-    if (homeHero && homeRate && !homeHero.contains(homeRate)) {
-      homeHero.classList.add("cel-hero-with-rate");
-      homeHero.appendChild(homeRate);
-    }
-
     const sobreHero = document.querySelector("#celulars-sobre .cel-hero");
     const sobreRate = document.querySelector("#celulars-sobre .cel-ptax-reference");
     if (sobreHero && sobreRate && !sobreHero.contains(sobreRate)) {
