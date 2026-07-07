@@ -766,6 +766,14 @@
   font-weight: 860;
 }
 
+.section-note {
+  max-width: 980px;
+  margin: -2px 2px 2px;
+  color: #5f6673;
+  font-size: .86rem;
+  line-height: 1.55;
+}
+
 .catalog-table-wrap {
   width: 100%;
   overflow: hidden;
@@ -896,6 +904,36 @@
   width: 10%;
 }
 
+.catalog-table.is-ecpo-consult th:nth-child(1),
+.catalog-table.is-ecpo-consult td:nth-child(1) {
+  width: 18%;
+}
+
+.catalog-table.is-ecpo-consult th:nth-child(2),
+.catalog-table.is-ecpo-consult td:nth-child(2) {
+  width: 8%;
+}
+
+.catalog-table.is-ecpo-consult th:nth-child(3),
+.catalog-table.is-ecpo-consult td:nth-child(3) {
+  width: 24%;
+}
+
+.catalog-table.is-ecpo-consult th:nth-child(4),
+.catalog-table.is-ecpo-consult td:nth-child(4) {
+  width: 28%;
+}
+
+.catalog-table.is-ecpo-consult th:nth-child(5),
+.catalog-table.is-ecpo-consult td:nth-child(5) {
+  width: 10%;
+}
+
+.catalog-table.is-ecpo-consult th:nth-child(6),
+.catalog-table.is-ecpo-consult td:nth-child(6) {
+  width: 12%;
+}
+
 .catalog-table-row {
   background: #fff;
   transition: 160ms ease;
@@ -976,6 +1014,18 @@
   font-size: .78rem;
   font-weight: 850;
   white-space: nowrap;
+}
+
+.condition-pill.is-ecpo {
+  background: #f6f7f9;
+  color: #3f4652;
+  border-color: rgba(29, 29, 31, .12);
+}
+
+.capacity-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .color-list {

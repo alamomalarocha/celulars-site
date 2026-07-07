@@ -75,9 +75,28 @@ Cotacao CELULARS = PTAX Banco Central + R$ 0,1500
 - 14 linhas de capacidade/preço exibidas.
 - Nenhuma imagem de aparelho exibida.
 - Nenhum CDVS visual exibido.
-- Nenhuma coluna ou filtro eCPO visível.
 - PTAX/Cotação CELULARS preservada com cache existente.
 - WhatsApp institucional com modelo, capacidade e condição Novo.
+
+## Correção posterior: eCPO separado
+
+A página iPhones não deve ser interpretada como uma página apenas de aparelhos novos.
+
+Estrutura corrigida:
+
+- Novos: somente linha iPhone 17, com preço Apple + taxa FL 7% e conversão por Cotação CELULARS.
+- eCPO: modelos do iPhone 12 ao iPhone 17, em seção separada, sem preço público por enquanto.
+
+Regra eCPO:
+
+- não mostrar `US$ 0`;
+- não mostrar `R$ 0,00`;
+- não mostrar preço inventado;
+- não usar "A partir de";
+- mostrar `Preço sob consulta`;
+- orientar confirmação por WhatsApp conforme lote, grade, condição e disponibilidade.
+
+Essa correção preserva a lógica de PTAX, a tabela de novos linha 17 e o WhatsApp institucional.
 - Layout sem overflow em desktop, 768px, 430px e 390px.
 - Demais páginas locais (`index.html`, `sobre.html`, `contato.html`, `atacado.html`) abriram sem erro de console e sem overflow mobile.
 
