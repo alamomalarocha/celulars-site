@@ -1304,23 +1304,28 @@
     return {...sp,...(SPEC_OVERRIDES[name]||{})};
   }
   IPHONE_MODELS.forEach(m=>{m.specs={...DEFAULT_SPECS,...specsForModel(m),...(m.specs||{})}});
-
-  document.querySelector('[data-condition-filter="Modelo informativo"]')?.remove();
   const gridEl = document.querySelector('[data-catalog-grid]');
   const statusEl = document.querySelector('[data-status]');
-  const conditionButtons = [...document.querySelectorAll('[data-condition-filter]')];
   const lineButtons = [...document.querySelectorAll('[data-line-filter]')];
+  const capacityButtons = [...document.querySelectorAll('[data-capacity-filter]')];
   const searchInput = document.querySelector('[data-search-filter]');
-  const STANDARD_CONDITIONS = ['Novo','eCPO eco Certified Pre-Owned'];
-  IPHONE_MODELS.forEach(m=>{m.conditions=[...STANDARD_CONDITIONS];m.stock_status='Disponível'});
-  let activeCondition = 'todos', activeLine = 'todos', activeSearch = '';
-  const MAIN_TABLE_ORDER = ['iPhone 17 Pro Max','iPhone 17 Pro','iPhone Air','iPhone 17','iPhone 17e','iPhone 16 Pro Max','iPhone 16 Pro','iPhone 16 Plus','iPhone 16','iPhone 16e','iPhone 15 Pro Max','iPhone 15 Pro','iPhone 15 Plus','iPhone 15','iPhone 14 Pro Max','iPhone 14 Pro','iPhone 14 Plus','iPhone 14','iPhone 13 Pro Max','iPhone 13 Pro','iPhone 13','iPhone 13 mini','iPhone 12 Pro Max','iPhone 12 Pro','iPhone 12','iPhone 12 mini'];
-  const MAIN_TABLE_MODELS = new Set(MAIN_TABLE_ORDER);
-  const MAIN_TABLE_RANK = new Map(MAIN_TABLE_ORDER.map((name,index)=>[name,index]));
-
+  IPHONE_MODELS.forEach(m=>{m.conditions=['Novo'];m.stock_status='Disponível'});
+  let activeLine = 'todos', activeCapacity = 'todos', activeSearch = '';
+  const FLORIDA_TAX_RATE = 0.07;
+  const IPHONE_17_ORDER = ['iPhone 17 Pro Max','iPhone 17 Pro','iPhone Air','iPhone 17','iPhone 17e'];
+  const IPHONE_17_MODELS = new Set(IPHONE_17_ORDER);
+  const IPHONE_17_RANK = new Map(IPHONE_17_ORDER.map((name,index)=>[name,index]));
+  const IPHONE_17_PRICING = {
+    'iPhone 17 Pro Max': {colors:['Silver','Cosmic Orange','Deep Blue'],prices:{'256 GB':1199,'512 GB':1399,'1 TB':1599,'2 TB':1999}},
+    'iPhone 17 Pro': {colors:['Silver','Cosmic Orange','Deep Blue'],prices:{'256 GB':1099,'512 GB':1299,'1 TB':1499}},
+    'iPhone Air': {colors:['Space Black','Cloud White','Light Gold','Sky Blue'],prices:{'256 GB':999,'512 GB':1199,'1 TB':1399}},
+    'iPhone 17': {colors:['Black','White','Mist Blue','Sage','Lavender'],prices:{'256 GB':829,'512 GB':1029}},
+    'iPhone 17e': {colors:['Black','White','Soft Pink'],prices:{'256 GB':599,'512 GB':799}}
+  };
   function normalize(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()}
   function escapeHtml(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
   function formatUsd(v){return 'US$ '+Math.round(v).toLocaleString('en-US')}
+  function formatUsdCents(v){return 'US$ '+Number(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
   function formatBrl(v){return v.toLocaleString('pt-BR',{style:'currency',currency:'BRL',minimumFractionDigits:2,maximumFractionDigits:2})}
   function formatBcbRate(v){return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:4,maximumFractionDigits:4})}
   const BCB_CACHE_KEY='celulars_bcb_ptax_usd_brl_v3_spread15';
@@ -1338,28 +1343,23 @@
   function updateExchangeCard(rateInfo,status){const ptax=Number(rateInfo.rate)||FALLBACK_BCB_RATE,reference=ptax+CELULARS_EXCHANGE_SPREAD_BRL,referenceEls=document.querySelectorAll('[data-cel-reference-rate], [data-bcb-rate]'),ptaxEls=document.querySelectorAll('[data-cel-ptax-rate]'),spreadEls=document.querySelectorAll('[data-cel-spread-rate]'),dateEls=document.querySelectorAll('[data-bcb-date], [data-cel-ptax-date]');referenceEls.forEach(el=>el.textContent=formatBcbRate(reference));ptaxEls.forEach(el=>el.textContent=formatBcbRate(ptax));spreadEls.forEach(el=>el.textContent=formatBcbRate(CELULARS_EXCHANGE_SPREAD_BRL));dateEls.forEach(el=>{el.textContent=status==='fallback'?'Cotação indisponível temporariamente.':'Atualizada em '+formatBcbDate(rateInfo.date||rateInfo.dataHoraCotacao)+'.'})}
   async function fetchBcbPtax(){const end=new Date(),start=new Date();start.setDate(end.getDate()-14);const url="https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='"+bcbParamDate(start)+"'&@dataFinalCotacao='"+bcbParamDate(end)+"'&$format=json&$orderby=dataHoraCotacao desc&$top=1";const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw new Error('BCB PTAX HTTP '+res.status);const data=await res.json(),row=data&&data.value&&data.value[0];if(!row||!Number(row.cotacaoVenda))throw new Error('BCB PTAX sem cota\u00e7\u00e3o');return{rate:Number(row.cotacaoVenda),date:String(row.dataHoraCotacao).slice(0,10),dataHoraCotacao:row.dataHoraCotacao,fetchedKey:localDateKey(),fetchedAt:Date.now(),source:'Banco Central do Brasil - PTAX USD/BRL venda'}}
   async function updateBcbExchangeRate(){const cached=readBcbCache(),today=localDateKey();if(cached&&cached.fetchedKey===today&&Date.now()-Number(cached.fetchedAt||0)<BCB_CACHE_TTL_MS){CATALOG_RATE=referenceRateFrom(cached);updateExchangeCard(cached,'cache');logBcbStatus('cache',cached);renderCatalog();return}try{const fresh=await fetchBcbPtax();CATALOG_RATE=referenceRateFrom(fresh);writeBcbCache(fresh);updateExchangeCard(fresh,'live');logBcbStatus('api',fresh);renderCatalog()}catch(e){console.warn('Não foi possível carregar PTAX do Banco Central.',e);const saved=readBcbCache()||readLegacyBcbCache();if(saved){CATALOG_RATE=referenceRateFrom(saved);updateExchangeCard(saved,'saved');logBcbStatus('saved-cache',saved);renderCatalog()}else{const fallback={rate:FALLBACK_BCB_RATE,date:''};CATALOG_RATE=referenceRateFrom(fallback);updateExchangeCard(fallback,'fallback');logBcbStatus('fallback',fallback);renderCatalog()}}}
-  function isMainTableModel(m){return MAIN_TABLE_MODELS.has(m.model_name)}
-  function capacityPriceRecord(m,capacity){const maps=[m.price_by_capacity,m.prices_by_capacity,m.priceByCapacity].filter(Boolean),target=normalize(capacity);for(const map of maps){for(const key of Object.keys(map)){if(normalize(key)===target)return map[key]||{}}}return{}}
-  function capacityConditionPrice(m,capacity,condition){const rec=capacityPriceRecord(m,capacity),ecpo=normalize(condition).includes('ecpo'),keys=ecpo?['ecpo_usd','price_ecpo_usd','ecpo','cpo_usd']:['new_usd','novo_usd','price_new_usd','novo'];for(const key of keys){const p=Number(rec[key]);if(p>0)return p}return null}
+  function isMainTableModel(m){return IPHONE_17_MODELS.has(m.model_name)}
   function colorHex(c){const k=normalize(c),map=[[/cosmic orange|coral/,'#d97845'],[/deep blue|blue titanium|pacific blue|sierra blue|mist blue|sky blue|blue|ultramarine/,'#6f8fb8'],[/space black|black titanium|space gray|graphite|midnight|jet black|black/,'#2d3036'],[/white titanium|cloud white|starlight|white/,'#eef1f4'],[/natural titanium|desert titanium|light gold|gold/,'#c9b28b'],[/silver/,'#d7dbe1'],[/soft pink|pink|rose gold/,'#e5b6bd'],[/sage|green|alpine green|midnight green|teal/,'#7f9b8b'],[/lavender|purple|deep purple/,'#8d79a6'],[/yellow/,'#e4ca68'],[/red|product/,'#b33a3a']];return(map.find(([rx])=>rx.test(k))||[null,'#cfd6df'])[1]}
   function buildWhatsAppUrl(msg){return 'https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(msg)}
-  function matchesModelFilters(m){return isMainTableModel(m)&&(activeCondition==='todos'||m.conditions.some(c=>normalize(c)===normalize(activeCondition)))&&(activeLine==='todos'||normalize(m.line)===normalize(activeLine))}
-  function matchesModelSearch(m){if(!activeSearch)return true;const hay=[m.model_name,m.year,m.line,m.capacities.join(' '),m.colors.join(' '),m.conditions.join(' ')].join(' ');return normalize(hay).includes(normalize(activeSearch))}
-  function tableModelsFor(models){return models.filter(matchesModelFilters).filter(matchesModelSearch).sort((a,b)=>(MAIN_TABLE_RANK.get(a.model_name)??999)-(MAIN_TABLE_RANK.get(b.model_name)??999))}
+  function matchesModelFilters(m){return isMainTableModel(m)&&(activeLine==='todos'||normalize(m.model_name)===normalize(activeLine))}
+  function matchesModelSearch(m){if(!activeSearch)return true;const info=IPHONE_17_PRICING[m.model_name]||{},hay=[m.model_name,m.year,m.line,Object.keys(info.prices||{}).join(' '),(info.colors||m.colors||[]).join(' '),'Novo'].join(' ');return normalize(hay).includes(normalize(activeSearch))}
+  function tableModelsFor(models){return models.filter(matchesModelFilters).filter(matchesModelSearch).sort((a,b)=>(IPHONE_17_RANK.get(a.model_name)??999)-(IPHONE_17_RANK.get(b.model_name)??999))}
   function colorList(colors){return'<div class="color-list">'+colors.map(c=>'<span class="color-static"><span class="color-swatch" style="--swatch:'+escapeHtml(colorHex(c))+'" aria-hidden="true"></span><span>'+escapeHtml(c)+'</span></span>').join('')+'</div>'}
-  function renderConditionPriceLine(m,capacity,condition){const p=capacityConditionPrice(m,capacity,condition)||0,brl=p>0?p*CATALOG_RATE:0;return'<div class="price-line"><span>'+escapeHtml(capacity)+'</span><strong>'+formatUsd(p)+' / '+formatBrl(brl)+'</strong></div>'}
-  function renderPriceBlock(m,condition){const label=normalize(condition).includes('ecpo')?'eCPO':'Novo';return'<div class="price-block"><h3>'+label+'</h3><div class="price-lines">'+m.capacities.map(capacity=>renderConditionPriceLine(m,capacity,condition)).join('')+'</div></div>'}
-  function visibleConditionKeys(){if(normalize(activeCondition).includes('ecpo'))return['ecpo'];if(normalize(activeCondition).includes('novo'))return['novo'];return['ecpo','novo']}
-  function conditionFromKey(key){return key==='ecpo'?'eCPO eco Certified Pre-Owned':'Novo'}
-  function conditionHeader(key){return key==='ecpo'?'eCPO':'Novo'}
-  function rowDataAttrs(m,i){return'class="catalog-table-row" data-model-index="'+i+'"'}
-  function renderModelCell(m){return'<div class="model-cell"><strong>'+escapeHtml(m.model_name)+'</strong></div>'}
-  function renderCatalogRow(m,conditions){const i=IPHONE_MODELS.indexOf(m),priceCells=conditions.map(key=>'<td data-label="'+conditionHeader(key)+'" data-price-cell="'+key+'">'+renderPriceBlock(m,conditionFromKey(key))+'</td>').join('');return'<tr '+rowDataAttrs(m,i)+'><td data-label="Modelo">'+renderModelCell(m)+'</td><td data-label="Ano"><span class="year-badge">'+m.year+'</span></td><td data-label="Cores">'+colorList(m.colors)+'</td>'+priceCells+'</tr>'}
-  function renderTable(models){const conditions=visibleConditionKeys(),conditionHeads=conditions.map(key=>'<th>'+conditionHeader(key)+'</th>').join(''),tableClass='catalog-table '+(conditions.length===1?'is-single-condition':'');return'<div class="catalog-table-wrap"><table class="'+tableClass+'"><thead><tr><th>Modelo</th><th>Ano</th><th>Cores</th>'+conditionHeads+'</tr></thead><tbody>'+models.map(m=>renderCatalogRow(m,conditions)).join('')+'</tbody></table></div>'}
-  function renderLegacyConsult(){return'<section class="legacy-consult-section legacy-consult-note"><div class="section-heading"><span>Consulta especial</span><strong>Modelos anteriores sob consulta</strong></div><p>Modelos anteriores ao iPhone 12 podem ser consultados diretamente pelo WhatsApp principal da página, conforme disponibilidade.</p></section>'}
-  function renderCatalogLayout(rows){let html='';if(rows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>Tabela principal</span><strong>iPhone 12 ao iPhone 17</strong></div>'+renderTable(rows)+'</section>';html+=renderLegacyConsult();return html}
+  function iphone17Info(m){return IPHONE_17_PRICING[m.model_name]||{colors:m.colors||[],prices:{}}}
+  function capacityRowsFor(m){const info=iphone17Info(m),rows=Object.keys(info.prices||{}).map(capacity=>({model:m,capacity,applePrice:Number(info.prices[capacity])||null}));return activeCapacity==='todos'?rows:rows.filter(row=>normalize(row.capacity)===normalize(activeCapacity))}
+  function filteredRows(models){return tableModelsFor(models).flatMap(capacityRowsFor)}
+  function renderModelCell(m){return'<div class="model-cell"><strong>'+escapeHtml(m.model_name)+'</strong><small>'+escapeHtml(m.year)+' &bull; Novo</small></div>'}
+  function renderMoneyCell(value,highlight){return value?'<strong class="'+(highlight?'price-usd':'')+'">'+formatUsdCents(value)+'</strong>':'<span class="review-price">Em revisão</span>'}
+  function renderCatalogRow(row){const m=row.model,info=iphone17Info(m),apple=row.applePrice,tax=apple?apple*FLORIDA_TAX_RATE:null,siteUsd=apple?apple+tax:null,siteBrl=siteUsd?siteUsd*CATALOG_RATE:null,msg='Olá, tenho interesse no '+m.model_name+' '+row.capacity+' novo pela CELULARS. Gostaria de confirmar cor, preço final e condições de compra.';return'<tr class="catalog-table-row" data-model="'+escapeHtml(m.model_name)+'"><td data-label="Modelo">'+renderModelCell(m)+'</td><td data-label="Capacidade"><span class="capacity-pill">'+escapeHtml(row.capacity)+'</span></td><td data-label="Cores">'+colorList(info.colors||m.colors||[])+'</td><td data-label="Condição"><span class="condition-pill">Novo</span></td><td data-label="Preço Apple">'+renderMoneyCell(apple,false)+'</td><td data-label="Taxa FL 7%">'+renderMoneyCell(tax,false)+'</td><td data-label="Preço CELULARS US$">'+renderMoneyCell(siteUsd,true)+'</td><td data-label="Preço CELULARS R$">'+(siteBrl?'<strong>'+formatBrl(siteBrl)+'</strong>':'<span class="review-price">Em revisão</span>')+'</td><td data-label="WhatsApp"><a class="whatsapp-button is-secondary table-whatsapp" href="'+buildWhatsAppUrl(msg)+'" target="_blank" rel="noopener">Consultar</a></td></tr>'}
+  function renderTable(rows){return'<div class="catalog-table-wrap"><table class="catalog-table is-iphone17-pricing"><thead><tr><th>Modelo</th><th>Capacidade</th><th>Cores</th><th>Condição</th><th>Preço Apple</th><th>Taxa FL 7%</th><th>Preço CELULARS US$</th><th>Preço CELULARS R$</th><th>WhatsApp</th></tr></thead><tbody>'+rows.map(renderCatalogRow).join('')+'</tbody></table></div>'}
+  function renderCatalogLayout(rows){let html='';if(rows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>Tabela principal</span><strong>Linha iPhone 17 nova</strong></div>'+renderTable(rows)+'</section>';return html}
   function wireCatalogControls(){}
-  function renderCatalog(){const models=tableModelsFor(IPHONE_MODELS);gridEl.innerHTML=renderCatalogLayout(models);wireCatalogControls();statusEl.hidden=!!models.length;statusEl.textContent=models.length?'':'Nenhum iPhone encontrado para este filtro.'}
+  function renderCatalog(){const rows=filteredRows(IPHONE_MODELS);gridEl.innerHTML=renderCatalogLayout(rows);wireCatalogControls();statusEl.hidden=!!rows.length;statusEl.textContent=rows.length?'':'Nenhum iPhone encontrado para este filtro.'}
   function setActive(btns,active){btns.forEach(b=>b.classList.toggle('is-active',b===active))}
-  conditionButtons.forEach(b=>b.addEventListener('click',()=>{activeCondition=b.dataset.conditionFilter;setActive(conditionButtons,b);renderCatalog()}));lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});renderCatalog();updateBcbExchangeRate();
+  lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));capacityButtons.forEach(b=>b.addEventListener('click',()=>{activeCapacity=b.dataset.capacityFilter;setActive(capacityButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});renderCatalog();updateBcbExchangeRate();
 })();
