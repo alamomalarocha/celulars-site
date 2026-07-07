@@ -1,4 +1,4 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CELULARS iPhone Catalog</title><link rel="stylesheet" href="visual-review.css?v=visual2"><link rel="stylesheet" href="apple-inspired-header.css?v=apple6"><link rel="stylesheet" href="visual-direction.css?v=direction4"></head><style>#celulars-iphones-catalog {
+<!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CELULARS iPhone Catalog</title><link rel="stylesheet" href="visual-review.css?v=visual2"><link rel="stylesheet" href="apple-inspired-header.css?v=apple7"><link rel="stylesheet" href="visual-direction.css?v=direction4"></head><style>#celulars-iphones-catalog {
   --ink: #1d1d1f;
   --muted: #6e6e73;
   --line: rgba(29, 29, 31, .09);
@@ -3990,6 +3990,6 @@
   function renderCatalog(){const newRows=newModelsFor(IPHONE_MODELS).flatMap(capacityRowsFor),ecpoRows=ecpoModelsFor(IPHONE_MODELS);gridEl.innerHTML=renderCatalogLayout(newRows,ecpoRows);wireCatalogControls();const total=newRows.length+ecpoRows.length;statusEl.hidden=!!total;statusEl.textContent=total?'':'Nenhum iPhone encontrado para este filtro.'}
   function setActive(btns,active){btns.forEach(b=>b.classList.toggle('is-active',b===active))}
   categoryButtons.forEach(b=>b.addEventListener('click',()=>{activeCategory=b.dataset.categoryFilter;setActive(categoryButtons,b);renderCatalog()}));lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});renderCatalog();updateBcbExchangeRate();
-})();</script><script src="apple-inspired-header.js?v=apple6"></script>
+})();</script><script src="apple-inspired-header.js?v=apple7"></script>
 <script src="visual-direction.js?v=direction1"></script>
 </body></html>
