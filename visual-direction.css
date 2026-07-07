@@ -910,3 +910,332 @@
     min-height: 44px;
   }
 }
+
+/* Home rebuild: compact commercial landing page, no imagery or technical panels. */
+#celulars-home {
+  --home-ink: #1d1d1f;
+  --home-muted: #667085;
+  --home-blue: #123d79;
+  --home-blue-strong: #0d2f61;
+  --home-soft-blue: #edf5ff;
+  --home-line: rgba(29, 29, 31, .1);
+  --home-surface: rgba(255, 255, 255, .94);
+  --home-shadow: 0 20px 54px rgba(15, 23, 42, .07);
+  background:
+    radial-gradient(circle at 18% 2%, rgba(18, 61, 121, .08), transparent 32%),
+    linear-gradient(180deg, #fbfbfd 0%, #f6f8fb 54%, #eef3f8 100%) !important;
+}
+
+#celulars-home .cel-home-shell {
+  max-width: 1140px !important;
+  padding: clamp(14px, 2vw, 22px) clamp(16px, 3vw, 28px) 34px !important;
+}
+
+#celulars-home .cel-hero-panel {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.05fr) minmax(310px, 390px) !important;
+  align-items: center !important;
+  gap: clamp(20px, 3.2vw, 42px) !important;
+  margin: 14px 0 18px !important;
+  padding: clamp(26px, 4vw, 46px) !important;
+  border: 1px solid rgba(29, 29, 31, .09) !important;
+  border-radius: 30px !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .98), rgba(248, 250, 252, .9)),
+    radial-gradient(circle at 85% 12%, rgba(18, 61, 121, .1), transparent 30%) !important;
+  box-shadow: var(--home-shadow) !important;
+}
+
+#celulars-home .cel-hero-content {
+  max-width: 670px !important;
+}
+
+#celulars-home .cel-eyebrow {
+  color: var(--home-blue) !important;
+  font-size: .72rem !important;
+  font-weight: 820 !important;
+  letter-spacing: .105em !important;
+}
+
+#celulars-home .cel-home-hero h1 {
+  max-width: 660px !important;
+  color: var(--home-ink) !important;
+  font-size: clamp(34px, 4.9vw, 58px) !important;
+  line-height: 1.01 !important;
+  font-weight: 840 !important;
+}
+
+#celulars-home .cel-home-hero p {
+  max-width: 610px !important;
+  margin-top: 12px !important;
+  color: var(--home-muted) !important;
+  font-size: clamp(.96rem, 1.2vw, 1.05rem) !important;
+  line-height: 1.52 !important;
+}
+
+#celulars-home .cel-home-hero .cel-hero-lead {
+  color: #344054 !important;
+  font-size: clamp(1.03rem, 1.45vw, 1.18rem) !important;
+  font-weight: 720 !important;
+  line-height: 1.42 !important;
+}
+
+#celulars-home .cel-hero-note {
+  margin-top: 12px !important;
+  color: #7b8797 !important;
+  font-size: .82rem !important;
+}
+
+#celulars-home .cel-actions {
+  gap: 10px !important;
+  margin-top: 21px !important;
+}
+
+#celulars-home .cel-btn {
+  min-height: 44px !important;
+  border-radius: 999px !important;
+  padding: 0 20px !important;
+  font-size: .9rem !important;
+  font-weight: 720 !important;
+  box-shadow: none !important;
+}
+
+#celulars-home .cel-btn-primary {
+  border: 1px solid var(--home-blue) !important;
+  background: var(--home-blue) !important;
+  color: #fff !important;
+}
+
+#celulars-home .cel-btn-primary:hover {
+  background: var(--home-blue-strong) !important;
+  border-color: var(--home-blue-strong) !important;
+}
+
+#celulars-home .cel-btn-whatsapp {
+  border: 1px solid rgba(34, 197, 94, .42) !important;
+  background: rgba(255, 255, 255, .88) !important;
+  color: #12783a !important;
+}
+
+#celulars-home .cel-btn-whatsapp:hover {
+  border-color: rgba(22, 163, 74, .62) !important;
+  background: #f3fff7 !important;
+  color: #0f6b32 !important;
+}
+
+#celulars-home .cel-btn-whatsapp:before {
+  display: none !important;
+}
+
+#celulars-home .cel-hero-flow-card {
+  padding: 20px !important;
+  border: 1px solid rgba(29, 29, 31, .09) !important;
+  border-radius: 22px !important;
+  background: rgba(255, 255, 255, .78) !important;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, .055) !important;
+}
+
+#celulars-home .cel-hero-flow-card h2 {
+  margin: 0 0 14px !important;
+  color: var(--home-ink) !important;
+  font-size: 1.18rem !important;
+  line-height: 1.15 !important;
+  font-weight: 820 !important;
+}
+
+#celulars-home .cel-flow-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#celulars-home .cel-flow-list li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 9px;
+  align-items: start;
+  color: #344054;
+  font-size: .9rem;
+  font-weight: 660;
+  line-height: 1.34;
+}
+
+#celulars-home .cel-flow-list svg {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(18, 61, 121, .08);
+  color: var(--home-blue);
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.6;
+}
+
+#celulars-home .cel-home-section {
+  padding: clamp(18px, 3vw, 32px) 0 !important;
+}
+
+#celulars-home .cel-section-head {
+  margin-bottom: 13px !important;
+}
+
+#celulars-home .cel-section-head h2,
+#celulars-home .cel-final-cta h2 {
+  color: var(--home-ink) !important;
+  font-size: clamp(24px, 3vw, 34px) !important;
+  line-height: 1.1 !important;
+  font-weight: 820 !important;
+}
+
+#celulars-home .cel-section-head p {
+  max-width: 620px !important;
+  margin: 8px 0 0 !important;
+  color: var(--home-muted) !important;
+  font-size: .95rem !important;
+  line-height: 1.45 !important;
+}
+
+#celulars-home .cel-compact-grid {
+  display: grid;
+  gap: 12px;
+}
+
+#celulars-home .cel-process-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+#celulars-home .cel-shipping-grid,
+#celulars-home .cel-path-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#celulars-home .cel-process-card,
+#celulars-home .cel-shipping-card,
+#celulars-home .cel-path-card {
+  min-height: 0 !important;
+  padding: 17px !important;
+  border: 1px solid var(--home-line) !important;
+  border-radius: 18px !important;
+  background: var(--home-surface) !important;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, .045) !important;
+}
+
+#celulars-home .cel-process-card span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 26px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background: var(--home-soft-blue);
+  color: var(--home-blue);
+  font-size: .72rem;
+  font-weight: 860;
+}
+
+#celulars-home .cel-process-card h3,
+#celulars-home .cel-shipping-card h3,
+#celulars-home .cel-path-card h3 {
+  margin: 0 !important;
+  color: var(--home-ink) !important;
+  font-size: .98rem !important;
+  line-height: 1.22 !important;
+  font-weight: 810 !important;
+}
+
+#celulars-home .cel-process-card p,
+#celulars-home .cel-shipping-card p,
+#celulars-home .cel-path-card p,
+#celulars-home .cel-final-cta p {
+  margin: 8px 0 0 !important;
+  color: var(--home-muted) !important;
+  font-size: .88rem !important;
+  line-height: 1.43 !important;
+}
+
+#celulars-home .cel-path-card {
+  display: flex;
+  flex-direction: column;
+}
+
+#celulars-home .cel-link {
+  display: inline-flex !important;
+  width: max-content !important;
+  margin-top: auto !important;
+  padding-top: 16px !important;
+  color: var(--home-blue) !important;
+  font-size: .86rem !important;
+  font-weight: 780 !important;
+  text-decoration: none !important;
+}
+
+#celulars-home .cel-final-cta {
+  margin: clamp(18px, 3vw, 30px) 0 8px !important;
+  padding: clamp(24px, 3.4vw, 38px) !important;
+  border: 1px solid rgba(29, 29, 31, .09) !important;
+  border-radius: 26px !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .96), rgba(244, 248, 252, .92)) !important;
+  box-shadow: var(--home-shadow) !important;
+  text-align: center !important;
+}
+
+#celulars-home .cel-final-cta p {
+  max-width: 650px !important;
+  margin: 10px auto 0 !important;
+}
+
+#celulars-home .cel-final-cta .cel-actions {
+  justify-content: center !important;
+}
+
+@media (max-width: 980px) {
+  #celulars-home .cel-hero-panel {
+    grid-template-columns: 1fr !important;
+  }
+
+  #celulars-home .cel-process-grid,
+  #celulars-home .cel-shipping-grid,
+  #celulars-home .cel-path-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  #celulars-home .cel-home-shell {
+    padding: 12px 14px 24px !important;
+  }
+
+  #celulars-home .cel-hero-panel {
+    margin-top: 10px !important;
+    padding: 20px !important;
+    border-radius: 24px !important;
+    gap: 18px !important;
+  }
+
+  #celulars-home .cel-home-hero h1 {
+    font-size: clamp(32px, 10vw, 42px) !important;
+  }
+
+  #celulars-home .cel-process-grid,
+  #celulars-home .cel-shipping-grid,
+  #celulars-home .cel-path-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #celulars-home .cel-actions,
+  #celulars-home .cel-actions-center {
+    display: grid !important;
+  }
+
+  #celulars-home .cel-btn {
+    width: 100% !important;
+  }
+}

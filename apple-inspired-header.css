@@ -1,46 +1,55 @@
 .cel-global-header {
-  padding: 8px clamp(16px, 3vw, 32px) !important;
-  background: rgba(251, 251, 253, .86) !important;
-  border-bottom: 1px solid rgba(29, 29, 31, .075) !important;
-  box-shadow: none !important;
+  padding: 8px clamp(18px, 3vw, 34px) !important;
+  background: rgba(251, 251, 253, .9) !important;
+  border-bottom: 1px solid rgba(29, 29, 31, .08) !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .65) inset !important;
   backdrop-filter: saturate(180%) blur(20px) !important;
 }
 
 .cel-global-nav {
   max-width: 1180px !important;
-  min-height: 62px !important;
+  min-height: 66px !important;
   justify-content: center !important;
-  gap: clamp(20px, 3.2vw, 44px) !important;
+  gap: clamp(22px, 3.2vw, 46px) !important;
 }
 
 .cel-global-brand {
-  width: 56px !important;
-  min-width: 56px !important;
-  height: 56px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: 58px !important;
   justify-content: center !important;
+  gap: 11px !important;
   border-radius: 13px;
 }
 
 .cel-global-brand img {
   display: block;
-  width: 50px !important;
-  height: 50px !important;
+  width: 48px !important;
+  height: 48px !important;
   max-width: 100% !important;
   object-fit: contain !important;
   transform: none !important;
 }
 
+.cel-global-brand-text {
+  display: inline-block;
+  color: #1d1d1f;
+  font-size: 1.08rem;
+  font-weight: 820;
+  letter-spacing: .02em;
+}
+
 .cel-global-links {
-  gap: clamp(14px, 2.4vw, 30px) !important;
+  gap: clamp(14px, 2.2vw, 28px) !important;
 }
 
 .cel-global-links a {
-  min-height: 36px !important;
-  padding: 0 7px !important;
+  min-height: 38px !important;
+  padding: 0 10px !important;
   background: transparent !important;
   color: rgba(29, 29, 31, .78) !important;
-  font-size: .96rem !important;
-  font-weight: 720 !important;
+  font-size: 1rem !important;
+  font-weight: 650 !important;
   letter-spacing: 0 !important;
 }
 
@@ -50,7 +59,7 @@
 
 .cel-global-links a.is-active {
   color: #1d1d1f !important;
-  background: rgba(29, 29, 31, .06) !important;
+  background: rgba(29, 29, 31, .065) !important;
 }
 
 .cel-global-search {
@@ -62,8 +71,8 @@
 .cel-global-search-button {
   display: inline-grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border: 0;
   border-radius: 999px;
   background: transparent;
@@ -154,18 +163,23 @@
 
   .cel-global-nav {
     gap: 9px !important;
-    min-height: 48px !important;
+    min-height: 50px !important;
   }
 
   .cel-global-brand {
     width: 42px !important;
     min-width: 42px !important;
     height: 42px !important;
+    gap: 0 !important;
   }
 
   .cel-global-brand img {
     width: 38px !important;
     height: 38px !important;
+  }
+
+  .cel-global-brand-text {
+    display: none !important;
   }
 
   .cel-global-links {
@@ -175,7 +189,7 @@
   .cel-global-links a {
     min-height: 31px !important;
     font-size: .8rem !important;
-    font-weight: 720 !important;
+    font-weight: 680 !important;
   }
 
   .cel-global-search-button {
