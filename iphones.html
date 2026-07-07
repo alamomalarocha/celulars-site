@@ -1268,25 +1268,24 @@
     <div class="catalog-header">
       <div>
         <span class="eyebrow">CELULARS</span>
-        <h1 id="catalog-title">Escolha seu iPhone</h1>
-        <p class="catalog-subtitle">A CELULARS trabalha com iPhones novos da linha 17 e iPhones eCPO P1 / Grade A do iPhone 12 ao 17 para varejo. Consulte modelos, capacidades, cores, pre&ccedil;os de refer&ecirc;ncia e disponibilidade pelo WhatsApp institucional.</p>
+        <h1 id="catalog-title">Tabela de iPhones</h1>
+        <p class="catalog-subtitle">Consulte modelos novos quando dispon&iacute;veis e iPhones eCPO P1 / Grade A selecionados para varejo. Os valores em reais s&atilde;o estimados pela Cota&ccedil;&atilde;o CELULARS e confirmados no atendimento.</p>
       </div>
     </div>
     <div class="table-exchange-card" role="note" aria-live="polite">
       <div>
-        <span>Cota&ccedil;&atilde;o usada na tabela</span>
+        <span>Cota&ccedil;&atilde;o usada nesta tabela</span>
         <strong>USD/BRL CELULARS: <span data-table-reference-rate>Atualizando cota&ccedil;&atilde;o CELULARS...</span></strong>
         <small data-table-ptax-date>Base PTAX/Banco Central em atualiza&ccedil;&atilde;o.</small>
       </div>
       <p data-table-rate-note>Valores em reais s&atilde;o estimativas calculadas com base na cota&ccedil;&atilde;o CELULARS do d&oacute;lar. O valor final &eacute; confirmado no atendimento pelo WhatsApp.</p>
     </div>
-    <div class="price-reference-note" role="note">Modelos novos usam refer&ecirc;ncia baseada no pre&ccedil;o oficial Apple acrescido da taxa da Fl&oacute;rida/Miami-Dade. Modelos eCPO t&ecirc;m pre&ccedil;o sob consulta conforme lote, condi&ccedil;&atilde;o, grade e disponibilidade. Valores em reais usam a Cota&ccedil;&atilde;o CELULARS vigente.</div>
+    <div class="table-action-bar" role="note">
+      <a class="table-main-whatsapp" href="https://wa.me/17865466540?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20consultar%20iPhones%20pela%20CELULARS.%20Gostaria%20de%20confirmar%20modelos%20dispon%C3%ADveis%2C%20capacidades%2C%20cores%20e%20valores%20atualizados%20em%20reais." target="_blank" rel="noopener">Consultar pelo WhatsApp</a>
+    </div>
+    <div class="price-reference-note" role="note">Modelos novos usam refer&ecirc;ncia baseada no pre&ccedil;o oficial Apple acrescido da taxa da Fl&oacute;rida/Miami-Dade. Nos modelos eCPO, valores e disponibilidade s&atilde;o confirmados conforme lote, condi&ccedil;&atilde;o e grade. Valores em reais usam a Cota&ccedil;&atilde;o CELULARS vigente.</div>
     <div class="operation-note" role="note"><strong>Atendimento organizado e seguro:</strong> A CELULARS trabalha com atendimento pr&eacute;vio pelo WhatsApp. Retirada em Miami somente para pedidos previamente confirmados, sem escolha de aparelhos, negocia&ccedil;&atilde;o ou pagamento presencial no local.</div>
     <div class="operation-note" role="note"><strong>Compra para revenda ou empresa?</strong> Os pre&ccedil;os e condi&ccedil;&otilde;es de atacado s&atilde;o exclusivos para clientes comerciais aprovados. Para solicitar acesso, envie seus dados de pessoa jur&iacute;dica para an&aacute;lise pela CELULARS. <a href="acessos.html">Solicitar acesso de atacado</a>.</div>
-    <div class="catalog-primary-cta" role="note">
-      <p>Para confirmar modelos novos e eCPO, capacidades, cores, pre&ccedil;os, disponibilidade e condi&ccedil;&otilde;es de compra, fale diretamente com a CELULARS pelo WhatsApp institucional.</p>
-      <a class="whatsapp-button" href="https://wa.me/17865466540?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20comprar%20iPhone%20pela%20CELULARS.%20Gostaria%20de%20consultar%20modelos%20novos%20e%20eCPO%2C%20capacidades%2C%20cores%2C%20pre%C3%A7os%2C%20disponibilidade%20e%20condi%C3%A7%C3%B5es%20de%20compra." target="_blank" rel="noopener">Consultar pelo WhatsApp</a>
-    </div>
     <div class="catalog-filter-panel" aria-label="Filtros do cat&aacute;logo">
       <div>
         <span class="filter-label">Categoria</span>
@@ -2657,6 +2656,33 @@
   line-height: 1.45;
 }
 
+.table-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0 0 18px;
+}
+
+.table-main-whatsapp {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #fff;
+  font-size: .88rem;
+  font-weight: 820;
+  text-decoration: none;
+  box-shadow: 0 8px 18px rgba(37, 211, 102, .18);
+}
+
+.table-main-whatsapp:hover {
+  background: #1ebe5d;
+  color: #fff;
+}
+
 .catalog-table.is-capacity-pricing {
   table-layout: fixed;
 }
@@ -2668,22 +2694,12 @@
 
 .catalog-table.is-capacity-pricing th:nth-child(1),
 .catalog-table.is-capacity-pricing td:nth-child(1) {
-  width: 18%;
+  width: 24%;
 }
 
 .catalog-table.is-capacity-pricing th:nth-child(2),
 .catalog-table.is-capacity-pricing td:nth-child(2) {
-  width: 13%;
-}
-
-.catalog-table.is-capacity-pricing th:nth-child(3),
-.catalog-table.is-capacity-pricing td:nth-child(3) {
-  width: 12%;
-}
-
-.catalog-table.is-capacity-pricing th:last-child,
-.catalog-table.is-capacity-pricing td:last-child {
-  width: 10%;
+  width: 14%;
 }
 
 .color-dots {
@@ -2705,16 +2721,16 @@
 }
 
 .capacity-price-cell,
-.capacity-consult,
+.capacity-available-marker,
 .capacity-unavailable {
   display: inline-flex;
   width: 100%;
-  min-height: 42px;
+  min-height: 38px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   gap: 2px;
-  border-radius: 12px;
+  border-radius: 10px;
   text-align: center;
   text-decoration: none;
 }
@@ -2732,29 +2748,17 @@
   line-height: 1.1;
 }
 
-.capacity-price-cell small {
-  color: #667085;
-  font-size: .66rem;
-  font-weight: 760;
-  line-height: 1.1;
+.capacity-available-marker {
+  color: #98a2b3;
+  font-size: 1.05rem;
+  font-weight: 800;
 }
 
-.capacity-price-cell:hover {
-  border-color: rgba(18, 61, 121, .34);
-  background: #f8fbff;
-}
-
-.capacity-consult {
-  border: 1px solid rgba(29, 29, 31, .09);
-  background: #f7f7f8;
-  color: #667085;
-}
-
-.capacity-consult strong,
 .capacity-unavailable {
   color: #667085;
   font-size: .78rem;
   font-weight: 760;
+  opacity: .32;
 }
 
 .capacity-label-mobile {
@@ -2781,6 +2785,13 @@
   color: #fff;
 }
 
+.table-footnote {
+  margin: 14px 0 0;
+  color: #667085;
+  font-size: .86rem;
+  line-height: 1.45;
+}
+
 @media (max-width: 860px) {
   .catalog-table.is-capacity-pricing td[data-label="Cores"] {
     grid-template-columns: 74px minmax(0, 1fr);
@@ -2795,9 +2806,9 @@
   }
 
   .capacity-price-cell,
-  .capacity-consult,
+  .capacity-available-marker,
   .capacity-unavailable {
-    min-height: 48px;
+    min-height: 42px;
     align-items: flex-start;
     justify-content: center;
     padding: 9px 11px;
@@ -2805,7 +2816,7 @@
   }
 
   .capacity-price-cell,
-  .capacity-consult {
+  .capacity-available-marker {
     flex-direction: row;
     justify-content: space-between;
   }
@@ -4200,12 +4211,10 @@
   function rowForEcpo(m){return{model:m,kind:'ecpo',condition:'eCPO P1 / Grade A',conditionClass:' is-ecpo',colors:m.colors||[],prices:{},capacities:sortCapacities(m.capacities||[])}}
   function capacityColumns(rows){const set=new Set();rows.forEach(row=>row.capacities.forEach(capacity=>set.add(capacity)));return sortCapacities([...set])}
   function renderModelCell(row){const m=row.model;return'<div class="model-cell"><strong>'+escapeHtml(m.model_name)+'</strong><small>'+escapeHtml(m.year)+'</small></div>'}
-  function renderConditionCell(row){return'<span class="condition-pill'+row.conditionClass+'">'+escapeHtml(row.condition)+'</span>'}
-  function rowMessage(row,capacity){const model=row.model.model_name;if(capacity)return'Ol\u00e1, tenho interesse em consultar o '+model+' '+capacity+' pela CELULARS. Gostaria de confirmar disponibilidade, cor e valor atualizado em reais.';return'Ol\u00e1, tenho interesse em consultar o '+model+' pela CELULARS. Gostaria de confirmar disponibilidade, capacidade, cor e valor atualizado em reais.'}
-  function renderCapacityCell(row,capacity){const hasPrice=Object.prototype.hasOwnProperty.call(row.prices,capacity)&&Number(row.prices[capacity])>0,available=row.capacities.includes(capacity)||hasPrice;if(!available)return'<span class="capacity-unavailable" aria-label="Capacidade n\u00e3o dispon\u00edvel">-</span>';const href=buildWhatsAppUrl(rowMessage(row,capacity));if(hasPrice){const siteUsd=Number(row.prices[capacity])*(1+FLORIDA_TAX_RATE),siteBrl=siteUsd*CATALOG_RATE;return'<a class="capacity-price-cell" href="'+href+'" target="_blank" rel="noopener" title="Consultar '+escapeHtml(row.model.model_name)+' '+escapeHtml(capacity)+' pelo WhatsApp"><span class="capacity-label-mobile">'+escapeHtml(capacity)+'</span><strong>'+formatBrlCompact(siteBrl)+'</strong><small>Consultar</small></a>'}return'<a class="capacity-consult" href="'+href+'" target="_blank" rel="noopener" title="Consultar '+escapeHtml(row.model.model_name)+' '+escapeHtml(capacity)+' pelo WhatsApp"><span class="capacity-label-mobile">'+escapeHtml(capacity)+'</span><strong>Sob consulta</strong></a>'}
-  function renderCatalogRow(row,columns){const href=buildWhatsAppUrl(rowMessage(row));return'<tr class="catalog-table-row" data-model="'+escapeHtml(row.model.model_name)+'"><td data-label="Modelo">'+renderModelCell(row)+'</td><td data-label="Condi\u00e7\u00e3o">'+renderConditionCell(row)+'</td><td data-label="Cores">'+colorDots(row.colors)+'</td>'+columns.map(capacity=>'<td data-label="'+escapeHtml(capacity)+'" data-capacity-cell>'+renderCapacityCell(row,capacity)+'</td>').join('')+'<td data-label="Consulta"><a class="row-consult-button" href="'+href+'" target="_blank" rel="noopener">Consultar</a></td></tr>'}
-  function renderTable(rows){if(!rows.length)return'';const columns=capacityColumns(rows),heads=['<th>Modelo</th><th>Condi\u00e7\u00e3o</th><th>Cores</th>'].concat(columns.map(capacity=>'<th>'+escapeHtml(capacity)+'</th>')).concat('<th>Consulta</th>').join('');return'<div class="catalog-table-wrap"><table class="catalog-table is-capacity-pricing"><thead><tr>'+heads+'</tr></thead><tbody>'+rows.map(row=>renderCatalogRow(row,columns)).join('')+'</tbody></table></div>'}
-  function renderCatalogLayout(newRows,ecpoRows){let html='';if(newRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>Novos</span><strong>iPhones novos linha 17</strong></div><p class="section-note">Pre\u00e7os em reais por capacidade, calculados com a Cota\u00e7\u00e3o CELULARS vigente. A confirma\u00e7\u00e3o final de cor, disponibilidade e valor acontece pelo WhatsApp.</p>'+renderTable(newRows)+'</section>';if(ecpoRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>eCPO</span><strong>iPhones eCPO P1 / Grade A do 12 ao 17</strong></div><p class="section-note">Aparelhos eCPO P1 / Grade A selecionados pela CELULARS para varejo. Cores aparecem como bolinhas e os valores s\u00e3o confirmados conforme lote e disponibilidade.</p>'+renderTable(ecpoRows)+'</section>';return html}
+  function renderCapacityCell(row,capacity){const hasPrice=Object.prototype.hasOwnProperty.call(row.prices,capacity)&&Number(row.prices[capacity])>0,available=row.capacities.includes(capacity)||hasPrice;if(!available)return'<span class="capacity-unavailable" aria-label="Capacidade n\u00e3o dispon\u00edvel">-</span>';if(hasPrice){const siteUsd=Number(row.prices[capacity])*(1+FLORIDA_TAX_RATE),siteBrl=siteUsd*CATALOG_RATE;return'<span class="capacity-price-cell"><span class="capacity-label-mobile">'+escapeHtml(capacity)+'</span><strong>'+formatBrlCompact(siteBrl)+'</strong></span>'}return'<span class="capacity-available-marker" title="Capacidade dispon\u00edvel para consulta" aria-label="Capacidade dispon\u00edvel para consulta"><span class="capacity-label-mobile">'+escapeHtml(capacity)+'</span><span aria-hidden="true">&bull;</span></span>'}
+  function renderCatalogRow(row,columns){return'<tr class="catalog-table-row" data-model="'+escapeHtml(row.model.model_name)+'"><td data-label="Modelo">'+renderModelCell(row)+'</td><td data-label="Cores">'+colorDots(row.colors)+'</td>'+columns.map(capacity=>'<td data-label="'+escapeHtml(capacity)+'" data-capacity-cell>'+renderCapacityCell(row,capacity)+'</td>').join('')+'</tr>'}
+  function renderTable(rows){if(!rows.length)return'';const columns=capacityColumns(rows),heads=['<th>Modelo</th><th>Cores</th>'].concat(columns.map(capacity=>'<th>'+escapeHtml(capacity)+'</th>')).join('');return'<div class="catalog-table-wrap"><table class="catalog-table is-capacity-pricing"><thead><tr>'+heads+'</tr></thead><tbody>'+rows.map(row=>renderCatalogRow(row,columns)).join('')+'</tbody></table></div>'}
+  function renderCatalogLayout(newRows,ecpoRows){let html='';if(ecpoRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>eCPO</span><strong>iPhones eCPO P1 / Grade A</strong></div><p class="section-note">Aparelhos selecionados para varejo. As capacidades marcadas com ponto ficam dispon\u00edveis para consulta pelo WhatsApp conforme lote, cor e disponibilidade.</p>'+renderTable(ecpoRows)+'</section>';if(newRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>Novos</span><strong>iPhones novos</strong></div><p class="section-note">Pre\u00e7os em reais por capacidade, calculados com a Cota\u00e7\u00e3o CELULARS vigente. A confirma\u00e7\u00e3o final de cor, disponibilidade e valor acontece pelo WhatsApp.</p>'+renderTable(newRows)+'</section>';html+='<p class="table-footnote">Outras capacidades, cores ou modelos podem ser consultados pelo WhatsApp conforme disponibilidade.</p>';return html}
   function renderCatalog(){const newRows=newModelsFor(IPHONE_MODELS).map(rowForNew),ecpoRows=ecpoModelsFor(IPHONE_MODELS).map(rowForEcpo);gridEl.innerHTML=renderCatalogLayout(newRows,ecpoRows);wireCatalogControls();const total=newRows.length+ecpoRows.length;statusEl.hidden=!!total;statusEl.textContent=total?'':'Nenhum iPhone encontrado para este filtro.'}
   function setActive(btns,active){btns.forEach(b=>b.classList.toggle('is-active',b===active))}
   categoryButtons.forEach(b=>b.addEventListener('click',()=>{activeCategory=b.dataset.categoryFilter;setActive(categoryButtons,b);renderCatalog()}));lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});renderCatalog();updateBcbExchangeRate();
