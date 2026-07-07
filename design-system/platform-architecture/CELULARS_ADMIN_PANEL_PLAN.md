@@ -4,212 +4,231 @@
 
 Planejar o futuro painel administrativo interno da CELULARS.
 
-Este documento não implementa painel, login ou banco de dados.
+Este documento nao implementa painel, login, API ou banco de dados. Ele define a direcao para que o site evolua para uma plataforma com dados editaveis, permissoes, auditoria e API reutilizavel.
 
-## Seções do painel
+## Principio Central
 
-### Dashboard
+Toda tabela exibida no site deve ser editavel no futuro pelo painel administrativo.
 
-Função:
-- visão geral da operação;
-- cotações recentes;
+O painel deve substituir a dependencia de alteracoes manuais em HTML/JS para:
+
+- precos;
+- produtos;
+- variantes;
+- estoque;
+- eCPO;
+- atacado;
+- clientes;
+- conteudo do site;
+- configuracoes operacionais.
+
+## Secoes do Painel
+
+### A. Dashboard
+
+Funcao:
+
+- resumo de vendas/consultas;
+- estoque;
+- cotacoes;
+- avisos;
 - produtos mais consultados;
-- pedidos/cotações abertas;
-- alertas de estoque.
+- pedidos/cotacoes abertas.
 
-Permissões:
-- `super_admin`
-- `admin`
-- `sales`
-- `viewer` limitado
+Permissoes:
 
-### Produtos
+- `super_admin`;
+- `admin`;
+- `sales`;
+- `viewer` limitado.
 
-Função:
-- criar e editar modelos;
+### B. Produtos
+
+Funcao:
+
+- criar/editar modelos;
 - capacidades;
 - cores;
-- condições;
-- status público/B2B.
+- condicao;
+- categorias: Novo/eCPO;
+- ativo/inativo;
+- status publico/B2B.
 
-Permissões:
-- `super_admin`
-- `admin`
-- `inventory` limitado
+Permissoes:
 
-### Estoque
+- `super_admin`;
+- `admin`;
+- `inventory` limitado.
 
-Função:
-- quantidade disponível;
-- quantidade reservada;
+### C. Precos
+
+Funcao:
+
+- editar precos Apple base;
+- editar taxa FL;
+- editar preco CELULARS;
+- editar eCPO;
+- editar atacado quando autorizado;
+- registrar historico de alteracao;
+- registrar quem alterou;
+- registrar quando alterou.
+
+Permissoes:
+
+- `super_admin`;
+- `admin`;
+- `sales` leitura/solicitacao.
+
+### D. Estoque
+
+Funcao:
+
+- QTY;
+- grade;
+- condicao;
+- localizacao;
 - lote;
-- condição;
-- localização;
-- status.
-
-Permissões:
-- `super_admin`
-- `admin`
-- `inventory`
-- `sales` leitura
-
-### Preços
-
-Função:
-- preços varejo;
-- preços atacado;
-- tiers;
-- validade;
-- fontes;
-- histórico.
-
-Permissões:
-- `super_admin`
-- `admin`
-- `sales` leitura/solicitação
-
-### Clientes
-
-Função:
-- dados comerciais;
 - status;
-- aprovação B2B;
-- vendedor responsável;
-- histórico.
+- reservado;
+- disponivel.
 
-Permissões:
-- `super_admin`
-- `admin`
-- `sales`
+Permissoes:
 
-### Atacado
+- `super_admin`;
+- `admin`;
+- `inventory`;
+- `sales` leitura.
 
-Função:
-- configurar visibilidade B2B;
-- tabelas permitidas;
-- lotes;
-- regras por cliente.
+### E. Atacado
 
-Permissões:
-- `super_admin`
-- `admin`
-- `sales`
+Funcao:
 
-### Pedidos/Consultas
+- tabela B2B;
+- precos por cliente;
+- precos por lote;
+- clientes aprovados;
+- regras de visibilidade;
+- permissoes.
 
-Função:
-- acompanhar solicitações;
-- responder cotações;
-- vincular vendedor;
-- mudar status.
+Permissoes:
 
-Permissões:
-- `super_admin`
-- `admin`
-- `sales`
+- `super_admin`;
+- `admin`;
+- `sales`.
 
-### PTAX/Cotação
+### F. Clientes
 
-Função:
-- visualizar PTAX;
-- visualizar ajuste operacional;
-- histórico de cotação;
-- auditoria de alterações.
+Funcao:
 
-Permissões:
-- `super_admin`
-- `admin`
-- `viewer` leitura
+- clientes varejo;
+- clientes B2B;
+- status de aprovacao;
+- documentos;
+- vendedor responsavel;
+- historico.
 
-### Conteúdo do site
+Permissoes:
 
-Função:
-- textos;
+- `super_admin`;
+- `admin`;
+- `sales`.
+
+### G. Conteudo do Site
+
+Funcao:
+
+- textos da Home;
+- textos da pagina iPhones;
+- textos Sobre/Contato;
 - banners;
-- avisos;
-- páginas públicas.
+- imagens;
+- SEO;
+- avisos comerciais.
 
-Permissões:
-- `super_admin`
-- `admin`
-- `content`
+Permissoes:
 
-### Mídia/imagens
+- `super_admin`;
+- `admin`;
+- `content`.
 
-Função:
-- uploads;
-- organização;
-- alt text;
-- uso por página.
+### H. Usuarios e Permissoes
 
-Permissões:
-- `super_admin`
-- `admin`
-- `content`
+Funcao:
 
-### Usuários
+- funcionarios;
+- niveis de acesso;
+- roles;
+- permissoes por modulo;
+- logs de login e alteracao.
 
-Função:
-- criar usuários;
-- alterar roles;
-- desativar acesso.
+Permissoes:
 
-Permissões:
-- `super_admin`
-- `admin` limitado
+- `super_admin`;
+- `admin` limitado.
 
-### Permissões
+### I. Integracoes e Configuracoes
 
-Função:
-- gerenciar matriz de acesso;
-- revisar roles.
+Funcao:
 
-Permissões:
-- `super_admin`
+- parametros globais;
+- PTAX;
+- ajuste operacional;
+- integracoes futuras;
+- variaveis operacionais.
 
-### Logs
+Permissoes:
 
-Função:
-- auditar alterações;
-- rastrear login;
-- verificar preço/estoque.
+- `super_admin`;
+- `admin` leitura/solicitacao.
 
-Permissões:
-- `super_admin`
-- `admin` leitura limitada
+### J. Assistente Interno / Integracao Futura com IA
 
-### Configurações
+No futuro, o painel pode ter uma area de assistente para ajudar a:
 
-Função:
-- parâmetros globais;
-- integrações;
-- variáveis operacionais.
+- revisar textos;
+- sugerir melhorias;
+- preparar alteracoes;
+- analisar estoque;
+- gerar relatorios;
+- sugerir atualizacao de precos;
+- criar descricoes;
+- revisar traducao;
+- orientar funcionarios.
 
-Permissões:
-- `super_admin`
+Regras:
 
-## Ordem ideal de implementação
+- o assistente nao deve ter permissao para publicar sozinho;
+- tudo deve passar por aprovacao de usuario autorizado;
+- toda alteracao precisa gerar log;
+- dados sensiveis precisam ficar protegidos;
+- integracao real deve usar API segura e permissoes;
+- a IA deve sugerir e preparar, mas nao executar alteracoes criticas sem aprovacao.
 
-1. Autenticação segura.
-2. Roles e permissões.
-3. Produtos.
-4. Clientes.
+## Ordem Ideal de Implementacao
+
+1. Autenticacao segura.
+2. Roles e permissoes.
+3. Produtos e variantes.
+4. Precos.
 5. Estoque.
-6. Preços.
-7. Cotações/pedidos.
-8. Conteúdo do site.
-9. Logs.
-10. Relatórios.
+6. Clientes.
+7. Atacado/B2B.
+8. Cotacoes/pedidos.
+9. Conteudo do site.
+10. Logs.
+11. Relatorios.
+12. Assistente interno.
 
-## Riscos de segurança
+## Riscos de Seguranca
 
-- Painel sem autenticação server-side.
+- Painel sem autenticacao server-side.
 - Acesso admin baseado apenas em JS.
-- Dados sensíveis no front-end.
+- Dados sensiveis no front-end.
 - Falta de logs.
-- Permissões amplas demais.
-- Falta de validação no backend.
+- Permissoes amplas demais.
+- Falta de validacao no backend.
+- IA publicando sem aprovacao humana.
 
-## Recomendação
+## Recomendacao
 
-Não iniciar o painel com dados reais antes de autenticação, roles, API protegida e banco de dados definidos.
+Nao iniciar o painel com dados reais antes de autenticacao, roles, API protegida, banco de dados e auditoria estarem definidos.

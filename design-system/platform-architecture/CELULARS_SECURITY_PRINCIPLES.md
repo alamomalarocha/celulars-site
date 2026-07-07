@@ -2,91 +2,122 @@
 
 ## Objetivo
 
-Registrar regras permanentes de segurança para o crescimento da plataforma CELULARS.
+Registrar regras permanentes de seguranca para o crescimento da plataforma CELULARS.
 
-## Regras fundamentais
+## Regras Fundamentais
 
 ### Nunca colocar senha no front-end
 
-Senhas, hashes, tokens e segredos não devem aparecer em HTML, CSS, JS ou JSON público.
+Senhas, hashes, tokens e segredos nao devem aparecer em HTML, CSS, JS ou JSON publico.
 
-### Nunca colocar inventário real em JSON público
+### Nunca colocar inventario real em JSON publico
 
 Estoque real deve ficar em backend/API protegida.
 
 ### Nunca expor custo ou lucro
 
-Custo de compra, margem e regras internas de preço são dados internos.
+Custo de compra, margem e regras internas de preco sao dados internos.
 
 ### Nunca expor dados de cliente
 
-Dados de clientes e empresas devem ficar protegidos e acessíveis apenas por usuários autorizados.
+Dados de clientes e empresas devem ficar protegidos e acessiveis apenas por usuarios autorizados.
 
-### Usar autenticação server-side
+### Usar autenticacao server-side
 
-Login real deve ser validado no servidor, com sessão segura e expiração.
+Login real deve ser validado no servidor, com sessao segura e expiracao.
 
-### Usar roles e permissões
+### Usar roles e permissoes
 
-Cada usuário deve ter apenas o acesso necessário.
+Cada usuario deve ter apenas o acesso necessario.
 
 ### Proteger endpoints
 
-Toda rota sensível deve validar:
-- autenticação;
+Toda rota sensivel deve validar:
+
+- autenticacao;
 - role;
 - propriedade do dado;
 - entrada recebida.
 
 ### Validar dados no backend
 
-O front-end pode ajudar na experiência, mas validação final deve ser no backend.
+O front-end pode ajudar na experiencia, mas validacao final deve ser no backend.
 
-### Usar logs
+### Toda edicao de tabela deve exigir login
+
+Qualquer edicao de preco, estoque, produto, cliente, tabela B2B, conteudo do site ou configuracao deve exigir usuario autenticado.
+
+### Toda edicao de preco deve gerar audit log
+
+Alteracoes de preco devem registrar:
+
+- usuario;
+- data/hora;
+- valor anterior;
+- valor novo;
+- entidade alterada;
+- origem da alteracao.
+
+### Cliente B2B nunca ve custo/lucro
+
+Clientes B2B podem ver apenas informacoes liberadas por permissao. Custo, margem, fornecedor, regra interna e preco de outros grupos nunca devem ser expostos.
+
+### Preco atacado nunca fica em JSON publico
+
+Precos atacado devem vir apenas de API protegida e conforme permissao do cliente.
+
+### Estoque real nunca fica em arquivo publico
+
+Estoque real deve ficar em banco/API protegidos, nao em HTML, JS ou JSON publico.
+
+### Painel admin deve validar no backend
+
+Nenhuma acao critica pode depender somente de bloqueio visual no front-end.
+
+### Acoes criticas devem ser registradas
 
 Registrar:
+
 - login;
-- alteração de preço;
-- alteração de estoque;
-- alteração de cliente;
-- alteração de permissão;
-- pedidos/cotações.
+- alteracao de preco;
+- alteracao de estoque;
+- alteracao de cliente;
+- alteracao de permissao;
+- alteracao de conteudo do site;
+- pedidos/cotacoes.
 
-### Proteger variáveis sensíveis
+### Integracao com IA exige aprovacao humana
 
-Chaves e segredos devem ficar em variáveis de ambiente ou cofre seguro.
-
-### Preparar backup/exportação
-
-Dados importantes devem ter rotina de backup e exportação.
-
-### Separar público, B2B e admin
-
-O site público não deve carregar dados B2B ou admin ocultos no HTML.
+IA/assistente pode sugerir e preparar alteracoes, mas nao deve publicar sozinha sem aprovacao de usuario autorizado.
 
 ## Cloudflare Access
 
-Cloudflare Access pode ser usado como camada inicial de proteção para páginas e rotas.
+Cloudflare Access pode ser usado como camada inicial de protecao para paginas e rotas.
 
-Limitação:
-- não substitui painel completo;
-- não substitui modelo interno de permissões;
-- não deve ser a única camada para dados críticos quando houver API própria.
+Limitacao:
 
-## Regras para deploy
+- nao substitui painel completo;
+- nao substitui modelo interno de permissoes;
+- nao deve ser a unica camada para dados criticos quando houver API propria.
+
+## Regras para Deploy
 
 - Revisar diffs antes de publicar.
-- Não commitar segredos.
-- Não commitar arquivos de inventário real em público.
+- Nao commitar segredos.
+- Nao commitar arquivos de inventario real em publico.
 - Validar rotas protegidas.
-- Testar site público após mudanças.
+- Testar site publico apos mudancas.
 
-## Checklist antes de expor dado sensível
+## Checklist Antes de Expor Dado Sensivel
 
-- Existe autenticação server-side?
-- Existe role/permissão?
-- Existe validação de entrada?
+- Existe autenticacao server-side?
+- Existe role/permissao?
+- Existe validacao de entrada?
 - Existe log?
-- O dado não aparece no HTML público?
+- O dado nao aparece no HTML publico?
 - Existe plano de rollback?
-- O dado é realmente necessário para aquele usuário?
+- O dado e realmente necessario para aquele usuario?
+
+## Principio Permanente
+
+Dados sensiveis, precos atacado, estoque real, clientes, logs e configuracoes criticas devem viver em backend protegido. O site publico deve receber somente dados aprovados para exibicao.

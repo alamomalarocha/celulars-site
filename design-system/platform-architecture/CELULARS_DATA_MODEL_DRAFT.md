@@ -4,13 +4,14 @@
 
 Rascunho inicial das entidades futuras da plataforma CELULARS.
 
-Este documento não implementa banco de dados. Serve como base para futura API, painel administrativo, área B2B e app.
+Este documento nao implementa banco de dados. Serve como base para futura API, painel administrativo, area B2B e app.
 
-## Entidades
+## Entidades Principais
 
 ### users
 
 Campos sugeridos:
+
 - `id`
 - `name`
 - `email`
@@ -21,13 +22,14 @@ Campos sugeridos:
 - `created_at`
 - `updated_at`
 
-Sensível: sim.
+Sensivel: sim.
 
-Público: não.
+Publico: nao.
 
 ### roles
 
 Campos sugeridos:
+
 - `id`
 - `key`
 - `name`
@@ -36,13 +38,14 @@ Campos sugeridos:
 - `created_at`
 - `updated_at`
 
-Sensível: parcialmente.
+Sensivel: parcialmente.
 
-Público: não.
+Publico: nao.
 
 ### customers
 
 Campos sugeridos:
+
 - `id`
 - `name`
 - `email`
@@ -55,13 +58,14 @@ Campos sugeridos:
 - `created_at`
 - `updated_at`
 
-Sensível: sim.
+Sensivel: sim.
 
-Público: não.
+Publico: nao.
 
 ### b2b_accounts
 
 Campos sugeridos:
+
 - `id`
 - `customer_id`
 - `approved`
@@ -73,117 +77,155 @@ Campos sugeridos:
 - `created_at`
 - `updated_at`
 
-Sensível: sim.
+Sensivel: sim.
 
-Público: não.
+Publico: nao.
 
 ### products
 
 Campos sugeridos:
+
 - `id`
+- `name`
 - `brand`
 - `model_name`
 - `line`
 - `year`
 - `category`
+- `condition_type`
 - `public_status`
 - `b2b_status`
+- `active`
 - `created_at`
 - `updated_at`
 
-Sensível: parcialmente.
+Sensivel: parcialmente.
 
-Público: sim, apenas campos aprovados.
+Publico: sim, apenas campos aprovados.
 
 ### product_variants
 
 Campos sugeridos:
+
 - `id`
 - `product_id`
 - `capacity`
+- `color`
 - `color_name`
 - `color_hex`
-- `condition`
+- `model_number`
 - `sku`
+- `active`
 - `public_visible`
 - `created_at`
 - `updated_at`
 
-Sensível: parcialmente.
+Sensivel: parcialmente.
 
-Público: sim, apenas variantes aprovadas.
-
-### inventory
-
-Campos sugeridos:
-- `id`
-- `product_variant_id`
-- `quantity_available`
-- `quantity_reserved`
-- `location`
-- `lot_code`
-- `condition_grade`
-- `availability_status`
-- `updated_by_user_id`
-- `updated_at`
-
-Sensível: sim.
-
-Público: não. Pode aparecer em B2B apenas de forma controlada.
-
-### wholesale_prices
-
-Campos sugeridos:
-- `id`
-- `product_variant_id`
-- `price_tier`
-- `currency`
-- `unit_price`
-- `minimum_quantity`
-- `valid_from`
-- `valid_to`
-- `created_by_user_id`
-
-Sensível: sim.
-
-Público: não.
+Publico: sim, apenas variantes aprovadas.
 
 ### retail_prices
 
 Campos sugeridos:
+
 - `id`
-- `product_variant_id`
-- `currency`
+- `variant_id`
 - `apple_price_usd`
-- `tax_rate`
-- `site_price_usd`
-- `site_price_brl`
+- `florida_tax_rate`
+- `celulares_price_usd`
+- `celulares_price_brl`
 - `source`
-- `valid_from`
-- `valid_to`
+- `visible_public`
+- `updated_by`
+- `updated_at`
 
-Sensível: parcialmente.
+Sensivel: parcialmente.
 
-Público: sim, quando aprovado.
+Publico: sim, quando aprovado.
 
-### price_sources
+### ecpo_prices
 
 Campos sugeridos:
+
 - `id`
-- `source_name`
-- `source_url`
+- `variant_id`
+- `grade`
+- `price_usd`
+- `price_brl`
+- `visible_public`
+- `updated_by`
+- `updated_at`
+
+Sensivel: parcialmente.
+
+Publico: apenas quando aprovado. A regra atual e nao exibir preco eCPO publico.
+
+### inventory
+
+Campos sugeridos:
+
+- `id`
+- `variant_id`
+- `condition_type`
+- `grade`
+- `qty`
+- `location`
+- `lot`
+- `reserved_qty`
+- `available_qty`
+- `availability_status`
+- `updated_by`
+- `updated_at`
+
+Sensivel: sim.
+
+Publico: nao. Pode aparecer em B2B apenas de forma controlada.
+
+### wholesale_prices
+
+Campos sugeridos:
+
+- `id`
+- `variant_id`
+- `customer_group`
+- `grade`
+- `price_usd`
+- `min_qty`
+- `active`
+- `valid_from`
+- `valid_to`
+- `created_by_user_id`
+- `updated_at`
+
+Sensivel: sim.
+
+Publico: nao.
+
+### site_tables
+
+Campos sugeridos:
+
+- `id`
+- `table_key`
+- `page`
 - `source_type`
-- `checked_at`
-- `checked_by_user_id`
-- `notes`
+- `description`
+- `editable_by_role`
+- `public_visible`
+- `created_at`
+- `updated_at`
 
-Sensível: parcialmente.
+Objetivo:
 
-Público: não obrigatório.
+- registrar quais tabelas existem no site;
+- definir se a fonte atual e HTML/JS, API ou banco;
+- documentar qual role pode editar;
+- orientar migracao do estatico para dados administraveis.
 
 ### exchange_rates
 
 Campos sugeridos:
+
 - `id`
 - `source`
 - `base_currency`
@@ -193,14 +235,36 @@ Campos sugeridos:
 - `final_rate`
 - `rate_date`
 - `fetched_at`
+- `updated_by`
+- `updated_at`
 
-Sensível: não, mas deve ser controlado.
+Sensivel: nao, mas deve ser controlado.
 
-Público: sim, taxa final e data.
+Publico: sim, taxa final e data.
+
+### settings
+
+Campos sugeridos:
+
+- `id`
+- `key`
+- `value_json`
+- `description`
+- `editable_by_role`
+- `updated_by`
+- `updated_at`
+
+Uso:
+
+- ajuste operacional;
+- parametros publicos;
+- configuracoes simples;
+- limites de exibicao.
 
 ### orders
 
 Campos sugeridos:
+
 - `id`
 - `customer_id`
 - `status`
@@ -210,13 +274,14 @@ Campos sugeridos:
 - `created_at`
 - `updated_at`
 
-Sensível: sim.
+Sensivel: sim.
 
-Público: não. Cliente vê apenas seus próprios pedidos.
+Publico: nao. Cliente ve apenas seus proprios pedidos.
 
 ### quote_requests
 
 Campos sugeridos:
+
 - `id`
 - `customer_id`
 - `product_variant_id`
@@ -227,16 +292,19 @@ Campos sugeridos:
 - `created_at`
 - `updated_at`
 
-Sensível: sim.
+Sensivel: sim.
 
-Público: não. Cliente vê apenas suas próprias solicitações.
+Publico: nao. Cliente ve apenas suas proprias solicitacoes.
 
 ### audit_logs
 
 Campos sugeridos:
+
 - `id`
+- `user_id`
 - `actor_user_id`
 - `action`
+- `entity`
 - `entity_type`
 - `entity_id`
 - `before_json`
@@ -245,13 +313,14 @@ Campos sugeridos:
 - `user_agent`
 - `created_at`
 
-Sensível: sim.
+Sensivel: sim.
 
-Público: não.
+Publico: nao.
 
 ### site_content
 
 Campos sugeridos:
+
 - `id`
 - `page_key`
 - `section_key`
@@ -260,13 +329,14 @@ Campos sugeridos:
 - `updated_by_user_id`
 - `updated_at`
 
-Sensível: parcialmente.
+Sensivel: parcialmente.
 
-Público: sim, somente conteúdo publicado.
+Publico: sim, somente conteudo publicado.
 
 ### media_assets
 
 Campos sugeridos:
+
 - `id`
 - `file_name`
 - `storage_key`
@@ -277,13 +347,14 @@ Campos sugeridos:
 - `uploaded_by_user_id`
 - `created_at`
 
-Sensível: parcialmente.
+Sensivel: parcialmente.
 
-Público: sim, somente arquivos aprovados.
+Publico: sim, somente arquivos aprovados.
 
-## Observações
+## Observacoes
 
-- Dados sensíveis devem ficar em banco/API protegidos.
-- O site público deve consumir apenas dados aprovados.
+- Dados sensiveis devem ficar em banco/API protegidos.
+- O site publico deve consumir apenas dados aprovados.
 - O app futuro deve usar a mesma API do site.
-- Logs devem ser gravados para alterações de preço, estoque e permissões.
+- Logs devem ser gravados para alteracoes de preco, estoque, clientes, conteudo e permissoes.
+- Nenhuma tabela deve depender permanentemente de HTML hardcoded.
