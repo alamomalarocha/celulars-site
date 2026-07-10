@@ -742,33 +742,81 @@
   display: block;
 }
 
-.catalog-table-section,
+.catalog-table-section {
+  display: block;
+  margin-top: clamp(22px, 3vw, 34px);
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, .09);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 16px 44px rgba(15, 23, 42, .06);
+}
+
 .legacy-consult-section {
   display: grid;
   gap: 12px;
   margin-top: 18px;
 }
 
-.section-heading {
+.catalog-group + .catalog-group {
+  margin-top: clamp(28px, 4vw, 42px);
+}
+
+.catalog-group__header {
+  position: relative;
+  padding: clamp(20px, 3vw, 28px);
+  border-bottom: 1px solid rgba(29, 29, 31, .08);
+  background: linear-gradient(180deg, #fff, #fbfcff);
+}
+
+.catalog-group__header:before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  bottom: 22px;
+  left: 0;
+  width: 4px;
+  border-radius: 0 999px 999px 0;
+  background: var(--blue);
+}
+
+.catalog-group__title-row {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 0 2px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.section-heading span {
-  color: var(--blue);
-  font-size: .72rem;
-  font-weight: 860;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-
-.section-heading strong {
+.catalog-group__title {
+  margin: 0;
   color: #1d2939;
-  font-size: 1.02rem;
+  font-size: clamp(1.45rem, 2.6vw, 1.9rem);
   font-weight: 860;
+  letter-spacing: -.015em;
+  line-height: 1.08;
+}
+
+.catalog-group__badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid rgba(18, 61, 121, .16);
+  border-radius: 999px;
+  background: #edf5ff;
+  color: var(--blue);
+  font-size: .76rem;
+  font-weight: 850;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+.catalog-group__subtitle {
+  max-width: 780px;
+  margin: 8px 0 0;
+  color: #5f6673;
+  font-size: .94rem;
+  line-height: 1.55;
 }
 
 .catalog-table-wrap {
@@ -778,6 +826,13 @@
   border-radius: 14px;
   background: #fff;
   box-shadow: 0 8px 24px rgba(14, 22, 40, .035);
+}
+
+#celulars-iphones-catalog .catalog-group .catalog-table-wrap {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .catalog-table {
@@ -1238,10 +1293,23 @@
     justify-self: stretch;
   }
 
-  .section-heading {
+  .catalog-group__header {
+    padding: 18px 16px;
+  }
+
+  .catalog-group__header:before {
+    top: 18px;
+    bottom: 18px;
+  }
+
+  .catalog-group__title-row {
     align-items: flex-start;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
+  }
+
+  .catalog-group__title {
+    font-size: clamp(1.35rem, 7vw, 1.7rem);
   }
 
   .catalog-table td {
@@ -2069,33 +2137,81 @@
   display: block;
 }
 
-.catalog-table-section,
+.catalog-table-section {
+  display: block;
+  margin-top: clamp(22px, 3vw, 34px);
+  overflow: hidden;
+  border: 1px solid rgba(29, 29, 31, .09);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 16px 44px rgba(15, 23, 42, .06);
+}
+
 .legacy-consult-section {
   display: grid;
   gap: 12px;
   margin-top: 18px;
 }
 
-.section-heading {
+.catalog-group + .catalog-group {
+  margin-top: clamp(28px, 4vw, 42px);
+}
+
+.catalog-group__header {
+  position: relative;
+  padding: clamp(20px, 3vw, 28px);
+  border-bottom: 1px solid rgba(29, 29, 31, .08);
+  background: linear-gradient(180deg, #fff, #fbfcff);
+}
+
+.catalog-group__header:before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  bottom: 22px;
+  left: 0;
+  width: 4px;
+  border-radius: 0 999px 999px 0;
+  background: var(--blue);
+}
+
+.catalog-group__title-row {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 0 2px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.section-heading span {
-  color: var(--blue);
-  font-size: .72rem;
-  font-weight: 860;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-
-.section-heading strong {
+.catalog-group__title {
+  margin: 0;
   color: #1d2939;
-  font-size: 1.02rem;
+  font-size: clamp(1.45rem, 2.6vw, 1.9rem);
   font-weight: 860;
+  letter-spacing: -.015em;
+  line-height: 1.08;
+}
+
+.catalog-group__badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid rgba(18, 61, 121, .16);
+  border-radius: 999px;
+  background: #edf5ff;
+  color: var(--blue);
+  font-size: .76rem;
+  font-weight: 850;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+.catalog-group__subtitle {
+  max-width: 780px;
+  margin: 8px 0 0;
+  color: #5f6673;
+  font-size: .94rem;
+  line-height: 1.55;
 }
 
 .section-note {
@@ -2113,6 +2229,13 @@
   border-radius: 14px;
   background: #fff;
   box-shadow: 0 8px 24px rgba(14, 22, 40, .035);
+}
+
+#celulars-iphones-catalog .catalog-group .catalog-table-wrap {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .catalog-table {
@@ -2615,10 +2738,23 @@
     justify-self: stretch;
   }
 
-  .section-heading {
+  .catalog-group__header {
+    padding: 18px 16px;
+  }
+
+  .catalog-group__header:before {
+    top: 18px;
+    bottom: 18px;
+  }
+
+  .catalog-group__title-row {
     align-items: flex-start;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
+  }
+
+  .catalog-group__title {
+    font-size: clamp(1.35rem, 7vw, 1.7rem);
   }
 
   .catalog-table td {
@@ -4232,7 +4368,7 @@
   function renderCapacityList(row){const items=(row.capacityItems&&row.capacityItems.length?row.capacityItems:sortCapacities(Object.keys(row.prices||{})).map(capacity=>({capacity,usd:row.prices[capacity]})));const chips=items.map(item=>renderCapacityChip(row,item)).filter(Boolean).join('');return'<div class="capacity-price-list">'+chips+'</div>'}
   function renderCatalogRow(row){return'<tr class="catalog-table-row" data-model="'+escapeHtml(row.model.model_name)+'"><td data-label="Modelo">'+renderModelCell(row)+'</td><td data-label="Cores">'+colorDots(row.colors)+'</td><td data-label="Capacidades e pre&ccedil;os" data-price-cell>'+renderCapacityList(row)+'</td></tr>'}
   function renderTable(rows){const visibleRows=rows.filter(hasVisibleRow);if(!visibleRows.length)return'';return'<div class="catalog-table-wrap"><table class="catalog-table is-capacity-pricing"><thead><tr><th>Modelo</th><th>Cores</th><th>Capacidades e pre&ccedil;os</th></tr></thead><tbody>'+visibleRows.map(renderCatalogRow).join('')+'</tbody></table></div>'}
-  function renderCatalogLayout(newRows,ecpoRows){const pricedNewRows=newRows.filter(hasPricedRow),visibleEcpoRows=ecpoRows.filter(hasVisibleRow);let html='';if(pricedNewRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>Novos</span><strong>iPhones novos</strong></div><p class="section-note">Pre&ccedil;os principais em d&oacute;lar por capacidade. A estimativa em reais usa a Cota&ccedil;&atilde;o CELULARS vigente e a confirma&ccedil;&atilde;o final acontece pelo atendimento em portugu&ecirc;s no WhatsApp institucional.</p>'+renderTable(pricedNewRows)+'</section>';if(visibleEcpoRows.length){html+='<section class="catalog-table-section"><div class="section-heading"><span>eCPO</span><strong>iPhones eCPO P1 / Grade A</strong></div><p class="section-note">eCPO americano P1 / Grade A selecionado para varejo. A tabela est&aacute; preparada para receber valores por capacidade em USD, com estimativa em reais pela Cota&ccedil;&atilde;o CELULARS.</p>'+renderTable(visibleEcpoRows)+'<p class="ecpo-pending-note">A equipe CELULARS confirma as melhores op&ccedil;&otilde;es atuais de eCPO americano pelo WhatsApp, com orienta&ccedil;&atilde;o sobre modelo, capacidade, cor e configura&ccedil;&atilde;o.</p></section>'}html+='<p class="table-footnote">Outras capacidades, cores ou modelos americanos podem ser consultados diretamente pelo WhatsApp com orienta&ccedil;&atilde;o em portugu&ecirc;s da equipe CELULARS.</p>';return html}
+  function renderCatalogLayout(newRows,ecpoRows){const pricedNewRows=newRows.filter(hasPricedRow),visibleEcpoRows=ecpoRows.filter(hasVisibleRow);let html='';if(pricedNewRows.length)html+='<section class="catalog-table-section catalog-group catalog-group--new"><header class="catalog-group__header"><div class="catalog-group__title-row"><h2 class="catalog-group__title">iPhones novos</h2></div><p class="catalog-group__subtitle">Modelos americanos com pre&ccedil;o total em US$ e estimativa em R$ pela Cota&ccedil;&atilde;o CELULARS.</p></header><div class="catalog-group__table">'+renderTable(pricedNewRows)+'</div></section>';if(visibleEcpoRows.length){html+='<section class="catalog-table-section catalog-group catalog-group--ecpo"><header class="catalog-group__header"><div class="catalog-group__title-row"><h2 class="catalog-group__title">iPhones eCPO</h2><span class="catalog-group__badge">P1 / Grade A</span></div><p class="catalog-group__subtitle">Aparelhos americanos selecionados para varejo, organizados por modelo, cor e capacidade.</p></header><div class="catalog-group__table">'+renderTable(visibleEcpoRows)+'</div><p class="ecpo-pending-note">Os valores eCPO por capacidade seguem a tabela comercial da CELULARS e ser&atilde;o apresentados em US$ com estimativa em R$.</p></section>'}html+='<p class="table-footnote">Outras capacidades, cores ou modelos americanos podem ser consultados diretamente pelo WhatsApp com orienta&ccedil;&atilde;o em portugu&ecirc;s da equipe CELULARS.</p>';return html}
   function renderCatalog(){const newRows=newModelsFor(IPHONE_MODELS).map(rowForNew),ecpoRows=ecpoModelsFor(IPHONE_MODELS).map(rowForEcpo);gridEl.innerHTML=renderCatalogLayout(newRows,ecpoRows);wireCatalogControls();const total=newRows.filter(hasPricedRow).length+ecpoRows.filter(hasVisibleRow).length;statusEl.hidden=!!total;statusEl.textContent=total?'':'Nenhum iPhone encontrado para este filtro.'}
   function setActive(btns,active){btns.forEach(b=>b.classList.toggle('is-active',b===active))}
   categoryButtons.forEach(b=>b.addEventListener('click',()=>{activeCategory=b.dataset.categoryFilter;setActive(categoryButtons,b);renderCatalog()}));lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});renderCatalog();updateBcbExchangeRate();
