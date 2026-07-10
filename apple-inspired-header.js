@@ -29,9 +29,9 @@
 
   const searchItems = [
     { label: "Home", url: "index.html", terms: "home inicio celulars" },
-    { label: "iPhones", url: "iphones.html", terms: "iphone iphones modelos 17 16 15 14 13 12 novo ecpo catalogo" },
-    { label: "Acessos", url: "acessos.html", terms: "acessos acesso atacado b2b revenda lojista empresa comercial volume funcionario equipe administrativo" },
-    { label: "Sobre", url: "sobre.html", terms: "sobre celulars miami girtab operacao empresa" },
+    { label: "iPhones", url: "iphones.html", terms: "iphone iphones modelos 17 16 15 14 13 12 novo ecpo catalogo trade-in operadoras origem procedencia" },
+    { label: "Acessos", url: "acessos.html", terms: "acessos acesso atacado b2b revenda lojista empresa comercial volume funcionario equipe administrativo trade-in lotes" },
+    { label: "Sobre", url: "sobre.html", terms: "sobre celulars miami girtab operacao empresa trade-in operadoras origem procedencia triagem" },
     { label: "Contato / WhatsApp", url: "contato.html", terms: "contato whatsapp telefone atendimento suporte" }
   ];
 
@@ -275,7 +275,7 @@
       '<div class="cel-global-footer-main">',
       '<div class="cel-global-footer-about">',
       '<a class="cel-global-footer-brand" href="index.html"><img src="' + iconPath + '" alt=""><span>CELULARS</span></a>',
-      '<p class="cel-global-footer-copy">iPhones americanos, atendimento em português e operação em Miami para clientes no Brasil e nos Estados Unidos.</p>',
+      '<p class="cel-global-footer-copy">iPhones novos e eCPO de trade-in americano, com seleção P1 / Grade A, atendimento em português e operação em Miami.</p>',
       '</div>',
       '<nav class="cel-global-footer-links" aria-label="Navegação do rodapé">',
       '<span class="cel-global-footer-label">Navegação</span>',
