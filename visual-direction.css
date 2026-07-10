@@ -1,4 +1,9 @@
 /* Direction correction: clearer hero, stronger CELULARS identity and compact PTAX card. */
+:where(.cel-btn, .filter-button, .table-main-whatsapp, [data-profile-tab], .cel-link-button, .cel-link):focus-visible {
+  outline: 3px solid rgba(18, 61, 121, .36);
+  outline-offset: 3px;
+}
+
 .cel-full-logo {
   display: block;
   width: min(280px, 78vw);

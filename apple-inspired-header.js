@@ -3,6 +3,7 @@
   const BCB_CACHE_KEY = "celulars_bcb_ptax_usd_brl_v3_spread15";
   const BCB_LEGACY_CACHE_KEYS = ["celulars_bcb_ptax_usd_brl_v2", "celulars_bcb_ptax_usd_brl_v1"];
   const BCB_CACHE_TTL_MS = 86400000;
+  const BCB_FETCH_TIMEOUT_MS = 8000;
   const FALLBACK_BCB_RATE = 5.32;
   const CELULARS_EXCHANGE_SPREAD_BRL = 0.15;
   const brandImage = document.querySelector(".cel-global-brand img");
@@ -212,24 +213,35 @@
     } catch (error) {}
   }
 
-  async function fetchBcbPtax() {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 14);
-    const url = "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='" + bcbParamDate(start) + "'&@dataFinalCotacao='" + bcbParamDate(end) + "'&$format=json&$orderby=dataHoraCotacao desc&$top=1";
-    const response = await fetch(url, { cache: "no-store" });
-    if (!response.ok) throw new Error("BCB PTAX HTTP " + response.status);
-    const data = await response.json();
-    const row = data && data.value && data.value[0];
-    if (!row || !Number(row.cotacaoVenda)) throw new Error("BCB PTAX sem cotação");
-    return {
-      rate: Number(row.cotacaoVenda),
-      date: String(row.dataHoraCotacao).slice(0, 10),
-      dataHoraCotacao: row.dataHoraCotacao,
-      fetchedKey: localDateKey(),
-      fetchedAt: Date.now(),
-      source: "Banco Central do Brasil - PTAX USD/BRL venda"
-    };
+  function fetchBcbPtax() {
+    if (window.__celularsPtaxRequest) return window.__celularsPtaxRequest;
+    window.__celularsPtaxRequest = (async function () {
+      const end = new Date();
+      const start = new Date();
+      const controller = typeof AbortController === "function" ? new AbortController() : null;
+      const timeout = controller ? setTimeout(() => controller.abort(), BCB_FETCH_TIMEOUT_MS) : null;
+      start.setDate(end.getDate() - 14);
+      const url = "https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='" + bcbParamDate(start) + "'&@dataFinalCotacao='" + bcbParamDate(end) + "'&$format=json&$orderby=dataHoraCotacao desc&$top=1";
+      try {
+        const options = controller ? { cache: "no-store", signal: controller.signal } : { cache: "no-store" };
+        const response = await fetch(url, options);
+        if (!response.ok) throw new Error("BCB PTAX HTTP " + response.status);
+        const data = await response.json();
+        const row = data && data.value && data.value[0];
+        if (!row || !Number(row.cotacaoVenda)) throw new Error("BCB PTAX sem cotação");
+        return {
+          rate: Number(row.cotacaoVenda),
+          date: String(row.dataHoraCotacao).slice(0, 10),
+          dataHoraCotacao: row.dataHoraCotacao,
+          fetchedKey: localDateKey(),
+          fetchedAt: Date.now(),
+          source: "Banco Central do Brasil - PTAX USD/BRL venda"
+        };
+      } finally {
+        if (timeout) clearTimeout(timeout);
+      }
+    })();
+    return window.__celularsPtaxRequest;
   }
 
   async function updateGlobalBcbExchangeRate() {

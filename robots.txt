@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /data/
+Disallow: /design-system/
+Disallow: /release-backup/
+Disallow: /structure-backup-20260628-204405/
+Disallow: /godaddy-
+
+Sitemap: https://celulars.com.br/sitemap.xml

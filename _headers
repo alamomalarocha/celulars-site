@@ -10,6 +10,12 @@
 /iphones.html
   Cache-Control: no-cache, no-store, must-revalidate
 
+/acessos
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/acessos.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
 /sobre
   Cache-Control: no-cache, no-store, must-revalidate
 
@@ -22,6 +28,27 @@
 /contato.html
   Cache-Control: no-cache, no-store, must-revalidate
 
+/atacado
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex, nofollow
+
+/atacado.html
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex, nofollow
+
 /data/wholesale-inventory.json
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store
+
+/data/wholesale-inventory.sample.json
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+
+/godaddy-*
+  X-Robots-Tag: noindex, nofollow
+
+/release-backup/*
+  X-Robots-Tag: noindex, nofollow
+
+/structure-backup-20260628-204405/*
+  X-Robots-Tag: noindex, nofollow
