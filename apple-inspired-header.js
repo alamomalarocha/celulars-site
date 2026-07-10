@@ -7,6 +7,7 @@
   const CELULARS_EXCHANGE_SPREAD_BRL = 0.15;
   const brandImage = document.querySelector(".cel-global-brand img");
   const nav = document.querySelector(".cel-global-nav");
+  const primaryContent = document.querySelector("main, #celulars-home, #celulars-iphones-catalog, #celulars-sobre, #celulars-contato");
 
   if (brandImage) {
     brandImage.src = iconPath;
@@ -15,6 +16,16 @@
   }
 
   if (!nav) return;
+
+  if (primaryContent && !document.querySelector(".cel-skip-link")) {
+    if (primaryContent.tagName !== "MAIN") primaryContent.setAttribute("role", "main");
+    if (!primaryContent.id) primaryContent.id = "conteudo-principal";
+    const skipLink = document.createElement("a");
+    skipLink.className = "cel-skip-link";
+    skipLink.href = "#" + primaryContent.id;
+    skipLink.textContent = "Ir para o conteúdo principal";
+    document.body.insertBefore(skipLink, document.body.firstChild);
+  }
 
   const searchItems = [
     { label: "Home", url: "index.html", terms: "home inicio celulars" },
@@ -54,7 +65,7 @@
       const filtered = query ? searchItems.filter((item) => matchesItem(item, query)) : searchItems.slice(1, 5);
       results.innerHTML = filtered.length
         ? filtered.map((item) => `<a href="${item.url}">${item.label}</a>`).join("")
-        : '<span class="cel-global-search-empty">Nenhum resultado encontrado</span>';
+        : '<span class="cel-global-search-empty">Tente buscar por modelo, linha ou tipo de atendimento.</span>';
     }
 
     function openPanel() {
@@ -250,4 +261,35 @@
   }
 
   updateGlobalBcbExchangeRate();
+
+  document.querySelectorAll('a[target="_blank"]').forEach((link) => {
+    link.rel = "noopener noreferrer";
+  });
+
+  if (!document.querySelector(".cel-global-footer")) {
+    const footer = document.createElement("footer");
+    footer.className = "cel-global-footer";
+    footer.setAttribute("role", "contentinfo");
+    footer.innerHTML = [
+      '<div class="cel-global-footer-inner">',
+      '<div class="cel-global-footer-main">',
+      '<div class="cel-global-footer-about">',
+      '<a class="cel-global-footer-brand" href="index.html"><img src="' + iconPath + '" alt=""><span>CELULARS</span></a>',
+      '<p class="cel-global-footer-copy">iPhones americanos, atendimento em português e operação em Miami para clientes no Brasil e nos Estados Unidos.</p>',
+      '</div>',
+      '<nav class="cel-global-footer-links" aria-label="Navegação do rodapé">',
+      '<span class="cel-global-footer-label">Navegação</span>',
+      '<a href="index.html">Home</a><a href="iphones.html">iPhones</a><a href="sobre.html">Sobre</a><a href="acessos.html">Acessos</a><a href="contato.html">Contato</a>',
+      '</nav>',
+      '<div class="cel-global-footer-contact">',
+      '<span class="cel-global-footer-label">Atendimento</span>',
+      '<a href="https://wa.me/17865466540?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20consultar%20iPhones%20pela%20CELULARS.%20Gostaria%20de%20confirmar%20modelos%2C%20capacidades%2C%20cores%20e%20valores%20atualizados%20em%20d%C3%B3lar%20e%20estimativa%20em%20reais." target="_blank" rel="noopener noreferrer">WhatsApp +1 786-546-6540</a>',
+      '<a href="mailto:contact@celulars.com.br">contact@celulars.com.br</a>',
+      '</div>',
+      '</div>',
+      '<div class="cel-global-footer-bottom"><span>© ' + new Date().getFullYear() + ' CELULARS</span><span>Miami, Estados Unidos · Atendimento em português</span></div>',
+      '</div>'
+    ].join("");
+    document.body.appendChild(footer);
+  }
 })();

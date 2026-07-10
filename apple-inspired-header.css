@@ -1,3 +1,36 @@
+.cel-skip-link {
+  position: fixed;
+  top: 8px;
+  left: 12px;
+  z-index: 20000;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #1d1d1f;
+  color: #fff;
+  font: 700 .85rem/1 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform .16s ease;
+}
+
+.cel-skip-link:focus {
+  transform: translateY(0);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+}
+
+.cel-global-header :is(a, button, input):focus-visible,
+.cel-global-footer a:focus-visible {
+  outline: 3px solid rgba(18, 61, 121, .34);
+  outline-offset: 3px;
+}
+
 .cel-global-header {
   padding: 8px clamp(16px, 2.6vw, 30px) !important;
   background: rgba(251, 251, 253, .9) !important;
@@ -31,8 +64,14 @@
   transform: none !important;
 }
 
-.cel-global-brand-text {
+.cel-global-header .cel-global-brand .cel-global-brand-text {
   display: inline-block;
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
   color: #1d1d1f;
   font-size: 1.08rem;
   font-weight: 820;
@@ -206,18 +245,110 @@
   font-weight: 780;
 }
 
-@media (max-width: 720px) {
+.cel-global-footer {
+  width: 100%;
+  border-top: 1px solid rgba(29, 29, 31, .09);
+  background: #f5f5f7;
+  color: #1d1d1f;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.cel-global-footer-inner {
+  width: min(100% - 32px, 1120px);
+  margin: 0 auto;
+  padding: 28px 0 24px;
+}
+
+.cel-global-footer-main {
+  display: grid;
+  grid-template-columns: minmax(210px, 1fr) auto auto;
+  gap: 24px 40px;
+  align-items: start;
+}
+
+.cel-global-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #1d1d1f;
+  text-decoration: none;
+  font-size: .94rem;
+  font-weight: 820;
+}
+
+.cel-global-footer-brand img {
+  display: block;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.cel-global-footer-copy {
+  max-width: 430px;
+  margin: 12px 0 0;
+  color: rgba(29, 29, 31, .64);
+  font-size: .8rem;
+  line-height: 1.55;
+}
+
+.cel-global-footer-links,
+.cel-global-footer-contact {
+  display: grid;
+  gap: 9px;
+}
+
+.cel-global-footer-links a,
+.cel-global-footer-contact a {
+  color: rgba(29, 29, 31, .76);
+  font-size: .8rem;
+  font-weight: 680;
+  text-decoration: none;
+}
+
+.cel-global-footer-links a:hover,
+.cel-global-footer-contact a:hover {
+  color: #000;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cel-global-footer-label {
+  color: rgba(29, 29, 31, .5);
+  font-size: .64rem;
+  font-weight: 820;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.cel-global-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(29, 29, 31, .08);
+  color: rgba(29, 29, 31, .52);
+  font-size: .72rem;
+}
+
+@media (max-width: 900px) {
   .cel-global-header {
     padding: 7px 10px !important;
   }
 
   .cel-global-nav {
-    gap: 9px !important;
-    min-height: 50px !important;
-    justify-content: center !important;
+    display: grid !important;
+    grid-template-columns: 42px minmax(0, 1fr) 32px;
+    grid-template-areas:
+      "brand currency search"
+      "links links links";
+    gap: 6px 10px !important;
+    min-height: 0 !important;
+    justify-content: stretch !important;
   }
 
   .cel-global-brand {
+    grid-area: brand;
     width: 42px !important;
     min-width: 42px !important;
     height: 42px !important;
@@ -229,18 +360,28 @@
     height: 38px !important;
   }
 
-  .cel-global-brand-text {
+  .cel-global-header .cel-global-brand .cel-global-brand-text {
     display: none !important;
   }
 
   .cel-global-links {
-    gap: 9px !important;
+    grid-area: links;
+    width: 100%;
+    gap: 5px 10px !important;
+    flex-wrap: nowrap !important;
   }
 
   .cel-global-links a {
     min-height: 31px !important;
-    font-size: .8rem !important;
+    padding: 0 4px !important;
+    font-size: .76rem !important;
     font-weight: 680 !important;
+  }
+
+  .cel-global-search {
+    grid-area: search;
+    margin-left: 0;
+    justify-self: end;
   }
 
   .cel-global-search-button {
@@ -254,20 +395,21 @@
   }
 
   .cel-global-currency {
-    order: 10;
-    width: min(100%, 430px);
+    grid-area: currency;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
     min-width: 0;
-    margin: 2px auto 0;
-    padding: 8px 12px;
-    grid-template-columns: auto 1fr;
-    column-gap: 9px;
-    row-gap: 2px;
-    text-align: left;
+    margin: 0;
+    padding: 6px 9px;
+    gap: 7px;
+    border-radius: 12px;
+    text-align: center;
   }
 
   .cel-currency-title {
-    grid-column: 1 / -1;
-    font-size: .59rem;
+    display: none;
   }
 
   .cel-currency-value {
@@ -284,8 +426,16 @@
 
   .cel-currency-date {
     align-self: center;
-    text-align: right;
-    font-size: .61rem;
+    text-align: left;
+    font-size: .58rem;
+  }
+
+  .cel-global-footer-main {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cel-global-footer-about {
+    grid-column: 1 / -1;
   }
 }
 
@@ -295,19 +445,38 @@
   }
 
   .cel-global-links {
-    gap: 7px !important;
+    gap: 4px 7px !important;
   }
 
   .cel-global-links a {
     font-size: .72rem !important;
+    padding: 0 2px !important;
   }
 
   .cel-global-currency {
-    grid-template-columns: 1fr;
-    gap: 3px;
+    gap: 5px;
   }
 
   .cel-currency-date {
     text-align: left;
+  }
+
+  .cel-global-footer-inner {
+    width: min(100% - 28px, 1120px);
+    padding: 24px 0 20px;
+  }
+
+  .cel-global-footer-main {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .cel-global-footer-about {
+    grid-column: auto;
+  }
+
+  .cel-global-footer-bottom {
+    display: grid;
+    gap: 5px;
   }
 }
