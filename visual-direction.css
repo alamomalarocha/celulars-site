@@ -1800,3 +1800,311 @@
     padding: var(--cel-panel-padding) !important;
   }
 }
+
+/* Footer, card padding and end-of-page rhythm refinement. */
+:is(
+  #celulars-home .cel-section-head,
+  #celulars-sobre .cel-head,
+  #celulars-acessos .cel-section-title,
+  #celulars-contato .cel-head
+) {
+  margin-bottom: 24px !important;
+}
+
+:is(
+  #celulars-home .cel-process-card,
+  #celulars-home .cel-shipping-card,
+  #celulars-home .cel-path-card,
+  #celulars-sobre .cel-card,
+  #celulars-sobre .cel-info-card,
+  #celulars-acessos .cel-profile-card,
+  #celulars-contato .cel-card
+) {
+  padding: 28px 26px !important;
+}
+
+:is(
+  #celulars-home .cel-process-card,
+  #celulars-home .cel-shipping-card,
+  #celulars-home .cel-path-card,
+  #celulars-sobre .cel-card,
+  #celulars-sobre .cel-info-card,
+  #celulars-acessos .cel-profile-card,
+  #celulars-acessos .cel-security-item,
+  #celulars-contato .cel-card,
+  #celulars-contato .cel-location,
+  #celulars-contato .cel-note
+) :is(h2, h3) {
+  margin-top: 0 !important;
+  margin-bottom: 14px !important;
+}
+
+:is(
+  #celulars-home .cel-process-card,
+  #celulars-home .cel-shipping-card,
+  #celulars-home .cel-path-card,
+  #celulars-sobre .cel-card,
+  #celulars-sobre .cel-info-card,
+  #celulars-acessos .cel-profile-card,
+  #celulars-acessos .cel-security-item,
+  #celulars-contato .cel-card,
+  #celulars-contato .cel-location,
+  #celulars-contato .cel-note
+) p {
+  line-height: 1.6 !important;
+}
+
+:is(
+  #celulars-home .cel-process-card,
+  #celulars-home .cel-shipping-card,
+  #celulars-home .cel-path-card,
+  #celulars-sobre .cel-card,
+  #celulars-sobre .cel-info-card,
+  #celulars-acessos .cel-profile-card,
+  #celulars-contato .cel-card,
+  #celulars-contato .cel-location,
+  #celulars-contato .cel-note
+) p + p {
+  margin-top: 12px !important;
+}
+
+#celulars-acessos .cel-profile-card h3 {
+  margin-bottom: 6px !important;
+}
+
+#celulars-contato .cel-card h3 {
+  margin-bottom: 0 !important;
+}
+
+#celulars-acessos :is(.cel-entry-left, .cel-entry-right) {
+  padding: 34px !important;
+}
+
+#celulars-acessos .cel-hero-note {
+  padding: 24px 26px !important;
+}
+
+#celulars-acessos .cel-status-grid > .cel-panel {
+  padding: 30px 34px !important;
+}
+
+#celulars-acessos .cel-security-item {
+  min-height: 0 !important;
+  padding: 22px !important;
+}
+
+#celulars-acessos .cel-permission-table th,
+#celulars-acessos .cel-permission-table td {
+  padding: 14px 18px !important;
+}
+
+#celulars-contato .cel-hero {
+  padding: 44px 40px !important;
+}
+
+#celulars-contato .cel-contact-highlight strong {
+  font-size: clamp(28px, 2.25vw, 36px) !important;
+  white-space: nowrap;
+}
+
+#celulars-contato :is(.cel-location, .cel-note) {
+  padding: 34px 40px !important;
+}
+
+#celulars-contato .cel-note p {
+  max-width: 76ch !important;
+  margin-top: 16px !important;
+}
+
+:is(
+  #celulars-home .cel-final-cta,
+  #celulars-sobre .cel-final-cta,
+  #celulars-acessos .cel-final-cta,
+  #celulars-contato .cel-final-cta
+) {
+  margin-top: 40px !important;
+  margin-bottom: 56px !important;
+  padding: 46px 40px !important;
+}
+
+#celulars-contato .cel-final-cta {
+  padding: 48px 44px !important;
+}
+
+#celulars-iphones-catalog.catalog-shell {
+  padding-bottom: 72px !important;
+}
+
+#celulars-iphones-catalog .catalog-filter-panel {
+  padding: 26px !important;
+}
+
+#celulars-iphones-catalog .catalog-group + .catalog-group {
+  margin-top: 40px !important;
+}
+
+#celulars-iphones-catalog .catalog-group__header {
+  padding: 30px 32px 22px !important;
+}
+
+#celulars-iphones-catalog .catalog-table th,
+#celulars-iphones-catalog .catalog-table td {
+  padding: 17px 20px !important;
+}
+
+#celulars-iphones-catalog .post-table-notes {
+  padding: 34px 36px !important;
+}
+
+.cel-global-footer-inner {
+  padding-top: 56px !important;
+  padding-bottom: 30px !important;
+}
+
+.cel-global-footer-main {
+  display: grid;
+  grid-template-columns: minmax(340px, 1.3fr) minmax(150px, .55fr) minmax(260px, .82fr);
+  gap: clamp(36px, 4vw, 64px);
+  align-items: start;
+}
+
+.cel-global-footer-about {
+  max-width: 420px;
+}
+
+.cel-global-footer-copy {
+  max-width: 420px;
+  margin-top: 14px;
+  font-size: .86rem;
+  line-height: 1.65;
+}
+
+.cel-global-footer-links,
+.cel-global-footer-contact {
+  align-content: start;
+  gap: 11px;
+}
+
+.cel-global-footer-label {
+  margin-bottom: 3px;
+  font-size: .68rem;
+  letter-spacing: .09em;
+}
+
+.cel-global-footer-links a,
+.cel-global-footer-contact a {
+  width: fit-content;
+  color: rgba(29, 29, 31, .72);
+  font-size: .86rem;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+.cel-global-footer-links a:hover,
+.cel-global-footer-contact a:hover {
+  color: #000;
+  text-decoration: none;
+}
+
+.cel-global-footer-contact a:first-of-type {
+  white-space: nowrap;
+}
+
+.cel-global-footer-bottom {
+  margin-top: 36px;
+  padding-top: 20px;
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  .cel-global-footer-main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px 40px;
+  }
+
+  .cel-global-footer-about {
+    grid-column: 1 / -1;
+    max-width: 560px;
+  }
+}
+
+@media (max-width: 620px) {
+  :is(
+    #celulars-home .cel-process-card,
+    #celulars-home .cel-shipping-card,
+    #celulars-home .cel-path-card,
+    #celulars-sobre .cel-card,
+    #celulars-sobre .cel-info-card,
+    #celulars-acessos .cel-profile-card,
+    #celulars-contato .cel-card
+  ) {
+    padding: 20px 22px !important;
+  }
+
+  #celulars-acessos :is(.cel-entry-left, .cel-entry-right),
+  #celulars-acessos .cel-status-grid > .cel-panel,
+  #celulars-acessos .cel-security-item,
+  #celulars-contato .cel-hero,
+  #celulars-contato :is(.cel-location, .cel-note),
+  #celulars-contato .cel-final-cta,
+  #celulars-iphones-catalog .catalog-filter-panel,
+  #celulars-iphones-catalog .post-table-notes,
+  #celulars-iphones-catalog .catalog-group__header {
+    padding: 20px 22px !important;
+  }
+
+  :is(
+    #celulars-home .cel-final-cta,
+    #celulars-sobre .cel-final-cta,
+    #celulars-acessos .cel-final-cta,
+    #celulars-contato .cel-final-cta
+  ) {
+    margin-top: 32px !important;
+    margin-bottom: 40px !important;
+    padding-block: 34px !important;
+  }
+
+  #celulars-contato .cel-contact-highlight strong {
+    font-size: clamp(27px, 8.4vw, 32px) !important;
+  }
+
+  #celulars-iphones-catalog .catalog-table th,
+  #celulars-iphones-catalog .catalog-table td {
+    padding: 14px 16px !important;
+  }
+
+  .cel-global-footer-inner {
+    padding-top: 40px !important;
+    padding-bottom: 26px !important;
+  }
+
+  .cel-global-footer-main {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .cel-global-footer-about {
+    grid-column: auto;
+    max-width: none;
+  }
+
+  .cel-global-footer-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 20px;
+  }
+
+  .cel-global-footer-links .cel-global-footer-label {
+    grid-column: 1 / -1;
+  }
+
+  .cel-global-footer-contact {
+    gap: 10px;
+  }
+
+  .cel-global-footer-bottom {
+    display: grid;
+    gap: 8px;
+    margin-top: 30px;
+    padding-top: 20px;
+  }
+}
