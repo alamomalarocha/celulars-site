@@ -1436,3 +1436,367 @@
     width: 100% !important;
   }
 }
+
+/* Global layout normalization: shared guides, spacing and reading rhythm. */
+:root {
+  --cel-content-max: 1180px;
+  --cel-reading-max: 72ch;
+  --cel-page-gutter: 32px;
+  --cel-section-space: 64px;
+  --cel-panel-padding: 30px;
+  --cel-card-padding: 24px;
+  --cel-panel-radius: 24px;
+  --cel-card-radius: 18px;
+  --cel-line-global: rgba(20, 38, 65, .1);
+  --cel-shadow-global: 0 12px 34px rgba(26, 43, 70, .06);
+}
+
+:is(
+  #celulars-home .cel-home-shell,
+  #celulars-iphones-catalog.catalog-shell,
+  #celulars-sobre .cel-sobre-shell,
+  #celulars-acessos .cel-access-shell,
+  #celulars-contato .cel-contato-shell,
+  .cel-global-footer-inner
+) {
+  width: min(var(--cel-content-max), calc(100% - (var(--cel-page-gutter) + var(--cel-page-gutter)))) !important;
+  max-width: none !important;
+  margin-inline: auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+:is(#celulars-home, #celulars-iphones-catalog, #celulars-sobre, #celulars-acessos, #celulars-contato) :is(p, li) {
+  text-wrap: pretty;
+}
+
+:is(
+  #celulars-home .cel-section-head,
+  #celulars-sobre .cel-head,
+  #celulars-acessos .cel-section-title,
+  #celulars-contato .cel-head,
+  #celulars-iphones-catalog .catalog-header
+) p {
+  max-width: var(--cel-reading-max) !important;
+}
+
+:is(
+  #celulars-home .cel-home-hero h1,
+  #celulars-iphones-catalog #catalog-title,
+  #celulars-sobre .cel-hero h1,
+  #celulars-acessos .cel-access-hero h1,
+  #celulars-contato .cel-hero h1
+) {
+  max-width: 18ch !important;
+  font-size: 60px !important;
+  line-height: 1.02 !important;
+  letter-spacing: 0 !important;
+  text-wrap: balance;
+}
+
+:is(
+  #celulars-home .cel-section-head h2,
+  #celulars-home .cel-final-cta h2,
+  #celulars-sobre .cel-section h2,
+  #celulars-sobre .cel-final-cta h2,
+  #celulars-acessos .cel-section-title h2,
+  #celulars-acessos .cel-final-cta h2,
+  #celulars-contato .cel-section h2,
+  #celulars-contato .cel-final-cta h2,
+  #celulars-iphones-catalog .catalog-group__title
+) {
+  font-size: 38px !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0 !important;
+  text-wrap: balance;
+}
+
+:is(#celulars-home .cel-home-section, #celulars-sobre .cel-section, #celulars-acessos .cel-section, #celulars-contato .cel-section) {
+  padding-block: var(--cel-section-space) !important;
+}
+
+:is(
+  #celulars-home .cel-hero-panel,
+  #celulars-sobre .cel-hero,
+  #celulars-contato .cel-hero,
+  #celulars-acessos .cel-entry-panel,
+  #celulars-iphones-catalog .catalog-filter-panel,
+  #celulars-iphones-catalog .post-table-notes
+) {
+  border-radius: var(--cel-panel-radius) !important;
+  border-color: var(--cel-line-global) !important;
+  box-shadow: var(--cel-shadow-global) !important;
+}
+
+#celulars-home .cel-hero-panel,
+#celulars-sobre .cel-hero,
+#celulars-contato .cel-hero {
+  margin-block: 32px 12px !important;
+  padding: 40px !important;
+}
+
+#celulars-home .cel-benefits-section .cel-path-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+#celulars-home :is(.cel-process-card, .cel-shipping-card, .cel-path-card) {
+  padding: var(--cel-card-padding) !important;
+  border-radius: var(--cel-card-radius) !important;
+  box-shadow: none !important;
+}
+
+#celulars-sobre .cel-intro .cel-copy-grid,
+#celulars-sobre .cel-diagnostic .cel-copy-grid {
+  gap: 32px !important;
+}
+
+#celulars-sobre :is(.cel-feature, .cel-retail) {
+  margin: 0 !important;
+  padding: var(--cel-section-space) 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--cel-line-global) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+#celulars-sobre :is(.cel-feature, .cel-retail) p,
+#celulars-sobre .cel-copy-grid p,
+#celulars-sobre .cel-stack {
+  max-width: var(--cel-reading-max);
+}
+
+#celulars-sobre :is(.cel-card, .cel-info-card) {
+  min-height: 0 !important;
+  padding: var(--cel-card-padding) !important;
+  border-radius: var(--cel-card-radius) !important;
+  box-shadow: none !important;
+}
+
+#celulars-acessos .cel-access-hero {
+  padding: 52px 0 32px !important;
+  gap: 48px !important;
+}
+
+#celulars-acessos .cel-entry-panel {
+  overflow: clip;
+}
+
+#celulars-acessos :is(.cel-entry-left, .cel-entry-right) {
+  padding: var(--cel-panel-padding) !important;
+}
+
+#celulars-acessos .cel-profile-grid {
+  gap: 18px !important;
+}
+
+#celulars-acessos .cel-profile-card {
+  min-height: 230px !important;
+  padding: var(--cel-card-padding) !important;
+  border-radius: var(--cel-card-radius) !important;
+  box-shadow: none !important;
+}
+
+#celulars-acessos .cel-permission-table th,
+#celulars-acessos .cel-permission-table td {
+  padding-block: 11px !important;
+}
+
+#celulars-acessos .cel-permission-panel {
+  max-height: 520px;
+  overflow: auto;
+}
+
+#celulars-contato .cel-contact-highlight {
+  width: min(100%, 390px) !important;
+  padding: var(--cel-panel-padding) !important;
+  border-radius: var(--cel-panel-radius) !important;
+  box-shadow: none !important;
+}
+
+#celulars-contato .cel-contact-highlight strong {
+  font-size: 34px !important;
+  line-height: 1.08 !important;
+  white-space: nowrap;
+}
+
+#celulars-contato .cel-card {
+  min-height: 0 !important;
+  padding: var(--cel-card-padding) !important;
+  border-radius: var(--cel-card-radius) !important;
+  box-shadow: none !important;
+}
+
+#celulars-contato :is(.cel-location, .cel-note, .cel-final-cta) {
+  padding: var(--cel-panel-padding) !important;
+  border-radius: var(--cel-panel-radius) !important;
+}
+
+#celulars-iphones-catalog.catalog-shell {
+  padding-top: 48px !important;
+  padding-bottom: 64px !important;
+}
+
+#celulars-iphones-catalog .catalog-subtitle {
+  max-width: var(--cel-reading-max) !important;
+}
+
+#celulars-iphones-catalog .catalog-filter-panel {
+  gap: 16px !important;
+  padding: 22px !important;
+}
+
+#celulars-iphones-catalog .filter-button {
+  min-height: 38px !important;
+  padding-inline: 14px !important;
+}
+
+#celulars-iphones-catalog .catalog-table-section {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+#celulars-iphones-catalog .catalog-group__header {
+  padding: 28px 28px 20px !important;
+}
+
+#celulars-iphones-catalog .catalog-table th,
+#celulars-iphones-catalog .catalog-table td {
+  padding: 16px 18px !important;
+}
+
+#celulars-iphones-catalog .post-table-notes {
+  margin-top: 28px !important;
+  padding: 28px !important;
+  border: 1px solid var(--cel-line-global);
+  background: rgba(255, 255, 255, .82);
+}
+
+#celulars-iphones-catalog .post-table-notes h2 {
+  margin: 0;
+  color: #1d1d1f;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+#celulars-iphones-catalog .post-table-note-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 32px;
+  margin-top: 12px;
+}
+
+#celulars-iphones-catalog .post-table-note-grid .operation-note {
+  margin: 0 !important;
+  padding: 16px 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--cel-line-global) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.cel-global-footer-inner {
+  padding-top: 34px !important;
+  padding-bottom: 28px !important;
+}
+
+.cel-global-footer-contact a[href^="tel:"] {
+  white-space: nowrap;
+}
+
+@media (max-width: 980px) {
+  :root {
+    --cel-page-gutter: 24px;
+    --cel-section-space: 52px;
+    --cel-panel-padding: 24px;
+    --cel-card-padding: 22px;
+  }
+
+  :is(
+    #celulars-home .cel-home-hero h1,
+    #celulars-iphones-catalog #catalog-title,
+    #celulars-sobre .cel-hero h1,
+    #celulars-acessos .cel-access-hero h1,
+    #celulars-contato .cel-hero h1
+  ) {
+    max-width: 18ch !important;
+    font-size: 48px !important;
+  }
+
+  #celulars-home .cel-benefits-section .cel-path-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 620px) {
+  :root {
+    --cel-page-gutter: 18px;
+    --cel-section-space: 38px;
+    --cel-panel-padding: 20px;
+    --cel-card-padding: 20px;
+    --cel-panel-radius: 22px;
+  }
+
+  :is(
+    #celulars-home .cel-home-hero h1,
+    #celulars-iphones-catalog #catalog-title,
+    #celulars-sobre .cel-hero h1,
+    #celulars-acessos .cel-access-hero h1,
+    #celulars-contato .cel-hero h1
+  ) {
+    max-width: none !important;
+    font-size: 38px !important;
+    line-height: 1.04 !important;
+  }
+
+  :is(
+    #celulars-home .cel-section-head h2,
+    #celulars-home .cel-final-cta h2,
+    #celulars-sobre .cel-section h2,
+    #celulars-sobre .cel-final-cta h2,
+    #celulars-acessos .cel-section-title h2,
+    #celulars-acessos .cel-final-cta h2,
+    #celulars-contato .cel-section h2,
+    #celulars-contato .cel-final-cta h2,
+    #celulars-iphones-catalog .catalog-group__title
+  ) {
+    font-size: 30px !important;
+  }
+
+  #celulars-home .cel-hero-panel,
+  #celulars-sobre .cel-hero,
+  #celulars-contato .cel-hero {
+    margin-top: 18px !important;
+    padding: var(--cel-panel-padding) !important;
+  }
+
+  #celulars-home .cel-benefits-section .cel-path-grid,
+  #celulars-iphones-catalog .post-table-note-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  #celulars-acessos .cel-access-hero {
+    padding: 34px 0 22px !important;
+  }
+
+  #celulars-acessos .cel-permission-panel {
+    max-height: none;
+    overflow: visible;
+  }
+
+  #celulars-contato .cel-contact-highlight strong {
+    font-size: 28px !important;
+  }
+
+  #celulars-iphones-catalog.catalog-shell {
+    padding-top: 30px !important;
+    padding-bottom: 44px !important;
+  }
+
+  #celulars-iphones-catalog .catalog-filter-panel,
+  #celulars-iphones-catalog .post-table-notes,
+  #celulars-iphones-catalog .catalog-group__header {
+    padding: var(--cel-panel-padding) !important;
+  }
+}

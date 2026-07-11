@@ -21,8 +21,8 @@
   <meta name="twitter:description" content="Consulte iPhones novos e eCPO de trade-in americano P1 / Grade A, com valores em US$ e estimativa em R$.">
   <meta name="twitter:image" content="https://celulars.com.br/celulars-social-preview-1200x630.png">
   <link rel="stylesheet" href="visual-review.css?v=visual2">
-  <link rel="stylesheet" href="apple-inspired-header.css?v=apple13">
-  <link rel="stylesheet" href="visual-direction.css?v=direction8">
+  <link rel="stylesheet" href="apple-inspired-header.css?v=apple14">
+  <link rel="stylesheet" href="visual-direction.css?v=direction9">
 <style>#celulars-iphones-catalog {
   --ink: #1d1d1f;
   --muted: #6e6e73;
@@ -1675,14 +1675,14 @@
     </div>
     <div class="catalog-status" data-status hidden></div>
     <div class="catalog-grid" data-catalog-grid></div>
-    <div class="post-table-notes" aria-label="Observa&ccedil;&otilde;es da tabela de iPhones">
-      <div class="price-reference-note" role="note">Valores em d&oacute;lar s&atilde;o a refer&ecirc;ncia principal da CELULARS. Os valores em reais s&atilde;o estimativas comerciais calculadas pela Cota&ccedil;&atilde;o CELULARS e podem variar at&eacute; a confirma&ccedil;&atilde;o final pelo WhatsApp institucional.</div>
-      <div class="operation-note" role="note"><strong>iPhones novos:</strong> o valor exibido considera o pre&ccedil;o total do aparelho novo com taxas aplic&aacute;veis j&aacute; inclu&iacute;das na refer&ecirc;ncia da tabela.</div>
-      <div class="operation-note" role="note"><strong>iPhones eCPO P1 / Grade A:</strong> a linha &eacute; formada principalmente por aparelhos originados em programas de trade-in de operadoras americanas e outros canais comerciais dos Estados Unidos. Os valores por capacidade seguem a tabela comercial da CELULARS.</div>
-      <div class="operation-note" role="note"><strong>Mais do que uma vers&atilde;o regional:</strong> o diferencial comercial est&aacute; na origem do lote, no canal de aquisi&ccedil;&atilde;o, na triagem e na sele&ccedil;&atilde;o antes da venda.</div>
-      <div class="operation-note" role="note"><strong>Sele&ccedil;&atilde;o comercial:</strong> os aparelhos eCPO passam por triagem e verifica&ccedil;&atilde;o de condi&ccedil;&atilde;o antes da classifica&ccedil;&atilde;o P1 / Grade A para varejo.</div>
-      <div class="operation-note" role="note"><strong>Atendimento organizado e seguro:</strong> Para organiza&ccedil;&atilde;o e seguran&ccedil;a, a retirada em Miami acontece ap&oacute;s o pedido estar previamente confirmado pelo atendimento da CELULARS.</div>
-      <div class="operation-note" role="note"><strong>Compra para revenda ou empresa?</strong> Condi&ccedil;&otilde;es de atacado s&atilde;o exclusivas para clientes comerciais aprovados. Para solicitar acesso, envie seus dados de pessoa jur&iacute;dica para an&aacute;lise pela CELULARS. <a href="acessos.html">Solicitar acesso de atacado</a>.</div>
+    <div class="post-table-notes" aria-labelledby="catalog-important-title">
+      <h2 id="catalog-important-title">Informa&ccedil;&otilde;es importantes</h2>
+      <div class="post-table-note-grid">
+        <div class="operation-note" role="note"><strong>Valores:</strong> o US$ &eacute; a refer&ecirc;ncia principal; o R$ &eacute; estimativo pela Cota&ccedil;&atilde;o CELULARS. Nos aparelhos novos, a refer&ecirc;ncia exibida j&aacute; considera as taxas aplic&aacute;veis.</div>
+        <div class="operation-note" role="note"><strong>Origem e sele&ccedil;&atilde;o eCPO:</strong> aparelhos provenientes principalmente de trade-in de operadoras e outros canais americanos. O diferencial est&aacute; no canal de aquisi&ccedil;&atilde;o, na triagem e na sele&ccedil;&atilde;o P1 / Grade A; os valores por capacidade seguem a tabela comercial da CELULARS.</div>
+        <div class="operation-note" role="note"><strong>Atendimento e retirada:</strong> valores finais, disponibilidade e retirada em Miami s&atilde;o confirmados previamente pelo WhatsApp institucional.</div>
+        <div class="operation-note" role="note"><strong>Atacado:</strong> condi&ccedil;&otilde;es exclusivas para clientes comerciais aprovados, mediante an&aacute;lise da CELULARS. <a href="acessos.html">Solicitar acesso</a>.</div>
+      </div>
     </div>
   </section>
 </main><script>(function clientMain(){
@@ -3076,6 +3076,6 @@
   function renderCatalog(){const newRows=newModelsFor(IPHONE_MODELS).map(rowForNew),ecpoRows=ecpoModelsFor(IPHONE_MODELS).map(rowForEcpo);gridEl.innerHTML=renderCatalogLayout(newRows,ecpoRows);wireCatalogControls();const total=newRows.filter(hasPricedRow).length+ecpoRows.filter(hasVisibleRow).length;statusEl.hidden=!!total;statusEl.textContent=total?'':'N\u00e3o encontramos essa combina\u00e7\u00e3o na tabela atual. Ajuste os filtros ou fale com a CELULARS pelo WhatsApp.'}
   function setActive(btns,active){btns.forEach(b=>{const selected=b===active;b.classList.toggle('is-active',selected);b.setAttribute('aria-pressed',selected?'true':'false')})}
   categoryButtons.forEach(b=>b.addEventListener('click',()=>{activeCategory=b.dataset.categoryFilter;setActive(categoryButtons,b);renderCatalog()}));lineButtons.forEach(b=>b.addEventListener('click',()=>{activeLine=b.dataset.lineFilter;setActive(lineButtons,b);renderCatalog()}));searchInput?.addEventListener('input',()=>{activeSearch=searchInput.value;renderCatalog()});renderCatalog();updateBcbExchangeRate();
-})();</script><script src="apple-inspired-header.js?v=apple11"></script>
+})();</script><script src="apple-inspired-header.js?v=apple12"></script>
 <script src="visual-direction.js?v=direction3"></script>
 </body></html>

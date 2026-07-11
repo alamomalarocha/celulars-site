@@ -70,19 +70,23 @@
     }
 
     function openPanel() {
+      search.classList.add("is-open");
       panel.classList.add("is-open");
       button.setAttribute("aria-expanded", "true");
       renderResults();
       window.setTimeout(() => input.focus(), 0);
     }
 
-    function closePanel() {
+    function closePanel(restoreFocus) {
+      const wasOpen = panel.classList.contains("is-open");
+      search.classList.remove("is-open");
       panel.classList.remove("is-open");
       button.setAttribute("aria-expanded", "false");
+      if (restoreFocus && wasOpen) button.focus();
     }
 
     button.addEventListener("click", () => {
-      panel.classList.contains("is-open") ? closePanel() : openPanel();
+      panel.classList.contains("is-open") ? closePanel(false) : openPanel();
     });
 
     input.addEventListener("input", renderResults);
@@ -91,15 +95,15 @@
         const first = results.querySelector("a");
         if (first) window.location.href = first.href;
       }
-      if (event.key === "Escape") closePanel();
+      if (event.key === "Escape") closePanel(true);
     });
 
     document.addEventListener("click", (event) => {
-      if (!search.contains(event.target)) closePanel();
+      if (!search.contains(event.target)) closePanel(true);
     });
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") closePanel();
+      if (event.key === "Escape") closePanel(true);
     });
   }
 
