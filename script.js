@@ -18,7 +18,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 699,
     "stock_status": "Dispon\u00edvel"
@@ -42,7 +42,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 1299,
     "stock_status": "Dispon\u00edvel"
@@ -65,7 +65,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 1199,
     "stock_status": "Dispon\u00edvel"
@@ -89,7 +89,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 999,
     "stock_status": "Dispon\u00edvel"
@@ -113,7 +113,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 899,
     "stock_status": "Dispon\u00edvel"
@@ -135,7 +135,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 499,
     "stock_status": "Dispon\u00edvel"
@@ -159,7 +159,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 1049,
     "stock_status": "Dispon\u00edvel"
@@ -184,7 +184,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 849,
     "stock_status": "Dispon\u00edvel"
@@ -209,7 +209,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 729,
     "stock_status": "Dispon\u00edvel"
@@ -234,7 +234,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 649,
     "stock_status": "Dispon\u00edvel"
@@ -258,7 +258,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 899,
     "stock_status": "Dispon\u00edvel"
@@ -283,7 +283,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 699,
     "stock_status": "Dispon\u00edvel"
@@ -308,7 +308,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 599,
     "stock_status": "Dispon\u00edvel"
@@ -333,7 +333,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 549,
     "stock_status": "Dispon\u00edvel"
@@ -358,7 +358,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 629,
     "stock_status": "Dispon\u00edvel"
@@ -383,7 +383,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 579,
     "stock_status": "Dispon\u00edvel"
@@ -409,7 +409,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 479,
     "stock_status": "Dispon\u00edvel"
@@ -435,7 +435,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 429,
     "stock_status": "Dispon\u00edvel"
@@ -458,7 +458,7 @@
     "commercial": true,
     "conditions": [
       "Novo",
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 149,
     "stock_status": "Dispon\u00edvel"
@@ -483,7 +483,7 @@
     ],
     "commercial": true,
     "conditions": [
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 499,
     "stock_status": "Dispon\u00edvel"
@@ -508,7 +508,7 @@
     ],
     "commercial": true,
     "conditions": [
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 429,
     "stock_status": "Dispon\u00edvel"
@@ -533,7 +533,7 @@
     ],
     "commercial": true,
     "conditions": [
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 349,
     "stock_status": "Dispon\u00edvel"
@@ -629,7 +629,7 @@
     ],
     "commercial": true,
     "conditions": [
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 299,
     "stock_status": "Dispon\u00edvel"
@@ -747,7 +747,7 @@
     ],
     "commercial": true,
     "conditions": [
-      "eCPO eco Certified Pre-Owned"
+      "CPO P1 / Grade A"
     ],
     "base_price_usd": 229,
     "stock_status": "Dispon\u00edvel"
@@ -1309,7 +1309,7 @@
   const categoryButtons = [...document.querySelectorAll('[data-category-filter]')];
   const lineButtons = [...document.querySelectorAll('[data-line-filter]')];
   const searchInput = document.querySelector('[data-search-filter]');
-  IPHONE_MODELS.forEach(m=>{m.conditions=['Novo','eCPO eco Certified Pre-Owned'];m.stock_status='Disponível'});
+  IPHONE_MODELS.forEach(m=>{m.conditions=['Novo','CPO P1 / Grade A'];m.stock_status='Disponível'});
   let activeCategory = 'todos', activeLine = 'todos', activeSearch = '';
   const FLORIDA_TAX_RATE = 0.07;
   const IPHONE_17_ORDER = ['iPhone 17 Pro Max','iPhone 17 Pro','iPhone Air','iPhone 17','iPhone 17e'];
@@ -1318,6 +1318,7 @@
   const ECPO_ORDER = ['iPhone 17 Pro Max','iPhone 17 Pro','iPhone Air','iPhone 17','iPhone 17e','iPhone 16 Pro Max','iPhone 16 Pro','iPhone 16 Plus','iPhone 16','iPhone 16e','iPhone 15 Pro Max','iPhone 15 Pro','iPhone 15 Plus','iPhone 15','iPhone 14 Pro Max','iPhone 14 Pro','iPhone 14 Plus','iPhone 14','iPhone 13 Pro Max','iPhone 13 Pro','iPhone 13','iPhone 13 mini','iPhone 12 Pro Max','iPhone 12 Pro','iPhone 12','iPhone 12 mini'];
   const ECPO_MODELS = new Set(ECPO_ORDER);
   const ECPO_RANK = new Map(ECPO_ORDER.map((name,index)=>[name,index]));
+  const CPO_SEARCH_ALIASES = 'CPO eCPO e CPO e-CPO';
   const IPHONE_17_PRICING = {
     'iPhone 17 Pro Max': {colors:['Silver','Cosmic Orange','Deep Blue'],prices:{'256 GB':1199,'512 GB':1399,'1 TB':1599,'2 TB':1999}},
     'iPhone 17 Pro': {colors:['Silver','Cosmic Orange','Deep Blue'],prices:{'256 GB':1099,'512 GB':1299,'1 TB':1499}},
@@ -1355,18 +1356,18 @@
   function lineAllowed(m){return activeLine==='todos'||normalize(modelFamily(m))===normalize(activeLine)}
   function matchesModelSearch(m,kind){if(!activeSearch)return true;const info=IPHONE_17_PRICING[m.model_name]||{},hay=[m.model_name,m.year,m.line,modelFamily(m),m.capacities.join(' '),(info.colors||m.colors||[]).join(' '),kind].join(' ');return normalize(hay).includes(normalize(activeSearch))}
   function newModelsFor(models){return models.filter(m=>isNewModel(m)&&categoryAllowed('novo')&&lineAllowed(m)&&matchesModelSearch(m,'Novo')).sort((a,b)=>(IPHONE_17_RANK.get(a.model_name)??999)-(IPHONE_17_RANK.get(b.model_name)??999))}
-  function ecpoModelsFor(models){return models.filter(m=>isEcpoModel(m)&&categoryAllowed('ecpo')&&lineAllowed(m)&&matchesModelSearch(m,'eCPO')).sort((a,b)=>(ECPO_RANK.get(a.model_name)??999)-(ECPO_RANK.get(b.model_name)??999))}
+  function ecpoModelsFor(models){return models.filter(m=>isEcpoModel(m)&&categoryAllowed('ecpo')&&lineAllowed(m)&&matchesModelSearch(m,CPO_SEARCH_ALIASES)).sort((a,b)=>(ECPO_RANK.get(a.model_name)??999)-(ECPO_RANK.get(b.model_name)??999))}
   function colorList(colors){return'<div class="color-list">'+colors.map(c=>'<span class="color-static"><span class="color-swatch" style="--swatch:'+escapeHtml(colorHex(c))+'" aria-hidden="true"></span><span>'+escapeHtml(c)+'</span></span>').join('')+'</div>'}
   function iphone17Info(m){return IPHONE_17_PRICING[m.model_name]||{colors:m.colors||[],prices:{}}}
   function capacityRowsFor(m){const info=iphone17Info(m);return Object.keys(info.prices||{}).map(capacity=>({model:m,capacity,applePrice:Number(info.prices[capacity])||null}))}
   function renderModelCell(m){return'<div class="model-cell"><strong>'+escapeHtml(m.model_name)+'</strong><small>'+escapeHtml(m.year)+' &bull; Novo</small></div>'}
-  function renderEcpoModelCell(m){return'<div class="model-cell"><strong>'+escapeHtml(m.model_name)+'</strong><small>'+escapeHtml(m.year)+' &bull; eCPO</small></div>'}
+  function renderEcpoModelCell(m){return'<div class="model-cell"><strong>'+escapeHtml(m.model_name)+'</strong><small>'+escapeHtml(m.year)+' &bull; CPO</small></div>'}
   function renderMoneyCell(value,highlight){return value?'<strong class="'+(highlight?'price-usd':'')+'">'+formatUsdCents(value)+'</strong>':'<span class="review-price">Confirmar pelo WhatsApp</span>'}
   function renderCatalogRow(row){const m=row.model,info=iphone17Info(m),apple=row.applePrice,tax=apple?apple*FLORIDA_TAX_RATE:null,siteUsd=apple?apple+tax:null,siteBrl=siteUsd?siteUsd*CATALOG_RATE:null,msg='Olá, tenho interesse no '+m.model_name+' '+row.capacity+' novo pela CELULARS. Gostaria de confirmar cor, preço final e condições de compra.';return'<tr class="catalog-table-row" data-model="'+escapeHtml(m.model_name)+'"><td data-label="Modelo">'+renderModelCell(m)+'</td><td data-label="Capacidade"><span class="capacity-pill">'+escapeHtml(row.capacity)+'</span></td><td data-label="Cores">'+colorList(info.colors||m.colors||[])+'</td><td data-label="Condição"><span class="condition-pill">Novo</span></td><td data-label="Preço base US$">'+renderMoneyCell(apple,false)+'</td><td data-label="Taxa FL 7%">'+renderMoneyCell(tax,false)+'</td><td data-label="Preço CELULARS US$">'+renderMoneyCell(siteUsd,true)+'</td><td data-label="Preço CELULARS R$">'+(siteBrl?'<strong>'+formatBrl(siteBrl)+'</strong>':'<span class="review-price">Confirmar pelo WhatsApp institucional</span>')+'</td><td data-label="WhatsApp"><a class="whatsapp-button is-secondary table-whatsapp" href="'+buildWhatsAppUrl(msg)+'" target="_blank" rel="noopener">Consultar</a></td></tr>'}
   function renderTable(rows){return'<div class="catalog-table-wrap"><table class="catalog-table is-iphone17-pricing"><thead><tr><th>Modelo</th><th>Capacidade</th><th>Cores</th><th>Condição</th><th>Preço base US$</th><th>Taxa FL 7%</th><th>Preço CELULARS US$</th><th>Preço CELULARS R$</th><th>WhatsApp</th></tr></thead><tbody>'+rows.map(renderCatalogRow).join('')+'</tbody></table></div>'}
-  function renderEcpoRow(m){return'<tr class="catalog-table-row" data-model="'+escapeHtml(m.model_name)+'"><td data-label="Modelo">'+renderEcpoModelCell(m)+'</td><td data-label="Ano"><span class="year-badge">'+escapeHtml(m.year)+'</span></td><td data-label="Capacidades"><div class="capacity-list">'+m.capacities.map(c=>'<span class="capacity-pill">'+escapeHtml(c)+'</span>').join('')+'</div></td><td data-label="Cores">'+colorList(m.colors||[])+'</td><td data-label="Condição"><span class="condition-pill is-ecpo">eCPO</span></td><td data-label="Consulta"><span class="review-price">Consulta comercial</span></td></tr>'}
+  function renderEcpoRow(m){return'<tr class="catalog-table-row" data-model="'+escapeHtml(m.model_name)+'"><td data-label="Modelo">'+renderEcpoModelCell(m)+'</td><td data-label="Ano"><span class="year-badge">'+escapeHtml(m.year)+'</span></td><td data-label="Capacidades"><div class="capacity-list">'+m.capacities.map(c=>'<span class="capacity-pill">'+escapeHtml(c)+'</span>').join('')+'</div></td><td data-label="Cores">'+colorList(m.colors||[])+'</td><td data-label="Condição"><span class="condition-pill is-ecpo">CPO</span></td><td data-label="Consulta"><span class="review-price">Consulta comercial</span></td></tr>'}
   function renderEcpoTable(models){return'<div class="catalog-table-wrap"><table class="catalog-table is-ecpo-consult"><thead><tr><th>Modelo</th><th>Ano</th><th>Capacidades</th><th>Cores</th><th>Condição</th><th>Consulta</th></tr></thead><tbody>'+models.map(renderEcpoRow).join('')+'</tbody></table></div>'}
-  function renderCatalogLayout(newRows,ecpoRows){let html='';if(newRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>Novos</span><strong>iPhones novos linha 17</strong></div><p class="section-note">Modelos novos da linha iPhone 17 com valores principais em dólar e estimativa em reais pela Cotação CELULARS. A confirmação final acontece pelo atendimento em português no WhatsApp institucional.</p>'+renderTable(newRows)+'</section>';if(ecpoRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>eCPO</span><strong>iPhones eCPO P1 / Grade A do 12 ao 17</strong></div><p class="section-note">eCPO americano P1 / Grade A selecionado pela CELULARS para varejo. A equipe confirma preços, grade, condição e lote no atendimento em português pelo WhatsApp institucional.</p>'+renderEcpoTable(ecpoRows)+'</section>';return html}
+  function renderCatalogLayout(newRows,ecpoRows){let html='';if(newRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>Novos</span><strong>iPhones novos linha 17</strong></div><p class="section-note">Modelos novos da linha iPhone 17 com valores principais em dólar e estimativa em reais pela Cotação CELULARS. A confirmação final acontece pelo atendimento em português no WhatsApp institucional.</p>'+renderTable(newRows)+'</section>';if(ecpoRows.length)html+='<section class="catalog-table-section"><div class="section-heading"><span>CPO</span><strong>iPhones CPO P1 / Grade A do 12 ao 17</strong></div><p class="section-note">CPO americano P1 / Grade A selecionado pela CELULARS para varejo. A equipe confirma preços, grade, condição e lote no atendimento em português pelo WhatsApp institucional.</p>'+renderEcpoTable(ecpoRows)+'</section>';return html}
   function wireCatalogControls(){}
   function renderCatalog(){const newRows=newModelsFor(IPHONE_MODELS).flatMap(capacityRowsFor),ecpoRows=ecpoModelsFor(IPHONE_MODELS);gridEl.innerHTML=renderCatalogLayout(newRows,ecpoRows);wireCatalogControls();const total=newRows.length+ecpoRows.length;statusEl.hidden=!!total;statusEl.textContent=total?'':'Nenhum iPhone encontrado para este filtro.'}
   function setActive(btns,active){btns.forEach(b=>b.classList.toggle('is-active',b===active))}

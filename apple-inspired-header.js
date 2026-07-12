@@ -30,7 +30,7 @@
 
   const searchItems = [
     { label: "Home", url: "index.html", terms: "home inicio celulars" },
-    { label: "iPhones", url: "iphones.html", terms: "iphone iphones modelos 17 16 15 14 13 12 novo ecpo catalogo trade-in operadoras origem procedencia" },
+    { label: "iPhones", url: "iphones.html", terms: "iphone iphones modelos 17 16 15 14 13 12 novo cpo ecpo e-cpo catalogo trade-in operadoras origem procedencia" },
     { label: "Acessos", url: "acessos.html", terms: "acessos acesso atacado b2b revenda lojista empresa comercial volume funcionario equipe administrativo trade-in lotes" },
     { label: "Sobre", url: "sobre.html", terms: "sobre celulars miami girtab operacao empresa trade-in operadoras origem procedencia triagem" },
     { label: "Contato / WhatsApp", url: "contato.html", terms: "contato whatsapp telefone atendimento suporte" }
@@ -44,7 +44,7 @@
       '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>',
       "</button>",
       '<div class="cel-global-search-panel" role="search" aria-label="Busca CELULARS">',
-      '<input type="search" placeholder="Buscar iPhone, eCPO, Acessos..." aria-label="Buscar no site CELULARS">',
+      '<input type="search" placeholder="Buscar iPhone, CPO, Acessos..." aria-label="Buscar no site CELULARS">',
       '<div class="cel-global-search-results"></div>',
       "</div>"
     ].join("");
@@ -291,7 +291,7 @@
       '<div class="cel-global-footer-main">',
       '<div class="cel-global-footer-about">',
       '<a class="cel-global-footer-brand" href="index.html"><img src="' + iconPath + '" alt=""><span>CELULARS</span></a>',
-      '<p class="cel-global-footer-copy">iPhones novos e eCPO de trade-in americano, com seleção P1 / Grade A, atendimento em português e operação em Miami.</p>',
+      '<p class="cel-global-footer-copy">iPhones novos e CPO de trade-in americano, com seleção P1 / Grade A, atendimento em português e operação em Miami.</p>',
       '</div>',
       '<nav class="cel-global-footer-links" aria-label="Navegação do rodapé">',
       '<span class="cel-global-footer-label">Navegação</span>',
