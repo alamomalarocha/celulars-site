@@ -1464,28 +1464,107 @@
   color: #fff;
 }
 
-.catalog-table.is-capacity-pricing {
+.catalog-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.catalog-table-wrap--matrix {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  scrollbar-gutter: stable;
+  overscroll-behavior-inline: contain;
+}
+
+#celulars-iphones-catalog .catalog-table.is-capacity-matrix thead th {
+  padding: 9px 8px !important;
+}
+
+#celulars-iphones-catalog .catalog-table.is-capacity-matrix tbody th,
+#celulars-iphones-catalog .catalog-table.is-capacity-matrix tbody td {
+  padding: 8px !important;
+}
+
+#celulars-iphones-catalog .catalog-table.is-capacity-matrix tbody th.model-matrix-cell {
+  background: #fff !important;
+}
+
+.catalog-table.is-capacity-matrix {
+  width: 100%;
+  min-width: var(--matrix-min-width, 900px);
   table-layout: fixed;
 }
 
-.catalog-table.is-capacity-pricing th,
-.catalog-table.is-capacity-pricing td {
-  padding: 15px 14px;
+.catalog-table.is-capacity-matrix col.model-column {
+  width: 23%;
 }
 
-.catalog-table.is-capacity-pricing th:nth-child(1),
-.catalog-table.is-capacity-pricing td:nth-child(1) {
-  width: 30%;
+.catalog-table.is-capacity-matrix col.colors-column {
+  width: 14%;
 }
 
-.catalog-table.is-capacity-pricing th:nth-child(2),
-.catalog-table.is-capacity-pricing td:nth-child(2) {
-  width: 16%;
+.catalog-table.is-capacity-matrix thead th {
+  position: sticky;
+  top: var(--catalog-sticky-offset, 106px);
+  z-index: 6;
+  height: 43px;
+  padding: 9px 8px;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(29, 29, 31, .12);
+  background: #f5f5f7;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .8) inset;
 }
 
-.catalog-table.is-capacity-pricing th:nth-child(3),
-.catalog-table.is-capacity-pricing td:nth-child(3) {
-  width: 54%;
+.catalog-table.is-capacity-matrix th,
+.catalog-table.is-capacity-matrix td {
+  width: auto !important;
+}
+
+.catalog-table.is-capacity-matrix thead th[data-capacity] {
+  color: #344054;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.catalog-table.is-capacity-matrix tbody th,
+.catalog-table.is-capacity-matrix tbody td {
+  height: 66px;
+  padding: 8px;
+  vertical-align: middle;
+}
+
+.catalog-table.is-capacity-matrix tbody th.model-matrix-cell {
+  position: static;
+  z-index: auto;
+  background: #fff;
+  color: inherit;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.catalog-table.is-capacity-matrix tbody tr:hover th,
+.catalog-table.is-capacity-matrix tbody tr:hover td {
+  background: #fbfcfe;
+}
+
+.catalog-table.is-capacity-matrix .matrix-colors-cell {
+  text-align: left;
+}
+
+.catalog-table.is-capacity-matrix .matrix-capacity-cell {
+  text-align: center;
+}
+
+.catalog-table.is-capacity-matrix .matrix-capacity-cell.is-empty {
+  background: rgba(248, 250, 252, .42);
 }
 
 .color-dots {
@@ -1506,65 +1585,52 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .45), 0 1px 2px rgba(14, 22, 40, .08);
 }
 
-.capacity-price-list {
+.iphone-price-cell {
   display: flex;
-  align-items: stretch;
-  flex-wrap: wrap;
-  gap: 10px;
-  min-width: 0;
-}
-
-.capacity-price-chip,
-.capacity-available-chip {
-  display: inline-flex;
-  min-width: 118px;
-  max-width: 154px;
-  min-height: 72px;
+  min-height: 49px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 5px;
-  padding: 10px 12px;
-  border: 1px solid rgba(18, 61, 121, .13);
-  border-radius: 12px;
-  background: #fff;
+  gap: 4px;
+  padding: 7px 5px;
+  border-radius: 8px;
+  background: rgba(245, 247, 250, .78);
   text-align: center;
-  text-decoration: none;
-  box-shadow: 0 5px 14px rgba(14, 22, 40, .035);
 }
 
-.capacity-price-chip {
+.iphone-price-cell .usd-price {
   color: #123d79;
-}
-
-.capacity-price-chip .capacity-label,
-.capacity-available-chip span:first-child {
-  color: #475467;
-  font-size: .76rem;
-  font-weight: 830;
-  line-height: 1.1;
-  white-space: nowrap;
-}
-
-.capacity-price-chip .usd-price {
-  color: #123d79;
-  font-size: .95rem;
+  font-size: clamp(.78rem, .82vw, .9rem);
   font-weight: 900;
+  line-height: 1.08;
+  white-space: nowrap;
+}
+
+.iphone-price-cell .brl-estimate {
+  color: #667085;
+  font-size: clamp(.66rem, .68vw, .73rem);
+  font-weight: 760;
   line-height: 1.1;
   white-space: nowrap;
 }
 
-.capacity-price-chip .brl-estimate {
-  color: #667085;
-  font-size: .72rem;
-  font-weight: 760;
-  line-height: 1.15;
-  white-space: nowrap;
+.capacity-marker {
+  display: inline-flex;
+  width: 21px;
+  height: 21px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(18, 61, 121, .15);
+  border-radius: 50%;
+  background: #f2f6fb;
+  color: #41688f;
+  font-size: .7rem;
+  font-weight: 900;
+  line-height: 1;
 }
 
-.capacity-available-chip {
-  color: #667085;
-  background: #fbfcfd;
+.catalog-mobile-list {
+  display: none;
 }
 
 .ecpo-pending-note {
@@ -1585,29 +1651,186 @@
   line-height: 1.45;
 }
 
-@media (max-width: 860px) {
-  .catalog-table.is-capacity-pricing td[data-label="Cores"] {
-    grid-template-columns: 74px minmax(0, 1fr);
+@media (max-width: 1120px) {
+  #celulars-iphones-catalog .catalog-group .catalog-table-wrap--matrix {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+  }
+}
+
+@media (min-width: 1121px) {
+  #celulars-iphones-catalog.catalog-shell {
+    overflow-x: clip !important;
+    overflow-y: visible !important;
   }
 
-  .catalog-table.is-capacity-pricing td[data-price-cell] {
-    grid-template-columns: 1fr;
+  #celulars-iphones-catalog .catalog-table-section.catalog-group {
+    overflow: visible !important;
+  }
+
+  #celulars-iphones-catalog .catalog-group .catalog-table-wrap--matrix {
+    overflow: visible !important;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1120px) {
+  #celulars-iphones-catalog .catalog-table.is-capacity-matrix thead th {
+    position: static;
+    top: auto;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 860px) {
+  .catalog-table.is-capacity-matrix {
+    display: table;
+    width: 100% !important;
+  }
+
+  .catalog-table.is-capacity-matrix thead {
+    display: table-header-group;
+  }
+
+  .catalog-table.is-capacity-matrix tbody {
+    display: table-row-group;
+  }
+
+  .catalog-table.is-capacity-matrix tr {
+    display: table-row;
+    width: auto !important;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .catalog-table.is-capacity-matrix th,
+  .catalog-table.is-capacity-matrix td {
+    display: table-cell;
+    width: auto !important;
+  }
+
+  .catalog-table.is-capacity-matrix td:before {
+    content: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .catalog-table-wrap--matrix {
+    display: none;
+  }
+
+  .catalog-mobile-list {
+    display: block;
+  }
+
+  .catalog-mobile-row {
+    padding: 16px;
+    border-bottom: 1px solid rgba(18, 61, 121, .09);
+    background: #fff;
+  }
+
+  .catalog-mobile-row:last-child {
+    border-bottom: 0;
+  }
+
+  .catalog-mobile-row__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .catalog-mobile-row__colors {
+    display: flex;
+    align-items: center;
     gap: 10px;
+    margin-top: 10px;
   }
 
-  .catalog-table.is-capacity-pricing td[data-price-cell]:before {
-    margin-bottom: 0;
+  .catalog-mobile-row__label {
+    flex: 0 0 auto;
+    color: #7d8898;
+    font-size: .66rem;
+    font-weight: 850;
+    letter-spacing: .06em;
+    text-transform: uppercase;
   }
 
-  .capacity-price-list {
-    gap: 8px;
+  .iphone-mobile-capacity-scroller {
+    width: 100%;
+    margin-top: 12px;
+    overflow-x: auto;
+    scrollbar-gutter: stable;
+    overscroll-behavior-inline: contain;
+    border: 1px solid rgba(18, 61, 121, .1);
+    border-radius: 10px;
+    background: #fff;
   }
 
-  .capacity-price-chip,
-  .capacity-available-chip {
-    flex: 1 1 136px;
-    max-width: none;
-    min-height: 68px;
+  .iphone-mobile-capacity-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--capacity-count), minmax(76px, 1fr));
+    min-width: max(100%, calc(var(--capacity-count) * 76px));
+}
+
+.iphone-mobile-capacity-grid__row {
+  display: contents;
+}
+
+  .iphone-mobile-capacity-heading,
+  .iphone-mobile-capacity-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    border-right: 1px solid rgba(18, 61, 121, .08);
+    text-align: center;
+  }
+
+  .iphone-mobile-capacity-heading {
+    min-height: 32px;
+    padding: 6px 4px;
+    border-bottom: 1px solid rgba(18, 61, 121, .1);
+    background: #f5f5f7;
+    color: #475467;
+    font-size: .66rem;
+    font-weight: 850;
+    white-space: nowrap;
+  }
+
+  .iphone-mobile-capacity-value {
+    min-height: 55px;
+    padding: 4px;
+    background: #fff;
+  }
+
+  .iphone-mobile-capacity-value.is-empty {
+    background: rgba(248, 250, 252, .5);
+  }
+
+  .iphone-mobile-capacity-value .iphone-price-cell {
+    width: 100%;
+    min-height: 47px;
+    padding: 5px 2px;
+    background: transparent;
+  }
+
+  .iphone-mobile-capacity-value .usd-price {
+    font-size: .7rem;
+  }
+
+  .iphone-mobile-capacity-value .brl-estimate {
+    font-size: .6rem;
+  }
+
+  .catalog-group__header {
+    padding: 18px 16px;
+  }
+
+  .ecpo-pending-note,
+  .table-footnote {
+    margin-right: 16px;
+    margin-left: 16px;
   }
 }
 </style>
@@ -3064,11 +3287,17 @@
   function renderModelCell(row){const m=row.model;return'<div class="model-cell"><strong>'+escapeHtml(m.model_name)+'</strong><small>'+escapeHtml(m.year)+'</small></div>'}
   function hasPricedRow(row){return Object.keys(row.prices||{}).some(capacity=>Number(row.prices[capacity])>0)}
   function hasVisibleRow(row){return(row.capacityItems||[]).length>0||(row.colors||[]).length>0}
-  function renderCapacityChip(row,item){const capacity=typeof item==='string'?item:item.capacity,value=Number((item&&item.usd)||row.prices[capacity])||0;if(value<=0)return'<span class="capacity-available-chip"><span class="capacity-label">'+escapeHtml(capacity)+'</span></span>';const siteUsd=row.kind==='novo'?value*(1+FLORIDA_TAX_RATE):value,siteBrl=siteUsd*CATALOG_RATE;return'<span class="capacity-price-chip"><span class="capacity-label">'+escapeHtml(capacity)+'</span><strong class="usd-price">'+formatUsdCents(siteUsd)+'</strong><span class="brl-estimate">&asymp; '+formatBrlCompact(siteBrl)+'</span></span>'}
-  function renderCapacityList(row){const items=(row.capacityItems&&row.capacityItems.length?row.capacityItems:sortCapacities(Object.keys(row.prices||{})).map(capacity=>({capacity,usd:row.prices[capacity]})));const chips=items.map(item=>renderCapacityChip(row,item)).filter(Boolean).join('');return'<div class="capacity-price-list">'+chips+'</div>'}
-  function capacityHeadingFor(row){return row.kind==='ecpo'?'Capacidades':'Capacidades e pre&ccedil;os'}
-  function renderCatalogRow(row){const heading=capacityHeadingFor(row);return'<tr class="catalog-table-row" data-model="'+escapeHtml(row.model.model_name)+'"><td data-label="Modelo">'+renderModelCell(row)+'</td><td data-label="Cores">'+colorDots(row.colors)+'</td><td data-label="'+heading+'" data-price-cell>'+renderCapacityList(row)+'</td></tr>'}
-  function renderTable(rows){const visibleRows=rows.filter(hasVisibleRow);if(!visibleRows.length)return'';const heading=capacityHeadingFor(visibleRows[0]);return'<div class="catalog-table-wrap"><table class="catalog-table is-capacity-pricing"><thead><tr><th scope="col">Modelo</th><th scope="col">Cores</th><th scope="col">'+heading+'</th></tr></thead><tbody>'+visibleRows.map(renderCatalogRow).join('')+'</tbody></table></div>'}
+  function capacitiesForRows(rows){return sortCapacities((rows||[]).flatMap(row=>(row.capacityItems||[]).map(item=>typeof item==='string'?item:item&&item.capacity).filter(Boolean)))}
+  function capacityState(row,capacity){const item=(row.capacityItems||[]).find(entry=>(typeof entry==='string'?entry:entry&&entry.capacity)===capacity),cataloged=Boolean(item)||Object.prototype.hasOwnProperty.call(row.prices||{},capacity),raw=Number((item&&item.usd)||(row.prices||{})[capacity])||0;if(!cataloged)return{cataloged:false,priced:false,capacity};if(raw<=0)return{cataloged:true,priced:false,capacity};const usd=row.kind==='novo'?raw*(1+FLORIDA_TAX_RATE):raw,brl=usd*CATALOG_RATE;return{cataloged:true,priced:true,capacity,usd,brl}}
+  function capacityAriaLabel(row,state){const model=row.model.model_name;if(!state.cataloged)return model+', capacidade '+state.capacity+' n\u00e3o catalogada.';if(!state.priced)return model+', capacidade '+state.capacity+' catalogada, valor comercial ainda n\u00e3o exibido.';return model+', capacidade '+state.capacity+', '+formatUsdCents(state.usd)+', estimativa '+formatBrlCompact(state.brl)+'.'}
+  function renderCapacityValue(row,state){if(!state.cataloged)return'';if(!state.priced)return'<span class="capacity-marker" aria-hidden="true">&#10003;</span>';return'<div class="iphone-price-cell"><strong class="usd-price">'+formatUsdCents(state.usd)+'</strong><span class="brl-estimate">&asymp; '+formatBrlCompact(state.brl)+'</span></div>'}
+  function renderCapacityCell(row,capacity){const state=capacityState(row,capacity),classes='matrix-capacity-cell '+(state.cataloged?'is-present ':'is-empty ')+(state.priced?'has-price':'has-marker'),cataloged=state.cataloged?' data-cataloged="true"':'';return'<td class="'+classes+'" data-capacity="'+escapeHtml(capacity)+'"'+cataloged+' aria-label="'+escapeHtml(capacityAriaLabel(row,state))+'">'+renderCapacityValue(row,state)+'</td>'}
+  function renderCatalogRow(row,capacities){return'<tr class="catalog-table-row" data-model="'+escapeHtml(row.model.model_name)+'"><th class="model-matrix-cell" scope="row" data-label="Modelo">'+renderModelCell(row)+'</th><td class="matrix-colors-cell" data-label="Cores">'+colorDots(row.colors)+'</td>'+capacities.map(capacity=>renderCapacityCell(row,capacity)).join('')+'</tr>'}
+  function renderMobileCapacityValue(row,capacity){const state=capacityState(row,capacity),classes='iphone-mobile-capacity-value '+(state.cataloged?'is-present ':'is-empty ')+(state.priced?'has-price':'has-marker'),cataloged=state.cataloged?' data-cataloged="true"':'';return'<div class="'+classes+'" role="cell" data-capacity="'+escapeHtml(capacity)+'"'+cataloged+' aria-label="'+escapeHtml(capacityAriaLabel(row,state))+'">'+renderCapacityValue(row,state)+'</div>'}
+  function renderMobileRow(row,capacities){const headings=capacities.map(capacity=>'<div class="iphone-mobile-capacity-heading" role="columnheader">'+escapeHtml(capacity)+'</div>').join(''),values=capacities.map(capacity=>renderMobileCapacityValue(row,capacity)).join('');return'<article class="catalog-mobile-row" data-model="'+escapeHtml(row.model.model_name)+'" aria-label="'+escapeHtml(row.model.model_name)+'"><div class="catalog-mobile-row__head">'+renderModelCell(row)+'</div><div class="catalog-mobile-row__colors"><span class="catalog-mobile-row__label">Cores</span>'+colorDots(row.colors)+'</div><div class="iphone-mobile-capacity-scroller" role="region" aria-label="Capacidades e valores de '+escapeHtml(row.model.model_name)+'"><div class="iphone-mobile-capacity-grid" role="table" style="--capacity-count:'+capacities.length+'"><div class="iphone-mobile-capacity-grid__row" role="row">'+headings+'</div><div class="iphone-mobile-capacity-grid__row" role="row">'+values+'</div></div></div></article>'}
+  function renderTable(rows){const visibleRows=rows.filter(hasVisibleRow);if(!visibleRows.length)return'';const capacities=capacitiesForRows(visibleRows),minWidth=Math.max(760,420+capacities.length*120),caption=visibleRows[0].kind==='novo'?'iPhones novos: valores por capacidade':'iPhones eCPO: capacidades catalogadas e valores por capacidade';return'<div class="catalog-table-wrap catalog-table-wrap--matrix"><table class="catalog-table is-capacity-matrix" style="--capacity-count:'+capacities.length+';--matrix-min-width:'+minWidth+'px"><caption class="catalog-sr-only">'+caption+'</caption><colgroup><col class="model-column"><col class="colors-column">'+capacities.map(()=>'<col class="capacity-column">').join('')+'</colgroup><thead><tr><th scope="col">Modelo</th><th scope="col">Cores</th>'+capacities.map(capacity=>'<th scope="col" data-capacity="'+escapeHtml(capacity)+'">'+escapeHtml(capacity)+'</th>').join('')+'</tr></thead><tbody>'+visibleRows.map(row=>renderCatalogRow(row,capacities)).join('')+'</tbody></table></div><div class="catalog-mobile-list" aria-label="'+caption+'">'+visibleRows.map(row=>renderMobileRow(row,capacities)).join('')+'</div>'}
+  function syncCatalogStickyOffset(){const header=document.querySelector('.cel-global-header');if(header)document.documentElement.style.setProperty('--catalog-sticky-offset',Math.ceil(header.getBoundingClientRect().height)+'px')}
+  const catalogHeader=document.querySelector('.cel-global-header');if(catalogHeader&&typeof ResizeObserver==='function')new ResizeObserver(syncCatalogStickyOffset).observe(catalogHeader);window.addEventListener('resize',syncCatalogStickyOffset);window.addEventListener('load',syncCatalogStickyOffset);syncCatalogStickyOffset();
   function renderCatalogLayout(newRows,ecpoRows){const pricedNewRows=newRows.filter(hasPricedRow),visibleEcpoRows=ecpoRows.filter(hasVisibleRow);let html='';if(pricedNewRows.length)html+='<section class="catalog-table-section catalog-group catalog-group--new"><header class="catalog-group__header"><div class="catalog-group__title-row"><h2 class="catalog-group__title">iPhones novos</h2></div><p class="catalog-group__subtitle">Aparelhos novos comercializados pela CELULARS, com pre&ccedil;o total em US$ e estimativa em R$ pela Cota&ccedil;&atilde;o CELULARS.</p></header><div class="catalog-group__table">'+renderTable(pricedNewRows)+'</div></section>';if(visibleEcpoRows.length){html+='<section class="catalog-table-section catalog-group catalog-group--ecpo"><header class="catalog-group__header"><div class="catalog-group__title-row"><h2 class="catalog-group__title">iPhones eCPO</h2><span class="catalog-group__badge">P1 / Grade A</span></div><p class="catalog-group__subtitle">Aparelhos provenientes principalmente do trade-in americano, selecionados para o padr&atilde;o de varejo da CELULARS.</p></header><div class="catalog-group__table">'+renderTable(visibleEcpoRows)+'</div><p class="ecpo-pending-note">A linha eCPO da CELULARS &eacute; formada principalmente por aparelhos originados em programas de trade-in de operadoras americanas e outros canais comerciais do mercado dos Estados Unidos. Os valores por capacidade seguem a tabela comercial da CELULARS.</p></section>'}html+='<p class="table-footnote">Outras capacidades, cores ou modelos do mercado americano podem ser consultados diretamente pelo WhatsApp com orienta&ccedil;&atilde;o em portugu&ecirc;s da equipe CELULARS.</p>';return html}
   function renderCatalog(){const newRows=newModelsFor(IPHONE_MODELS).map(rowForNew),ecpoRows=ecpoModelsFor(IPHONE_MODELS).map(rowForEcpo);gridEl.innerHTML=renderCatalogLayout(newRows,ecpoRows);wireCatalogControls();const total=newRows.filter(hasPricedRow).length+ecpoRows.filter(hasVisibleRow).length;statusEl.hidden=!!total;statusEl.textContent=total?'':'N\u00e3o encontramos essa combina\u00e7\u00e3o na tabela atual. Ajuste os filtros ou fale com a CELULARS pelo WhatsApp.'}
   function setActive(btns,active){btns.forEach(b=>{const selected=b===active;b.classList.toggle('is-active',selected);b.setAttribute('aria-pressed',selected?'true':'false')})}
