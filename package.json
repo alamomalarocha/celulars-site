@@ -1,0 +1,13 @@
+{
+  "name": "celulars-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Site estatico da CELULARS",
+  "scripts": {
+    "build": "node scripts/build-public.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+
