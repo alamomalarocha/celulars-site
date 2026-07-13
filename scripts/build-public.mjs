@@ -29,6 +29,7 @@ const publicFiles = [
 ];
 
 const generatedPublicFiles = ['data/catalog-public.js'];
+const forbiddenOutputPatterns = [/(?:^|\/)tools(?:\/|$)/, /(?:^|\/)internal(?:\/|$)/, /catalog-manager/i, /(?:^|\/)backups(?:\/|$)/, /(?:^|\/)history(?:\/|$)/, /catalog-admin/i];
 
 function assertOutputDirectoryIsSafe() {
   const expected = path.join(projectRoot, 'dist');
@@ -95,6 +96,9 @@ const outputFiles = (await listOutputFiles()).sort();
 const expectedOutputFiles = [...publicFiles, ...generatedPublicFiles].sort();
 if (JSON.stringify(outputFiles) !== JSON.stringify(expectedOutputFiles)) {
   throw new Error(`Artefato inesperado. Gerados: ${outputFiles.join(', ')}`);
+}
+for (const file of outputFiles) {
+  if (forbiddenOutputPatterns.some(pattern => pattern.test(file))) throw new Error(`Arquivo interno proibido em dist: ${file}`);
 }
 
 console.log(`Artefato publico criado em ${outputDirectory}`);

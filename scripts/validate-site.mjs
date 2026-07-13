@@ -1,7 +1,7 @@
-import { createHash } from 'node:crypto';
 import { access, readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { catalogModuleSource, validateCatalog } from './catalog-rules.mjs';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(scriptDirectory, '..');
@@ -28,11 +28,11 @@ const requiredRootFiles = [
   'brand-assets/celulars-official-logos/icon/celulars-header-icon-original-512.png'
 ];
 const expectedDistFiles = [...requiredRootFiles].sort();
-const expectedNewOrder = ['iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone Air', 'iPhone 17', 'iPhone 17e'];
-const expectedCpoOrder = ['iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone Air', 'iPhone 17', 'iPhone 17e', 'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16 Plus', 'iPhone 16', 'iPhone 16e', 'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15', 'iPhone 14 Pro Max', 'iPhone 14 Pro', 'iPhone 14 Plus', 'iPhone 14', 'iPhone 13 Pro Max', 'iPhone 13 Pro', 'iPhone 13', 'iPhone 13 mini', 'iPhone 12 Pro Max', 'iPhone 12 Pro', 'iPhone 12', 'iPhone 12 mini'];
-const expectedStructureHash = 'f24be6d04e1100ad639a557c539c35cdde364f53a04f917d32fa06705009b664';
 const expectedWhatsapp = '17865466540';
 const expectedEmail = 'contact@celulars.com.br';
+const forbiddenDistPatterns = [/(?:^|\/)tools(?:\/|$)/, /(?:^|\/)internal(?:\/|$)/, /catalog-manager/i, /(?:^|\/)backups(?:\/|$)/, /(?:^|\/)history(?:\/|$)/, /catalog-admin/i];
+const textFileExtensions = new Set(['.js', '.mjs', '.json', '.html', '.css', '.md', '.yml', '.yaml']);
+const unicodeScanIgnoredDirectories = new Set(['.git', 'node_modules', 'dist', 'backups', 'history']);
 
 function check(condition, message) {
   if (!condition) errors.push(message);
@@ -70,24 +70,6 @@ function navHrefs(html) {
   return [...match[1].matchAll(/<a\b[^>]*href="([^"]+)"/gi)].map(item => item[1]);
 }
 
-function structuralProduct(product) {
-  return {
-    model: product.model,
-    year: product.year,
-    group: product.group,
-    condition: product.condition,
-    classification: product.classification,
-    colors: product.colors,
-    capacities: product.capacities,
-    availability: product.availability,
-    order: product.order
-  };
-}
-
-function structureHash(products) {
-  return createHash('sha256').update(JSON.stringify(products.map(structuralProduct))).digest('hex');
-}
-
 async function listFiles(directory, prefix = '') {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
@@ -97,6 +79,41 @@ async function listFiles(directory, prefix = '') {
     else files.push(relativePath);
   }
   return files;
+}
+
+async function listTextFiles(directory, prefix = '') {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    if (entry.isDirectory() && unicodeScanIgnoredDirectories.has(entry.name)) continue;
+    const relativePath = path.posix.join(prefix, entry.name);
+    if (entry.isDirectory()) files.push(...await listTextFiles(path.join(directory, entry.name), relativePath));
+    else if (entry.name === '.gitignore' || textFileExtensions.has(path.extname(entry.name).toLowerCase())) files.push(relativePath);
+  }
+  return files;
+}
+
+async function validateUnicodeControls() {
+  const controlPattern = /[\p{Cc}\p{Cf}]/u;
+  const isTextFile = relativePath => path.basename(relativePath) === '.gitignore' || textFileExtensions.has(path.extname(relativePath).toLowerCase());
+  const scanFiles = new Set([...requiredRootFiles, 'package.json', '.gitignore'].filter(isTextFile));
+  for (const directory of ['.github', 'docs', 'scripts', 'tools']) {
+    const directoryPath = path.join(projectRoot, directory);
+    if (await exists(directory)) {
+      for (const relativePath of await listTextFiles(directoryPath, directory)) scanFiles.add(relativePath);
+    }
+  }
+  for (const relativePath of scanFiles) {
+    const source = await read(relativePath);
+    for (let position = 0; position < source.length;) {
+      const codePoint = source.codePointAt(position);
+      const character = String.fromCodePoint(codePoint);
+      if (controlPattern.test(character) && character !== '\t' && character !== '\n' && character !== '\r') {
+        errors.push(`Caractere Unicode de controle nao permitido em ${relativePath}, posicao ${position}, code point U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}.`);
+      }
+      position += character.length;
+    }
+  }
 }
 
 function compileScripts(html, pageName) {
@@ -111,6 +128,8 @@ function compileScripts(html, pageName) {
   }
 }
 
+await validateUnicodeControls();
+
 for (const file of requiredRootFiles) {
   check(await exists(file), `Arquivo publico obrigatorio ausente: ${file}`);
 }
@@ -123,50 +142,11 @@ try {
 }
 
 if (catalog) {
-  const products = Array.isArray(catalog.products) ? catalog.products : [];
-  const newProducts = products.filter(product => product.group === 'new').sort((a, b) => a.order - b.order);
-  const cpoProducts = products.filter(product => product.group === 'cpo').sort((a, b) => a.order - b.order);
-  const ids = products.map(product => product.id);
-  const groupModels = products.map(product => `${product.group}:${product.model}`);
-
-  check(new Set(ids).size === ids.length, 'IDs duplicados no catalogo.');
-  check(new Set(groupModels).size === groupModels.length, 'Modelo duplicado dentro do mesmo grupo.');
-  check(newProducts.length === 5, `Esperados 5 modelos novos; encontrados ${newProducts.length}.`);
-  check(cpoProducts.length === 26, `Esperados 26 modelos CPO; encontrados ${cpoProducts.length}.`);
-  check(JSON.stringify(newProducts.map(product => product.model)) === JSON.stringify(expectedNewOrder), 'Ordem dos modelos novos foi alterada.');
-  check(JSON.stringify(cpoProducts.map(product => product.model)) === JSON.stringify(expectedCpoOrder), 'Ordem dos modelos CPO foi alterada.');
-
-  let zeroCount = 0;
-  const cpoCapacitySet = new Set();
-  for (const product of products) {
-    check(typeof product.id === 'string' && product.id.length > 3, 'Produto sem ID estavel.');
-    check(typeof product.model === 'string' && product.model.trim(), `${product.id}: modelo vazio.`);
-    check(Number.isInteger(product.year) && product.year >= 2007 && product.year <= 2100, `${product.id}: ano invalido.`);
-    check(Array.isArray(product.colors) && product.colors.length > 0 && product.colors.every(color => typeof color === 'string' && color.trim()), `${product.id}: cores invalidas.`);
-    check(product.capacities && typeof product.capacities === 'object' && !Array.isArray(product.capacities), `${product.id}: capacidades invalidas.`);
-    for (const [capacity, entry] of Object.entries(product.capacities || {})) {
-      check(/^\d+\s+(?:GB|TB)$/i.test(capacity), `${product.id}: capacidade invalida (${capacity}).`);
-      const usd = entry && entry.usd;
-      check(typeof usd === 'number' && Number.isFinite(usd) && usd >= 0, `${product.id} ${capacity}: preco invalido.`);
-      if (usd === 0) {
-        zeroCount += 1;
-        check(product.group === 'cpo', `${product.id} ${capacity}: zero permitido somente para CPO.`);
-      }
-      if (product.group === 'new') check(usd > 0, `${product.id} ${capacity}: modelo novo sem preco real.`);
-      if (product.group === 'cpo') cpoCapacitySet.add(capacity);
-    }
-  }
-
-  const missingCount = cpoProducts.length * cpoCapacitySet.size - cpoProducts.reduce((total, product) => total + Object.keys(product.capacities).length, 0);
-  check(zeroCount === 83, `Esperadas 83 capacidades CPO zeradas; encontradas ${zeroCount}.`);
-  check(missingCount === 73, `Esperadas 73 combinacoes CPO ausentes; encontradas ${missingCount}.`);
-  const computedHash = structureHash(products);
-  check(catalog.sourceStructureSha256 === expectedStructureHash, 'Hash estrutural declarado foi alterado.');
-  check(computedHash === expectedStructureHash, `Hash estrutural divergente: ${computedHash}.`);
-
-  const expectedModule = `window.CELULARS_CATALOG=${JSON.stringify(catalog)};\n`;
+  const catalogValidation = validateCatalog(catalog);
+  for (const error of catalogValidation.errors) errors.push(error);
+  const expectedModule = catalogModuleSource(catalog);
   const sourceModule = await read('data/catalog-public.js');
-  check(sourceModule === expectedModule, 'catalog-public.js nao corresponde ao JSON canonico.');
+  check(sourceModule.replace(/\r\n/g, '\n') === expectedModule, 'catalog-public.js nao corresponde ao JSON canonico.');
 }
 
 const pageSources = new Map();
@@ -236,6 +216,7 @@ if (validateDist) {
     check(distStat.isDirectory(), 'dist nao e um diretorio.');
     const distFiles = (await listFiles(distRoot)).sort();
     check(JSON.stringify(distFiles) === JSON.stringify(expectedDistFiles), `Allowlist de dist divergente: ${distFiles.join(', ')}`);
+    for (const file of distFiles) check(!forbiddenDistPatterns.some(pattern => pattern.test(file)), `Arquivo interno proibido em dist: ${file}`);
     for (const page of activePages) {
       const html = await read(page, distRoot);
       for (const match of html.matchAll(/(?:src|href)="([^"#]+)"/gi)) {
@@ -255,7 +236,7 @@ if (errors.length) {
   process.exitCode = 1;
 } else {
   console.log('Validacao CELULARS concluida sem erros.');
-  console.log('Catalogo: 5 novos, 26 CPO, 83 zeros e 73 combinacoes ausentes.');
-  console.log(`Hash estrutural: ${expectedStructureHash}`);
+  console.log('Catalogo: 5 novos, 26 CPO, 83 capacidades e 73 combinacoes ausentes.');
+  console.log(`Hash estrutural: ${catalog.sourceStructureSha256}`);
   if (validateDist) console.log(`Artefato dist validado: ${expectedDistFiles.length} arquivos publicos.`);
 }

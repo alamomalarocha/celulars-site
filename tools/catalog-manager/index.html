@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gerenciador de catálogo CELULARS</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Ferramenta interna local</p>
+      <h1>Gerenciador de catálogo CELULARS</h1>
+      <p class="subtitle">Edite somente preços CPO em US$. Modelos novos e estrutura do catálogo permanecem protegidos.</p>
+    </div>
+    <div class="top-actions">
+      <button class="button secondary" id="reloadButton" type="button">Recarregar</button>
+      <button class="button primary" id="reviewButton" type="button" disabled>Revisar alterações</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="summary" aria-labelledby="summaryTitle">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Fonte canônica</p>
+          <h2 id="summaryTitle">Estado do catálogo</h2>
+        </div>
+        <span class="status-pill" id="validationStatus">Carregando...</span>
+      </div>
+      <dl class="summary-grid">
+        <div><dt>Arquivo</dt><dd id="canonicalFile">-</dd></div>
+        <div><dt>Modelos novos</dt><dd id="newModels">-</dd></div>
+        <div><dt>Modelos CPO</dt><dd id="cpoModels">-</dd></div>
+        <div><dt>Preços CPO zerados</dt><dd id="zeroPrices">-</dd></div>
+        <div><dt>Última leitura</dt><dd id="lastRead">-</dd></div>
+        <div><dt>Alterações não salvas</dt><dd id="pendingCount">0</dd></div>
+      </dl>
+    </section>
+
+    <section class="workspace" aria-labelledby="catalogTitle">
+      <div class="section-heading catalog-heading">
+        <div>
+          <p class="eyebrow">Administração local</p>
+          <h2 id="catalogTitle">Produtos e capacidades</h2>
+        </div>
+        <label class="rate-field">
+          Cotação CELULARS para prévia
+          <span><span aria-hidden="true">R$</span><input id="previewRate" type="number" min="0.0001" step="0.0001" value="5.2588" inputmode="decimal"></span>
+          <small>Não é salva no catálogo.</small>
+        </label>
+      </div>
+
+      <div class="filters" aria-label="Filtros do catálogo">
+        <fieldset class="segment" id="groupFilter">
+          <legend>Tipo</legend>
+          <label><input type="radio" name="group" value="all" checked><span>Todos</span></label>
+          <label><input type="radio" name="group" value="new"><span>Novo</span></label>
+          <label><input type="radio" name="group" value="cpo"><span>CPO</span></label>
+        </fieldset>
+        <label>Buscar modelo<input id="modelSearch" type="search" placeholder="Ex.: iPhone 16 Pro"></label>
+        <label>Ano<input id="yearSearch" type="search" inputmode="numeric" placeholder="Ex.: 2024"></label>
+        <label>Capacidade<input id="capacitySearch" type="search" placeholder="Ex.: 256 GB"></label>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Modelo</th><th>Ano</th><th>Tipo</th><th>Cores</th><th>Capacidade</th><th>Preço USD</th><th>Prévia BRL</th><th>Estado</th></tr></thead>
+          <tbody id="catalogRows"></tbody>
+        </table>
+        <p class="empty" id="emptyState" hidden>Nenhum item corresponde aos filtros.</p>
+      </div>
+    </section>
+
+    <section class="operations" aria-labelledby="operationsTitle">
+      <div>
+        <p class="eyebrow">Revisão e manutenção</p>
+        <h2 id="operationsTitle">Importar, exportar e gerar</h2>
+      </div>
+      <div class="operation-grid">
+        <div>
+          <h3>Exportação</h3>
+          <p>Baixe a versão salva ou uma cópia com alterações ainda não gravadas.</p>
+          <div class="button-row">
+            <a class="button secondary" href="/api/export/current" download>Exportar catálogo atual</a>
+            <button class="button secondary" id="exportDraftButton" type="button">Exportar com alterações</button>
+          </div>
+        </div>
+        <div>
+          <h3>Importação protegida</h3>
+          <p>O arquivo é validado e comparado antes de qualquer alteração.</p>
+          <label class="file-button">Selecionar arquivo JSON<input id="importFile" type="file" accept="application/json,.json"></label>
+        </div>
+        <div>
+          <h3>Validação e build</h3>
+          <p>Executa o validador e regenera <code>dist</code>. Não publica nem faz commit.</p>
+          <button class="button secondary" id="buildButton" type="button">Validar e gerar site</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="notice" id="message" role="status" aria-live="polite">Carregando catálogo canônico...</div>
+  </main>
+
+  <dialog id="reviewDialog" aria-labelledby="reviewTitle">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Confirmação obrigatória</p><h2 id="reviewTitle">Salvar alterações no catálogo</h2></div>
+        <button class="icon-button" value="cancel" aria-label="Fechar revisão">×</button>
+      </div>
+      <p>Confira cada mudança. Um backup será criado antes da gravação.</p>
+      <div id="diffList" class="diff-list"></div>
+      <label class="high-confirm" id="highConfirmLabel" hidden><input id="highConfirm" type="checkbox">Confirmo os valores acima de US$ 10.000,00.</label>
+      <div class="dialog-actions">
+        <button class="button secondary" value="cancel">Cancelar</button>
+        <button class="button primary" id="confirmSaveButton" value="default" type="button">Salvar alterações</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/app.js"></script>
+</body>
+</html>

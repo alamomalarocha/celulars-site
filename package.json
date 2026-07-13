@@ -5,7 +5,9 @@
   "description": "Site estatico da CELULARS",
   "scripts": {
     "validate": "node scripts/validate-site.mjs",
-    "build": "npm run validate && node scripts/build-public.mjs && node scripts/validate-site.mjs --dist"
+    "build": "npm run validate && node scripts/build-public.mjs && node scripts/validate-site.mjs --dist",
+    "catalog:admin": "node scripts/catalog-admin-server.mjs",
+    "catalog:test": "node scripts/test-catalog-manager.mjs"
   },
   "engines": {
     "node": ">=20"
