@@ -1,4 +1,4 @@
-import { cp, mkdir, readdir, rm, stat } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -24,8 +24,11 @@ const publicFiles = [
   '_redirects',
   'robots.txt',
   'sitemap.xml',
+  'data/catalog-public.json',
   'brand-assets/celulars-official-logos/icon/celulars-header-icon-original-512.png'
 ];
+
+const generatedPublicFiles = ['data/catalog-public.js'];
 
 function assertOutputDirectoryIsSafe() {
   const expected = path.join(projectRoot, 'dist');
@@ -83,9 +86,15 @@ for (const relativePath of publicFiles) {
   await copyPublicFile(relativePath);
 }
 
+const catalogJson = JSON.parse(await readFile(path.join(projectRoot, 'data/catalog-public.json'), 'utf8'));
+const catalogModulePath = path.join(outputDirectory, 'data/catalog-public.js');
+await mkdir(path.dirname(catalogModulePath), { recursive: true });
+await writeFile(catalogModulePath, `window.CELULARS_CATALOG=${JSON.stringify(catalogJson)};\n`, 'utf8');
+
 const outputFiles = (await listOutputFiles()).sort();
-if (outputFiles.length !== publicFiles.length) {
-  throw new Error(`Artefato inesperado: ${outputFiles.length} arquivos gerados para ${publicFiles.length} autorizados.`);
+const expectedOutputFiles = [...publicFiles, ...generatedPublicFiles].sort();
+if (JSON.stringify(outputFiles) !== JSON.stringify(expectedOutputFiles)) {
+  throw new Error(`Artefato inesperado. Gerados: ${outputFiles.join(', ')}`);
 }
 
 console.log(`Artefato publico criado em ${outputDirectory}`);

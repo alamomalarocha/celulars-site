@@ -1,6 +1,7 @@
 /atacado /acessos 301
 /atacado.html /acessos 301
-/data/* /not-found 302
+/data/wholesale-inventory.json /not-found 302
+/data/wholesale-inventory.sample.json /not-found 302
 /design-system/* /not-found 302
 /release-backup/* /not-found 302
 /structure-backup-* /not-found 302

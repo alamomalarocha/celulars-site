@@ -1,0 +1,932 @@
+{
+  "version": 1,
+  "currency": "USD",
+  "floridaTaxRate": 0.07,
+  "zeroMeaning": "Capacidade cadastrada na estrutura CPO e ainda sem preco comercial publicado.",
+  "sourceStructureSha256": "f24be6d04e1100ad639a557c539c35cdde364f53a04f917d32fa06705009b664",
+  "products": [
+    {
+      "id": "iphone-17-pro-max-new",
+      "model": "iPhone 17 Pro Max",
+      "year": 2025,
+      "line": "iPhone 17",
+      "family": "Pro Max",
+      "group": "new",
+      "condition": "Novo",
+      "classification": "Novo",
+      "colors": [
+        "Silver",
+        "Cosmic Orange",
+        "Deep Blue"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 1199
+        },
+        "512 GB": {
+          "usd": 1399
+        },
+        "1 TB": {
+          "usd": 1599
+        },
+        "2 TB": {
+          "usd": 1999
+        }
+      },
+      "availability": "Disponível",
+      "order": 0
+    },
+    {
+      "id": "iphone-17-pro-new",
+      "model": "iPhone 17 Pro",
+      "year": 2025,
+      "line": "iPhone 17",
+      "family": "Pro",
+      "group": "new",
+      "condition": "Novo",
+      "classification": "Novo",
+      "colors": [
+        "Silver",
+        "Cosmic Orange",
+        "Deep Blue"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 1099
+        },
+        "512 GB": {
+          "usd": 1299
+        },
+        "1 TB": {
+          "usd": 1499
+        }
+      },
+      "availability": "Disponível",
+      "order": 1
+    },
+    {
+      "id": "iphone-air-new",
+      "model": "iPhone Air",
+      "year": 2025,
+      "line": "iPhone Air",
+      "family": "Air",
+      "group": "new",
+      "condition": "Novo",
+      "classification": "Novo",
+      "colors": [
+        "Space Black",
+        "Cloud White",
+        "Light Gold",
+        "Sky Blue"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 999
+        },
+        "512 GB": {
+          "usd": 1199
+        },
+        "1 TB": {
+          "usd": 1399
+        }
+      },
+      "availability": "Disponível",
+      "order": 2
+    },
+    {
+      "id": "iphone-17-new",
+      "model": "iPhone 17",
+      "year": 2025,
+      "line": "iPhone 17",
+      "family": "standard",
+      "group": "new",
+      "condition": "Novo",
+      "classification": "Novo",
+      "colors": [
+        "Black",
+        "White",
+        "Mist Blue",
+        "Sage",
+        "Lavender"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 829
+        },
+        "512 GB": {
+          "usd": 1029
+        }
+      },
+      "availability": "Disponível",
+      "order": 3
+    },
+    {
+      "id": "iphone-17e-new",
+      "model": "iPhone 17e",
+      "year": 2026,
+      "line": "iPhone 17",
+      "family": "e",
+      "group": "new",
+      "condition": "Novo",
+      "classification": "Novo",
+      "colors": [
+        "Black",
+        "White",
+        "Soft Pink"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 599
+        },
+        "512 GB": {
+          "usd": 799
+        }
+      },
+      "availability": "Disponível",
+      "order": 4
+    },
+    {
+      "id": "iphone-17-pro-max-cpo",
+      "model": "iPhone 17 Pro Max",
+      "year": 2025,
+      "line": "iPhone 17",
+      "family": "Pro Max",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Silver",
+        "Cosmic Orange",
+        "Deep Blue"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        },
+        "2 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 0
+    },
+    {
+      "id": "iphone-17-pro-cpo",
+      "model": "iPhone 17 Pro",
+      "year": 2025,
+      "line": "iPhone 17",
+      "family": "Pro",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Silver",
+        "Cosmic Orange",
+        "Deep Blue"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 1
+    },
+    {
+      "id": "iphone-air-cpo",
+      "model": "iPhone Air",
+      "year": 2025,
+      "line": "iPhone Air",
+      "family": "Air",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Space Black",
+        "Cloud White",
+        "Light Gold",
+        "Sky Blue"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 2
+    },
+    {
+      "id": "iphone-17-cpo",
+      "model": "iPhone 17",
+      "year": 2025,
+      "line": "iPhone 17",
+      "family": "standard",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black",
+        "White",
+        "Mist Blue",
+        "Sage",
+        "Lavender"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 3
+    },
+    {
+      "id": "iphone-17e-cpo",
+      "model": "iPhone 17e",
+      "year": 2026,
+      "line": "iPhone 17",
+      "family": "e",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black",
+        "White",
+        "Soft Pink"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 4
+    },
+    {
+      "id": "iphone-16-pro-max-cpo",
+      "model": "iPhone 16 Pro Max",
+      "year": 2024,
+      "line": "iPhone 16",
+      "family": "Pro Max",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black Titanium",
+        "White Titanium",
+        "Natural Titanium",
+        "Desert Titanium"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 5
+    },
+    {
+      "id": "iphone-16-pro-cpo",
+      "model": "iPhone 16 Pro",
+      "year": 2024,
+      "line": "iPhone 16",
+      "family": "Pro",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black Titanium",
+        "White Titanium",
+        "Natural Titanium",
+        "Desert Titanium"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 6
+    },
+    {
+      "id": "iphone-16-plus-cpo",
+      "model": "iPhone 16 Plus",
+      "year": 2024,
+      "line": "iPhone 16",
+      "family": "Plus",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black",
+        "White",
+        "Pink",
+        "Teal",
+        "Ultramarine"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 7
+    },
+    {
+      "id": "iphone-16-cpo",
+      "model": "iPhone 16",
+      "year": 2024,
+      "line": "iPhone 16",
+      "family": "standard",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black",
+        "White",
+        "Pink",
+        "Teal",
+        "Ultramarine"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 8
+    },
+    {
+      "id": "iphone-16e-cpo",
+      "model": "iPhone 16e",
+      "year": 2025,
+      "line": "iPhone 16",
+      "family": "e",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black",
+        "White"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 9
+    },
+    {
+      "id": "iphone-15-pro-max-cpo",
+      "model": "iPhone 15 Pro Max",
+      "year": 2023,
+      "line": "iPhone 15",
+      "family": "Pro Max",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black Titanium",
+        "White Titanium",
+        "Blue Titanium",
+        "Natural Titanium"
+      ],
+      "capacities": {
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 10
+    },
+    {
+      "id": "iphone-15-pro-cpo",
+      "model": "iPhone 15 Pro",
+      "year": 2023,
+      "line": "iPhone 15",
+      "family": "Pro",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black Titanium",
+        "White Titanium",
+        "Blue Titanium",
+        "Natural Titanium"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 11
+    },
+    {
+      "id": "iphone-15-plus-cpo",
+      "model": "iPhone 15 Plus",
+      "year": 2023,
+      "line": "iPhone 15",
+      "family": "Plus",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black",
+        "Blue",
+        "Green",
+        "Yellow",
+        "Pink"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 12
+    },
+    {
+      "id": "iphone-15-cpo",
+      "model": "iPhone 15",
+      "year": 2023,
+      "line": "iPhone 15",
+      "family": "standard",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black",
+        "Blue",
+        "Green",
+        "Yellow",
+        "Pink"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 13
+    },
+    {
+      "id": "iphone-14-pro-max-cpo",
+      "model": "iPhone 14 Pro Max",
+      "year": 2022,
+      "line": "iPhone 14",
+      "family": "Pro Max",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Space Black",
+        "Silver",
+        "Gold",
+        "Deep Purple"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 14
+    },
+    {
+      "id": "iphone-14-pro-cpo",
+      "model": "iPhone 14 Pro",
+      "year": 2022,
+      "line": "iPhone 14",
+      "family": "Pro",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Space Black",
+        "Silver",
+        "Gold",
+        "Deep Purple"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 15
+    },
+    {
+      "id": "iphone-14-plus-cpo",
+      "model": "iPhone 14 Plus",
+      "year": 2022,
+      "line": "iPhone 14",
+      "family": "Plus",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Midnight",
+        "Starlight",
+        "Blue",
+        "Purple",
+        "Yellow",
+        "(PRODUCT)RED"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 16
+    },
+    {
+      "id": "iphone-14-cpo",
+      "model": "iPhone 14",
+      "year": 2022,
+      "line": "iPhone 14",
+      "family": "standard",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Midnight",
+        "Starlight",
+        "Blue",
+        "Purple",
+        "Yellow",
+        "(PRODUCT)RED"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 17
+    },
+    {
+      "id": "iphone-13-pro-max-cpo",
+      "model": "iPhone 13 Pro Max",
+      "year": 2021,
+      "line": "iPhone 13",
+      "family": "Pro Max",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Graphite",
+        "Gold",
+        "Silver",
+        "Sierra Blue",
+        "Alpine Green"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 18
+    },
+    {
+      "id": "iphone-13-pro-cpo",
+      "model": "iPhone 13 Pro",
+      "year": 2021,
+      "line": "iPhone 13",
+      "family": "Pro",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Graphite",
+        "Gold",
+        "Silver",
+        "Sierra Blue",
+        "Alpine Green"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        },
+        "1 TB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 19
+    },
+    {
+      "id": "iphone-13-cpo",
+      "model": "iPhone 13",
+      "year": 2021,
+      "line": "iPhone 13",
+      "family": "standard",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Pink",
+        "Blue",
+        "Midnight",
+        "Starlight",
+        "Green",
+        "(PRODUCT)RED"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 20
+    },
+    {
+      "id": "iphone-13-mini-cpo",
+      "model": "iPhone 13 mini",
+      "year": 2021,
+      "line": "iPhone 13",
+      "family": "mini",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Pink",
+        "Blue",
+        "Midnight",
+        "Starlight",
+        "Green",
+        "(PRODUCT)RED"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Referência histórica",
+      "order": 21
+    },
+    {
+      "id": "iphone-12-pro-max-cpo",
+      "model": "iPhone 12 Pro Max",
+      "year": 2020,
+      "line": "iPhone 12",
+      "family": "Pro Max",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Silver",
+        "Graphite",
+        "Gold",
+        "Pacific Blue"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Referência histórica",
+      "order": 22
+    },
+    {
+      "id": "iphone-12-pro-cpo",
+      "model": "iPhone 12 Pro",
+      "year": 2020,
+      "line": "iPhone 12",
+      "family": "Pro",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Silver",
+        "Graphite",
+        "Gold",
+        "Pacific Blue"
+      ],
+      "capacities": {
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        },
+        "512 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Referência histórica",
+      "order": 23
+    },
+    {
+      "id": "iphone-12-cpo",
+      "model": "iPhone 12",
+      "year": 2020,
+      "line": "iPhone 12",
+      "family": "standard",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black",
+        "White",
+        "(PRODUCT)RED",
+        "Green",
+        "Blue",
+        "Purple"
+      ],
+      "capacities": {
+        "64 GB": {
+          "usd": 0
+        },
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Disponível",
+      "order": 24
+    },
+    {
+      "id": "iphone-12-mini-cpo",
+      "model": "iPhone 12 mini",
+      "year": 2020,
+      "line": "iPhone 12",
+      "family": "mini",
+      "group": "cpo",
+      "condition": "CPO",
+      "classification": "P1 / Grade A",
+      "colors": [
+        "Black",
+        "White",
+        "(PRODUCT)RED",
+        "Green",
+        "Blue",
+        "Purple"
+      ],
+      "capacities": {
+        "64 GB": {
+          "usd": 0
+        },
+        "128 GB": {
+          "usd": 0
+        },
+        "256 GB": {
+          "usd": 0
+        }
+      },
+      "availability": "Referência histórica",
+      "order": 25
+    }
+  ]
+}
