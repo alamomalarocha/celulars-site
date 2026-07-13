@@ -36,6 +36,14 @@
   Cache-Control: no-cache, no-store, must-revalidate
   X-Robots-Tag: noindex, nofollow
 
+/404.html
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex, nofollow
+
+/not-found
+  Cache-Control: no-cache, no-store, must-revalidate
+  X-Robots-Tag: noindex, nofollow
+
 /data/wholesale-inventory.json
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store

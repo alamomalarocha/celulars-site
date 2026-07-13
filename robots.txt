@@ -3,7 +3,16 @@ Allow: /
 Disallow: /data/
 Disallow: /design-system/
 Disallow: /release-backup/
-Disallow: /structure-backup-20260628-204405/
+Disallow: /structure-backup-
+Disallow: /image-work-tomorrow/
 Disallow: /godaddy-
+Disallow: /preview
+Disallow: /sample-products.json
+Disallow: /iphone_models_database.json
+Disallow: /iphone-image-map
+Disallow: /apps-script.js
+Disallow: /collect-
+Disallow: /create-third-party-review-gallery.py
+Disallow: /third-party-images-packaging-skipped.csv
 
 Sitemap: https://celulars.com.br/sitemap.xml
