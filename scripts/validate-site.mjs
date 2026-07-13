@@ -31,6 +31,8 @@ const expectedDistFiles = [...requiredRootFiles].sort();
 const expectedWhatsapp = '17865466540';
 const expectedEmail = 'contact@celulars.com.br';
 const forbiddenDistPatterns = [/(?:^|\/)tools(?:\/|$)/, /(?:^|\/)internal(?:\/|$)/, /catalog-manager/i, /(?:^|\/)backups(?:\/|$)/, /(?:^|\/)history(?:\/|$)/, /catalog-admin/i];
+const textFileExtensions = new Set(['.js', '.mjs', '.json', '.html', '.css', '.md', '.yml', '.yaml']);
+const unicodeScanIgnoredDirectories = new Set(['.git', 'node_modules', 'dist', 'backups', 'history']);
 
 function check(condition, message) {
   if (!condition) errors.push(message);
@@ -79,6 +81,41 @@ async function listFiles(directory, prefix = '') {
   return files;
 }
 
+async function listTextFiles(directory, prefix = '') {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    if (entry.isDirectory() && unicodeScanIgnoredDirectories.has(entry.name)) continue;
+    const relativePath = path.posix.join(prefix, entry.name);
+    if (entry.isDirectory()) files.push(...await listTextFiles(path.join(directory, entry.name), relativePath));
+    else if (entry.name === '.gitignore' || textFileExtensions.has(path.extname(entry.name).toLowerCase())) files.push(relativePath);
+  }
+  return files;
+}
+
+async function validateUnicodeControls() {
+  const controlPattern = /[\p{Cc}\p{Cf}]/u;
+  const isTextFile = relativePath => path.basename(relativePath) === '.gitignore' || textFileExtensions.has(path.extname(relativePath).toLowerCase());
+  const scanFiles = new Set([...requiredRootFiles, 'package.json', '.gitignore'].filter(isTextFile));
+  for (const directory of ['.github', 'docs', 'scripts', 'tools']) {
+    const directoryPath = path.join(projectRoot, directory);
+    if (await exists(directory)) {
+      for (const relativePath of await listTextFiles(directoryPath, directory)) scanFiles.add(relativePath);
+    }
+  }
+  for (const relativePath of scanFiles) {
+    const source = await read(relativePath);
+    for (let position = 0; position < source.length;) {
+      const codePoint = source.codePointAt(position);
+      const character = String.fromCodePoint(codePoint);
+      if (controlPattern.test(character) && character !== '\t' && character !== '\n' && character !== '\r') {
+        errors.push(`Caractere Unicode de controle nao permitido em ${relativePath}, posicao ${position}, code point U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}.`);
+      }
+      position += character.length;
+    }
+  }
+}
+
 function compileScripts(html, pageName) {
   for (const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
     const attributes = match[1];
@@ -90,6 +127,8 @@ function compileScripts(html, pageName) {
     }
   }
 }
+
+await validateUnicodeControls();
 
 for (const file of requiredRootFiles) {
   check(await exists(file), `Arquivo publico obrigatorio ausente: ${file}`);

@@ -44,6 +44,19 @@
       && capacity.toLowerCase().includes(state.capacity);
   }
 
+  function node(tagName, className, text) {
+    const element = document.createElement(tagName);
+    if (className) element.className = className;
+    if (text !== undefined) element.textContent = text;
+    return element;
+  }
+
+  function statusNode(changed, usd) {
+    if (changed) return node('span', 'state-changed', 'Alterado, não salvo');
+    if (usd === 0) return node('span', 'state-zero', 'Cadastrado, sem preço');
+    return document.createTextNode('Salvo');
+  }
+
   function priceInput(product, capacity) {
     const input = document.createElement('input');
     input.className = 'price-input';
@@ -63,18 +76,18 @@
       input.classList.toggle('changed', normalized !== original);
       const row = input.closest('tr');
       const rate = Number(elements.previewRate.value) || 0;
-      if (row?.children[6]) row.children[6].innerHTML = `<span class="brl-preview">${rate > 0 ? moneyBrl.format(normalized * rate) : '-'}</span>`;
-      if (row?.lastElementChild) row.lastElementChild.innerHTML = normalized !== original ? '<span class="state-changed">Alterado, não salvo</span>' : (normalized === 0 ? '<span class="state-zero">Cadastrado, sem preço</span>' : 'Salvo');
+      if (row?.children[6]) row.children[6].replaceChildren(node('span', 'brl-preview', rate > 0 ? moneyBrl.format(normalized * rate) : '-'));
+      if (row?.lastElementChild) row.lastElementChild.replaceChildren(statusNode(normalized !== original, normalized));
       updatePending();
       setMessage(state.edits.size ? `${state.edits.size} alteração(ões) aguardando revisão.` : 'Nenhuma alteração pendente.');
     });
     return input;
   }
 
-  function makeCell(label, content) {
+  function makeCell(label, ...contents) {
     const cell = document.createElement('td');
     cell.dataset.label = label;
-    if (content instanceof Node) cell.append(content); else cell.innerHTML = content;
+    for (const content of contents) cell.append(content instanceof Node ? content : document.createTextNode(String(content)));
     return cell;
   }
 
@@ -90,27 +103,22 @@
         visible += 1;
         const usd = effectiveUsd(product, capacity);
         const row = document.createElement('tr');
-        row.append(makeCell('Modelo', `<span class="model-name">${escapeHtml(product.model)}</span><span class="model-meta">${escapeHtml(product.family || product.line || '')}</span>`));
+        row.append(makeCell('Modelo', node('span', 'model-name', product.model), node('span', 'model-meta', product.family || product.line || '')));
         row.append(makeCell('Ano', String(product.year)));
-        row.append(makeCell('Tipo', `<span class="group-badge ${product.group}">${product.group === 'cpo' ? 'CPO' : 'Novo'}</span>`));
-        row.append(makeCell('Cores', `<span class="color-list">${product.colors.map(escapeHtml).join(' · ')}</span>`));
-        row.append(makeCell('Capacidade', `<strong>${escapeHtml(capacity)}</strong>`));
+        row.append(makeCell('Tipo', node('span', `group-badge ${product.group}`, product.group === 'cpo' ? 'CPO' : 'Novo')));
+        row.append(makeCell('Cores', node('span', 'color-list', product.colors.join(' · '))));
+        row.append(makeCell('Capacidade', node('strong', '', capacity)));
         if (product.group === 'cpo') row.append(makeCell('Preço USD', priceInput(product, capacity)));
-        else row.append(makeCell('Preço USD', `<span class="read-price">${moneyUsd.format(usd)}</span><span class="price-state">Somente leitura</span>`));
-        row.append(makeCell('Prévia BRL', `<span class="brl-preview">${rate > 0 ? moneyBrl.format(usd * rate) : '-'}</span>`));
+        else row.append(makeCell('Preço USD', node('span', 'read-price', moneyUsd.format(usd)), node('span', 'price-state', 'Somente leitura')));
+        row.append(makeCell('Prévia BRL', node('span', 'brl-preview', rate > 0 ? moneyBrl.format(usd * rate) : '-')));
         const changed = state.edits.has(editKey(product.id, capacity));
-        const status = changed ? '<span class="state-changed">Alterado, não salvo</span>' : (usd === 0 ? '<span class="state-zero">Cadastrado, sem preço</span>' : 'Salvo');
-        row.append(makeCell('Estado', status));
+        row.append(makeCell('Estado', statusNode(changed, usd)));
         fragment.append(row);
       }
     }
     elements.catalogRows.replaceChildren(fragment);
     elements.emptyState.hidden = visible > 0;
     updatePending();
-  }
-
-  function escapeHtml(value) {
-    return String(value).replace(/[&<>"]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[character]);
   }
 
   async function loadCatalog({ preserveEdits = false } = {}) {
@@ -132,7 +140,11 @@
     const pending = [...state.edits.values()];
     elements.diffList.replaceChildren(...pending.map(edit => {
       const item = document.createElement('div'); item.className = 'diff-item';
-      item.innerHTML = `<div><strong>${escapeHtml(edit.model)} — ${escapeHtml(edit.capacity)}</strong><span>Preço CPO em US$</span></div><div class="diff-values"><s>${moneyUsd.format(edit.before)}</s><strong>${moneyUsd.format(edit.usd)}</strong></div>`;
+      const description = node('div');
+      description.append(node('strong', '', `${edit.model} — ${edit.capacity}`), node('span', '', 'Preço CPO em US$'));
+      const values = node('div', 'diff-values');
+      values.append(node('s', '', moneyUsd.format(edit.before)), node('strong', '', moneyUsd.format(edit.usd)));
+      item.append(description, values);
       return item;
     }));
     const hasHigh = pending.some(edit => edit.usd > 10000);

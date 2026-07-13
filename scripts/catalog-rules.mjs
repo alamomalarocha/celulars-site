@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
 
 export const EXPECTED_NEW_ORDER = ['iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone Air', 'iPhone 17', 'iPhone 17e'];
 export const EXPECTED_CPO_ORDER = ['iPhone 17 Pro Max', 'iPhone 17 Pro', 'iPhone Air', 'iPhone 17', 'iPhone 17e', 'iPhone 16 Pro Max', 'iPhone 16 Pro', 'iPhone 16 Plus', 'iPhone 16', 'iPhone 16e', 'iPhone 15 Pro Max', 'iPhone 15 Pro', 'iPhone 15 Plus', 'iPhone 15', 'iPhone 14 Pro Max', 'iPhone 14 Pro', 'iPhone 14 Plus', 'iPhone 14', 'iPhone 13 Pro Max', 'iPhone 13 Pro', 'iPhone 13', 'iPhone 13 mini', 'iPhone 12 Pro Max', 'iPhone 12 Pro', 'iPhone 12', 'iPhone 12 mini'];
@@ -158,6 +159,20 @@ export function validateImport(current, candidate) {
   const errors = [...validation.errors];
   if (validation.valid && structureHash(current.products || []) !== structureHash(candidate.products || [])) {
     errors.push('A importacao altera modelos, cores, capacidades ou outra estrutura protegida.');
+  }
+  if (!errors.length) {
+    const candidateWithoutCpoPriceChanges = structuredClone(candidate);
+    const currentById = new Map(current.products.map(product => [product.id, product]));
+    for (const product of candidateWithoutCpoPriceChanges.products) {
+      if (product.group !== 'cpo') continue;
+      const original = currentById.get(product.id);
+      for (const capacity of Object.keys(product.capacities)) {
+        product.capacities[capacity].usd = original.capacities[capacity].usd;
+      }
+    }
+    if (!isDeepStrictEqual(candidateWithoutCpoPriceChanges, current)) {
+      errors.push('A importacao pode alterar somente precos USD de capacidades CPO existentes.');
+    }
   }
   return { valid: errors.length === 0, errors, changes: errors.length ? [] : diffCpoPrices(current, candidate), stats: validation.stats };
 }

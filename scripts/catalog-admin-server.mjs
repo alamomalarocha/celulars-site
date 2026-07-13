@@ -39,16 +39,20 @@ async function exists(filePath) {
   }
 }
 
-async function atomicWrite(filePath, contents) {
-  await mkdir(path.dirname(filePath), { recursive: true });
-  const temporaryPath = `${filePath}.tmp-${process.pid}-${randomUUID()}`;
-  await writeFile(temporaryPath, contents, 'utf8');
+async function atomicWriteFiles(entries) {
+  const prepared = [];
   try {
-    const writtenContents = await readFile(temporaryPath, 'utf8');
-    if (writtenContents !== contents) throw new Error('Falha ao verificar o arquivo temporario antes da gravacao atomica.');
-    await rename(temporaryPath, filePath);
+    for (const { filePath, contents } of entries) {
+      await mkdir(path.dirname(filePath), { recursive: true });
+      const temporaryPath = `${filePath}.tmp-${process.pid}-${randomUUID()}`;
+      await writeFile(temporaryPath, contents, 'utf8');
+      const writtenContents = await readFile(temporaryPath, 'utf8');
+      if (writtenContents !== contents) throw new Error('Falha ao verificar o arquivo temporario antes da gravacao atomica.');
+      prepared.push({ filePath, temporaryPath });
+    }
+    for (const { filePath, temporaryPath } of prepared) await rename(temporaryPath, filePath);
   } catch (error) {
-    await unlink(temporaryPath).catch(() => {});
+    await Promise.all(prepared.map(({ temporaryPath }) => unlink(temporaryPath).catch(() => {})));
     throw error;
   }
 }
@@ -99,8 +103,9 @@ function validateChanges(catalog, changes, confirmHighValues) {
 
 async function restoreCatalog({ source, catalogPath, catalogModulePath }) {
   const catalog = JSON.parse(source);
-  await atomicWrite(catalogPath, source);
-  if (catalogModulePath) await atomicWrite(catalogModulePath, catalogModuleSource(catalog));
+  const entries = [{ filePath: catalogPath, contents: source }];
+  if (catalogModulePath) entries.push({ filePath: catalogModulePath, contents: catalogModuleSource(catalog) });
+  await atomicWriteFiles(entries);
 }
 
 export async function saveCatalogChanges({
@@ -137,8 +142,9 @@ export async function saveCatalogChanges({
 
   try {
     JSON.parse(nextSource);
-    await atomicWrite(catalogPath, nextSource);
-    if (catalogModulePath) await atomicWrite(catalogModulePath, catalogModuleSource(next));
+    const entries = [{ filePath: catalogPath, contents: nextSource }];
+    if (catalogModulePath) entries.push({ filePath: catalogModulePath, contents: catalogModuleSource(next) });
+    await atomicWriteFiles(entries);
     const written = await readCatalog(catalogPath);
     if (written.validation.contentHash !== contentHash(next)) throw new Error('Hash do arquivo gravado nao corresponde ao catalogo validado.');
     await validateProject();
@@ -235,6 +241,20 @@ export function createCatalogAdminServer(options = {}) {
     build: await runNodeFile('scripts/build-public.mjs'),
     distValidation: await runNodeFile('scripts/validate-site.mjs', ['--dist'])
   }));
+  const distDirectory = options.distDirectory || path.join(projectRoot, 'dist');
+  let mutableOperationRunning = false;
+
+  async function runMutableOperation(response, operation) {
+    if (mutableOperationRunning) {
+      return sendJson(response, 409, { error: 'Outra operacao de gravacao ou build esta em andamento.' });
+    }
+    mutableOperationRunning = true;
+    try {
+      return await operation();
+    } finally {
+      mutableOperationRunning = false;
+    }
+  }
 
   const server = createServer(async (request, response) => {
     try {
@@ -287,29 +307,33 @@ export function createCatalogAdminServer(options = {}) {
       }
 
       if (url.pathname === '/api/save' && request.method === 'POST') {
-        const body = await readJsonBody(request);
-        const result = await saveCatalogChanges({
-          changes: body.changes,
-          confirmHighValues: body.confirmHighValues === true,
-          catalogPath,
-          catalogModulePath,
-          backupDirectory,
-          historyFile,
-          validateProject
+        return await runMutableOperation(response, async () => {
+          const body = await readJsonBody(request);
+          const result = await saveCatalogChanges({
+            changes: body.changes,
+            confirmHighValues: body.confirmHighValues === true,
+            catalogPath,
+            catalogModulePath,
+            backupDirectory,
+            historyFile,
+            validateProject
+          });
+          return sendJson(response, result.ok ? 200 : result.status || 400, result);
         });
-        return sendJson(response, result.ok ? 200 : result.status || 400, result);
       }
 
       if (url.pathname === '/api/build' && request.method === 'POST') {
-        await readJsonBody(request);
-        const result = await buildProject();
-        const loaded = await readCatalog(catalogPath);
-        return sendJson(response, 200, {
-          ok: true,
-          result,
-          distPath: path.join(projectRoot, 'dist'),
-          distFiles: await countFiles(path.join(projectRoot, 'dist')),
-          catalogHash: loaded.validation.contentHash
+        return await runMutableOperation(response, async () => {
+          await readJsonBody(request);
+          const result = await buildProject();
+          const loaded = await readCatalog(catalogPath);
+          return sendJson(response, 200, {
+            ok: true,
+            result,
+            distPath: distDirectory,
+            distFiles: await countFiles(distDirectory),
+            catalogHash: loaded.validation.contentHash
+          });
         });
       }
 

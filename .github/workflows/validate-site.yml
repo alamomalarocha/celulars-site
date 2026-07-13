@@ -1,5 +1,8 @@
 name: Validate CELULARS site
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -13,18 +16,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: '24'
+          package-manager-cache: false
 
       - name: Validate source
         run: npm run validate
 
       - name: Build public artifact
         run: npm run build
+
+      - name: Test local catalog manager
+        run: npm run catalog:test
 
       - name: Confirm build output
         run: test -f dist/index.html && test -f dist/data/catalog-public.js
