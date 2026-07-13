@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "description": "Site estatico da CELULARS",
   "scripts": {
-    "build": "node scripts/build-public.mjs"
+    "validate": "node scripts/validate-site.mjs",
+    "build": "npm run validate && node scripts/build-public.mjs && node scripts/validate-site.mjs --dist"
   },
   "engines": {
     "node": ">=20"
   }
 }
-
