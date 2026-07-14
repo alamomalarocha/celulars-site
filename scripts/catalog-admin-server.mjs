@@ -114,11 +114,13 @@ export async function saveCatalogChanges({
   changes,
   confirmHighValues = false,
   expectedCatalogHash,
+  historyContext = {},
   catalogPath = defaultCatalogPath,
   catalogModulePath = defaultCatalogModulePath,
   backupDirectory = defaultBackupDirectory,
   historyFile = defaultHistoryFile,
-  validateProject = async () => runNodeFile('scripts/validate-site.mjs')
+  validateProject = async () => runNodeFile('scripts/validate-site.mjs'),
+  writeCatalogFiles = atomicWriteFiles
 }) {
   const current = await readCatalog(catalogPath);
   const currentSourceHash = contentHash(current.source);
@@ -151,7 +153,7 @@ export async function saveCatalogChanges({
     JSON.parse(nextSource);
     const entries = [{ filePath: catalogPath, contents: nextSource }];
     if (catalogModulePath) entries.push({ filePath: catalogModulePath, contents: catalogModuleSource(next) });
-    await atomicWriteFiles(entries);
+    await writeCatalogFiles(entries);
     const written = await readCatalog(catalogPath);
     if (written.validation.contentHash !== contentHash(next)) throw new Error('Hash do arquivo gravado nao corresponde ao catalogo validado.');
     await validateProject();
@@ -160,6 +162,10 @@ export async function saveCatalogChanges({
     const changedAt = new Date().toISOString();
     const historyLines = finalChanges.map(change => JSON.stringify({
       changedAt,
+      type: historyContext.type || 'manual_edit',
+      ...(historyContext.filename ? { filename: historyContext.filename } : {}),
+      ...(Number.isInteger(historyContext.rowsRead) ? { rowsRead: historyContext.rowsRead } : {}),
+      changeCount: finalChanges.length,
       model: change.model,
       productId: change.id,
       capacity: change.capacity,
@@ -191,6 +197,12 @@ function runNodeFile(relativePath, argumentsList = []) {
       else reject(Object.assign(new Error(`${relativePath} falhou com codigo ${code}.`), { result }));
     });
   });
+}
+
+function safeImportFilename(value) {
+  const leaf = String(value || 'planilha-cpo.csv').replaceAll('\\', '/').split('/').pop();
+  const sanitized = leaf.replace(/[^\p{L}\p{N}._ -]/gu, '_').slice(0, 120).trim();
+  return sanitized || 'planilha-cpo.csv';
 }
 
 async function countFiles(directory) {
@@ -263,6 +275,7 @@ export function createCatalogAdminServer(options = {}) {
     distValidation: await runNodeFile('scripts/validate-site.mjs', ['--dist'])
   }));
   const distDirectory = options.distDirectory || path.join(projectRoot, 'dist');
+  const writeCatalogFiles = options.writeCatalogFiles || atomicWriteFiles;
   let mutableOperationRunning = false;
 
   async function runMutableOperation(response, operation) {
@@ -371,11 +384,17 @@ export function createCatalogAdminServer(options = {}) {
             changes: validated.changes.map(change => ({ id: change.id, capacity: change.capacity, usd: change.after })),
             confirmHighValues: request.headers['x-confirm-high-values'] === 'true',
             expectedCatalogHash: currentHash,
+            historyContext: {
+              type: 'spreadsheet_import',
+              filename: safeImportFilename(request.headers['x-import-filename']),
+              rowsRead: validated.summary.rowsRead
+            },
             catalogPath,
             catalogModulePath,
             backupDirectory,
             historyFile,
-            validateProject
+            validateProject,
+            writeCatalogFiles
           });
           return sendJson(response, result.ok ? 200 : result.status || 400, result.ok ? result : { ...result, error: result.errors?.join(' | ') });
         });
@@ -399,7 +418,8 @@ export function createCatalogAdminServer(options = {}) {
             catalogModulePath,
             backupDirectory,
             historyFile,
-            validateProject
+            validateProject,
+            writeCatalogFiles
           });
           return sendJson(response, result.ok ? 200 : result.status || 400, result);
         });

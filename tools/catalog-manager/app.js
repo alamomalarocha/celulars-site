@@ -285,7 +285,8 @@
         headers: {
           'Content-Type': 'text/csv; charset=utf-8',
           'X-Catalog-Hash': state.csvImport.result.currentHash,
-          'X-Confirm-High-Values': hasHigh ? 'true' : 'false'
+          'X-Confirm-High-Values': hasHigh ? 'true' : 'false',
+          'X-Import-Filename': state.csvImport.fileName
         },
         body: state.csvImport.source
       });

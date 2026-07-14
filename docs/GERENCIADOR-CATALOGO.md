@@ -119,6 +119,69 @@ npm run catalog:test
 
 Os testes usam uma fixture temporária e não alteram preços reais.
 
+## Planilha de preços CPO
+
+A área **Planilha de preços CPO** permite atualizar em lote as 83 combinações de modelo e capacidade CPO. O arquivo usa UTF-8 com BOM, separador `;` e quebras de linha compatíveis com Excel, Google Sheets e LibreOffice.
+
+Há três exportações:
+
+- **Baixar planilha CPO**: inclui todas as combinações e deixa `new_usd` vazio;
+- **Baixar somente preços zerados**: inclui apenas os preços atuais iguais a zero;
+- **Baixar catálogo CPO completo**: inclui todas as combinações e preenche `new_usd` com o valor atual, útil para conferência completa.
+
+As colunas são:
+
+```text
+catalog_hash;product_id;model;year;grade;capacity;current_usd;new_usd
+```
+
+Somente `new_usd` pode ser editada. As demais colunas identificam a versão e a estrutura protegida do catálogo. Se o catálogo mudar depois da exportação, o `catalog_hash` antigo será bloqueado e uma nova planilha deverá ser baixada.
+
+### Valores aceitos em `new_usd`
+
+São aceitos números sem símbolo monetário, maiores ou iguais a zero e com até duas casas decimais:
+
+```text
+625
+625.5
+625.50
+625,50
+0
+0.00
+0,00
+```
+
+Uma célula vazia significa **não alterar**. Um valor igual a `current_usd` é classificado como inalterado.
+
+São rejeitados valores negativos, texto, símbolos, separadores de milhar ambíguos, mais de duas casas decimais e fórmulas iniciadas por `=`, `+`, `-` ou `@`.
+
+### Importação segura
+
+1. Exporte uma planilha nova.
+2. Edite somente `new_usd`.
+3. Salve como CSV UTF-8 separado por ponto e vírgula.
+4. Arraste o arquivo para a área **Importar e validar** ou selecione-o.
+5. Clique em **Importar e validar**.
+6. Revise hashes, resumo, erros e diferenças antes/depois.
+7. Se houver erros, baixe o relatório CSV e corrija a planilha.
+8. Confirme a aplicação somente quando a prévia estiver correta.
+
+O arquivo é limitado a 2 MB. A prévia não grava nada. Na confirmação, o servidor lê e valida novamente o catálogo e a planilha dentro do bloqueio de gravação. Importações simultâneas e importação durante build são bloqueadas.
+
+Valores acima de US$ 10.000 exigem confirmação explícita. A aplicação reutiliza o mesmo backup, histórico, gravação controlada, validação e rollback do editor individual. Uma falha durante gravação ou validação restaura o catálogo anterior.
+
+O CSV não aceita fórmulas e protege células exportadas que possam ser interpretadas por planilhas. A interface apresenta conteúdo importado apenas como texto.
+
+### Testes da planilha
+
+Execute:
+
+```powershell
+npm run catalog:csv-test
+```
+
+A suíte cobre exportações completa/parcial/zerados, vírgula e ponto decimal, valores inválidos, fórmulas, duplicidades, estrutura alterada, hash antigo, arquivo vazio/malformado/acima de 2 MB, concorrência, build simultâneo, rollback, XSS e preservação byte a byte do catálogo real.
+
 ## Revisão no Git
 
 Depois de uma edição real:
