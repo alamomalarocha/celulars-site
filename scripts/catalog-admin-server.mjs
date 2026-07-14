@@ -4,6 +4,7 @@ import { appendFile, mkdir, readFile, readdir, rename, stat, unlink, writeFile }
 import { createServer } from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { exportCpoCsv } from './catalog-csv.mjs';
 import { catalogModuleSource, catalogStats, contentHash, diffCpoPrices, validateCatalog, validateImport } from './catalog-rules.mjs';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -297,6 +298,25 @@ export function createCatalogAdminServer(options = {}) {
           'X-Content-Type-Options': 'nosniff'
         });
         return response.end(jsonText(loaded.catalog));
+      }
+
+      if (url.pathname === '/api/export/cpo.csv' && request.method === 'GET') {
+        const mode = url.searchParams.get('mode') || 'template';
+        const filenames = {
+          template: 'precos-cpo-celulars.csv',
+          zero: 'precos-cpo-celulars-zerados.csv',
+          complete: 'catalogo-cpo-celulars-completo.csv'
+        };
+        if (!Object.hasOwn(filenames, mode)) return sendJson(response, 400, { error: 'Modo de exportação CSV inválido.' });
+        const loaded = await readCatalog(catalogPath);
+        const exported = exportCpoCsv(loaded.catalog, contentHash(loaded.source), { mode });
+        response.writeHead(200, {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="${filenames[mode]}"`,
+          'Cache-Control': 'no-store',
+          'X-Content-Type-Options': 'nosniff'
+        });
+        return response.end(exported.csv);
       }
 
       if (url.pathname === '/api/validate-import' && request.method === 'POST') {

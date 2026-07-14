@@ -99,6 +99,31 @@
       </div>
     </section>
 
+    <section class="operations" aria-labelledby="spreadsheetTitle">
+      <div>
+        <p class="eyebrow">Atualização em lote</p>
+        <h2 id="spreadsheetTitle">Planilha de preços CPO</h2>
+        <p>Arquivos CSV UTF-8, separados por ponto e vírgula e compatíveis com Excel, Google Sheets e LibreOffice.</p>
+      </div>
+      <div class="operation-grid">
+        <div>
+          <h3>Planilha para edição</h3>
+          <p>Inclui todas as combinações CPO e deixa a coluna <code>new_usd</code> vazia para preenchimento.</p>
+          <a class="button secondary" href="/api/export/cpo.csv?mode=template" download>Baixar planilha CPO</a>
+        </div>
+        <div>
+          <h3>Preços zerados</h3>
+          <p>Inclui somente as combinações que ainda estão com preço igual a zero.</p>
+          <a class="button secondary" href="/api/export/cpo.csv?mode=zero" download>Baixar somente preços zerados</a>
+        </div>
+        <div>
+          <h3>Catálogo completo</h3>
+          <p>Inclui todas as combinações e preenche <code>new_usd</code> com o valor atual para conferência completa.</p>
+          <a class="button secondary" href="/api/export/cpo.csv?mode=complete" download>Baixar catálogo CPO completo</a>
+        </div>
+      </div>
+    </section>
+
     <div class="notice" id="message" role="status" aria-live="polite">Carregando catálogo canônico...</div>
   </main>
 
