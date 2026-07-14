@@ -49,6 +49,9 @@ assert.equal(result.summary.rowsRead, 83);
 assert.equal(result.summary.unchangedRows, 83);
 assert.equal(result.summary.changedRows, 0);
 assert.equal(complete.csv.charCodeAt(0), 0xfeff);
+assert.deepEqual([...Buffer.from(complete.csv, 'utf8').subarray(0, 3)], [0xef, 0xbb, 0xbf]);
+assert.equal(complete.csv.endsWith('\r\n'), true);
+assert.doesNotMatch(complete.csv.replaceAll('\r\n', ''), /[\r\n]/);
 assert.match(complete.csv, /;/);
 
 // B. Importação parcial válida.
@@ -71,8 +74,17 @@ result = validateCpoCsv(catalog, hash, changedCsv(catalog, hash, '625.50'));
 assert.equal(result.valid, true);
 assert.equal(result.changes[0].after, 625.5);
 
-// F-H. Valores negativos, três casas e fórmulas são bloqueados.
-for (const value of ['-1', '625.555', '=1+1', '+SUM(A1:A2)', '@cmd']) {
+// F-H. Valores negativos, três casas, fórmulas e comandos são bloqueados.
+for (const value of [
+  '-1',
+  '625.555',
+  '=1+1',
+  '+SUM(1;2)',
+  '-IMPORTXML("https://invalid")',
+  '@command',
+  '=HYPERLINK("https://invalid")',
+  "=cmd|' /C calc'!A0"
+]) {
   result = validateCpoCsv(catalog, hash, changedCsv(catalog, hash, value));
   assert.equal(result.valid, false, `${value} deveria ser rejeitado.`);
 }
