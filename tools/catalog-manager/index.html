@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gerenciador de catálogo CELULARS</title>
   <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/csv-styles.css">
 </head>
 <body>
   <header class="topbar">
@@ -97,6 +98,43 @@
           <button class="button secondary" id="buildButton" type="button">Validar e gerar site</button>
         </div>
       </div>
+      <div class="csv-import-card">
+        <div>
+          <h3>Importar e validar</h3>
+          <p>Selecione ou arraste um CSV. Nenhum preço será salvo antes da prévia e da confirmação.</p>
+        </div>
+        <label class="csv-drop-zone" id="csvDropZone" tabindex="0">
+          <strong id="csvFileName">Selecionar arquivo CSV</strong>
+          <span>ou arraste o arquivo aqui · máximo 2 MB</span>
+          <input id="csvImportFile" type="file" accept=".csv,text/csv">
+        </label>
+        <button class="button primary" id="validateCsvButton" type="button" disabled>Importar e validar</button>
+      </div>
+    </section>
+
+    <section class="operations" aria-labelledby="spreadsheetTitle">
+      <div>
+        <p class="eyebrow">Atualização em lote</p>
+        <h2 id="spreadsheetTitle">Planilha de preços CPO</h2>
+        <p>Arquivos CSV UTF-8, separados por ponto e vírgula e compatíveis com Excel, Google Sheets e LibreOffice.</p>
+      </div>
+      <div class="operation-grid">
+        <div>
+          <h3>Planilha para edição</h3>
+          <p>Inclui todas as combinações CPO e deixa a coluna <code>new_usd</code> vazia para preenchimento.</p>
+          <a class="button secondary" href="/api/export/cpo.csv?mode=template" download>Baixar planilha CPO</a>
+        </div>
+        <div>
+          <h3>Preços zerados</h3>
+          <p>Inclui somente as combinações que ainda estão com preço igual a zero.</p>
+          <a class="button secondary" href="/api/export/cpo.csv?mode=zero" download>Baixar somente preços zerados</a>
+        </div>
+        <div>
+          <h3>Catálogo completo</h3>
+          <p>Inclui todas as combinações e preenche <code>new_usd</code> com o valor atual para conferência completa.</p>
+          <a class="button secondary" href="/api/export/cpo.csv?mode=complete" download>Baixar catálogo CPO completo</a>
+        </div>
+      </div>
     </section>
 
     <div class="notice" id="message" role="status" aria-live="polite">Carregando catálogo canônico...</div>
@@ -116,6 +154,45 @@
         <button class="button primary" id="confirmSaveButton" value="default" type="button">Salvar alterações</button>
       </div>
     </form>
+  </dialog>
+
+  <dialog id="csvReviewDialog" aria-labelledby="csvReviewTitle">
+    <div class="dialog-card csv-review-card">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Prévia obrigatória</p><h2 id="csvReviewTitle">Revisar planilha CPO</h2></div>
+        <button class="icon-button" id="closeCsvReviewButton" type="button" aria-label="Fechar revisão">×</button>
+      </div>
+      <p id="csvReviewFile">Arquivo: -</p>
+      <dl class="csv-hashes">
+        <div><dt>Hash da planilha</dt><dd id="csvSpreadsheetHash">-</dd></div>
+        <div><dt>Hash atual</dt><dd id="csvCurrentHash">-</dd></div>
+      </dl>
+      <dl class="csv-summary">
+        <div><dt>Linhas lidas</dt><dd id="csvRowsRead">0</dd></div>
+        <div><dt>Válidas</dt><dd id="csvValidRows">0</dd></div>
+        <div><dt>Alteradas</dt><dd id="csvChangedRows">0</dd></div>
+        <div><dt>Inalteradas</dt><dd id="csvUnchangedRows">0</dd></div>
+        <div><dt>Vazias</dt><dd id="csvBlankRows">0</dd></div>
+        <div><dt>Inválidas</dt><dd id="csvInvalidRows">0</dd></div>
+        <div><dt>Conflitos</dt><dd id="csvConflicts">0</dd></div>
+        <div><dt>Zeros restantes</dt><dd id="csvZeroAfter">0</dd></div>
+        <div><dt>Preços positivos</dt><dd id="csvPositiveAfter">0</dd></div>
+      </dl>
+      <section class="csv-review-section" id="csvErrorsSection" hidden>
+        <div class="csv-section-heading"><h3>Erros encontrados</h3><button class="button secondary compact" id="downloadCsvErrorsButton" type="button">Baixar relatório de erros</button></div>
+        <div class="csv-error-list" id="csvErrorList"></div>
+      </section>
+      <section class="csv-review-section">
+        <h3>Diferenças de preço</h3>
+        <div class="diff-list" id="csvDiffList"></div>
+        <p class="empty" id="csvNoChanges">Nenhuma alteração de preço encontrada.</p>
+      </section>
+      <label class="high-confirm" id="csvHighConfirmLabel" hidden><input id="csvHighConfirm" type="checkbox">Confirmo os valores acima de US$ 10.000,00 exibidos na prévia.</label>
+      <div class="dialog-actions">
+        <button class="button secondary" id="cancelCsvImportButton" type="button">Cancelar importação</button>
+        <button class="button primary" id="confirmCsvImportButton" type="button" disabled>Confirmar alterações</button>
+      </div>
+    </div>
   </dialog>
 
   <script src="/app.js"></script>

@@ -35,5 +35,8 @@ jobs:
       - name: Test local catalog manager
         run: npm run catalog:test
 
+      - name: Test CPO CSV import and export
+        run: npm run catalog:csv-test
+
       - name: Confirm build output
         run: test -f dist/index.html && test -f dist/data/catalog-public.js

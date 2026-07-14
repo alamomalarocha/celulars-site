@@ -4,6 +4,7 @@ import { appendFile, mkdir, readFile, readdir, rename, stat, unlink, writeFile }
 import { createServer } from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { cpoCsvErrorReport, exportCpoCsv, validateCpoCsv } from './catalog-csv.mjs';
 import { catalogModuleSource, catalogStats, contentHash, diffCpoPrices, validateCatalog, validateImport } from './catalog-rules.mjs';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -19,7 +20,8 @@ const STATIC_FILES = new Map([
   ['/', { file: 'index.html', type: 'text/html; charset=utf-8' }],
   ['/index.html', { file: 'index.html', type: 'text/html; charset=utf-8' }],
   ['/app.js', { file: 'app.js', type: 'text/javascript; charset=utf-8' }],
-  ['/styles.css', { file: 'styles.css', type: 'text/css; charset=utf-8' }]
+  ['/styles.css', { file: 'styles.css', type: 'text/css; charset=utf-8' }],
+  ['/csv-styles.css', { file: 'csv-styles.css', type: 'text/css; charset=utf-8' }]
 ]);
 
 function jsonText(value) {
@@ -111,13 +113,20 @@ async function restoreCatalog({ source, catalogPath, catalogModulePath }) {
 export async function saveCatalogChanges({
   changes,
   confirmHighValues = false,
+  expectedCatalogHash,
+  historyContext = {},
   catalogPath = defaultCatalogPath,
   catalogModulePath = defaultCatalogModulePath,
   backupDirectory = defaultBackupDirectory,
   historyFile = defaultHistoryFile,
-  validateProject = async () => runNodeFile('scripts/validate-site.mjs')
+  validateProject = async () => runNodeFile('scripts/validate-site.mjs'),
+  writeCatalogFiles = atomicWriteFiles
 }) {
   const current = await readCatalog(catalogPath);
+  const currentSourceHash = contentHash(current.source);
+  if (expectedCatalogHash && expectedCatalogHash !== currentSourceHash) {
+    return { ok: false, status: 409, errors: ['O catálogo mudou desde a prévia. Exporte e valide novamente a planilha antes de salvar.'] };
+  }
   const checked = validateChanges(current.catalog, changes, confirmHighValues);
   if (checked.errors.length) return { ok: false, status: 400, errors: checked.errors };
 
@@ -144,7 +153,7 @@ export async function saveCatalogChanges({
     JSON.parse(nextSource);
     const entries = [{ filePath: catalogPath, contents: nextSource }];
     if (catalogModulePath) entries.push({ filePath: catalogModulePath, contents: catalogModuleSource(next) });
-    await atomicWriteFiles(entries);
+    await writeCatalogFiles(entries);
     const written = await readCatalog(catalogPath);
     if (written.validation.contentHash !== contentHash(next)) throw new Error('Hash do arquivo gravado nao corresponde ao catalogo validado.');
     await validateProject();
@@ -153,6 +162,10 @@ export async function saveCatalogChanges({
     const changedAt = new Date().toISOString();
     const historyLines = finalChanges.map(change => JSON.stringify({
       changedAt,
+      type: historyContext.type || 'manual_edit',
+      ...(historyContext.filename ? { filename: historyContext.filename } : {}),
+      ...(Number.isInteger(historyContext.rowsRead) ? { rowsRead: historyContext.rowsRead } : {}),
+      changeCount: finalChanges.length,
       model: change.model,
       productId: change.id,
       capacity: change.capacity,
@@ -184,6 +197,12 @@ function runNodeFile(relativePath, argumentsList = []) {
       else reject(Object.assign(new Error(`${relativePath} falhou com codigo ${code}.`), { result }));
     });
   });
+}
+
+function safeImportFilename(value) {
+  const leaf = String(value || 'planilha-cpo.csv').replaceAll('\\', '/').split('/').pop();
+  const sanitized = leaf.replace(/[^\p{L}\p{N}._ -]/gu, '_').slice(0, 120).trim();
+  return sanitized || 'planilha-cpo.csv';
 }
 
 async function countFiles(directory) {
@@ -221,6 +240,20 @@ async function readJsonBody(request) {
   }
 }
 
+async function readCsvBody(request) {
+  const contentType = String(request.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+  const allowed = new Set(['text/csv', 'application/csv', 'application/vnd.ms-excel']);
+  if (!allowed.has(contentType)) throw Object.assign(new Error('Content-Type deve identificar um arquivo CSV.'), { status: 415 });
+  let size = 0;
+  const chunks = [];
+  for await (const chunk of request) {
+    size += chunk.length;
+    if (size > MAX_BODY_BYTES) throw Object.assign(new Error('Arquivo CSV excede 2 MB.'), { status: 413 });
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks).toString('utf8');
+}
+
 function assertLocalRequest(request, host, port) {
   const expectedHost = `${host}:${port}`;
   if (request.headers.host !== expectedHost) throw Object.assign(new Error('Host local invalido.'), { status: 403 });
@@ -242,6 +275,7 @@ export function createCatalogAdminServer(options = {}) {
     distValidation: await runNodeFile('scripts/validate-site.mjs', ['--dist'])
   }));
   const distDirectory = options.distDirectory || path.join(projectRoot, 'dist');
+  const writeCatalogFiles = options.writeCatalogFiles || atomicWriteFiles;
   let mutableOperationRunning = false;
 
   async function runMutableOperation(response, operation) {
@@ -299,6 +333,73 @@ export function createCatalogAdminServer(options = {}) {
         return response.end(jsonText(loaded.catalog));
       }
 
+      if (url.pathname === '/api/export/cpo.csv' && request.method === 'GET') {
+        const mode = url.searchParams.get('mode') || 'template';
+        const filenames = {
+          template: 'precos-cpo-celulars.csv',
+          zero: 'precos-cpo-celulars-zerados.csv',
+          complete: 'catalogo-cpo-celulars-completo.csv'
+        };
+        if (!Object.hasOwn(filenames, mode)) return sendJson(response, 400, { error: 'Modo de exportação CSV inválido.' });
+        const loaded = await readCatalog(catalogPath);
+        const exported = exportCpoCsv(loaded.catalog, contentHash(loaded.source), { mode });
+        response.writeHead(200, {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="${filenames[mode]}"`,
+          'Cache-Control': 'no-store',
+          'X-Content-Type-Options': 'nosniff'
+        });
+        return response.end(exported.csv);
+      }
+
+      if (url.pathname === '/api/validate/cpo.csv' && request.method === 'POST') {
+        const source = await readCsvBody(request);
+        const loaded = await readCatalog(catalogPath);
+        const result = validateCpoCsv(loaded.catalog, contentHash(loaded.source), source);
+        return sendJson(response, 200, {
+          ...result,
+          errorReport: result.errors.length ? cpoCsvErrorReport(result.errors) : ''
+        });
+      }
+
+      if (url.pathname === '/api/import/cpo.csv' && request.method === 'POST') {
+        return await runMutableOperation(response, async () => {
+          const source = await readCsvBody(request);
+          const loaded = await readCatalog(catalogPath);
+          const currentHash = contentHash(loaded.source);
+          const expectedHash = String(request.headers['x-catalog-hash'] || '');
+          if (!expectedHash || expectedHash !== currentHash) {
+            return sendJson(response, 409, { error: 'O catálogo mudou desde a prévia. Valide novamente a planilha.' });
+          }
+          const validated = validateCpoCsv(loaded.catalog, currentHash, source);
+          if (!validated.valid) {
+            return sendJson(response, 400, {
+              ...validated,
+              error: 'A planilha deixou de ser válida. Corrija os erros e valide novamente.',
+              errorReport: cpoCsvErrorReport(validated.errors)
+            });
+          }
+          if (!validated.changes.length) return sendJson(response, 400, { error: 'A planilha não contém alterações de preço.' });
+          const result = await saveCatalogChanges({
+            changes: validated.changes.map(change => ({ id: change.id, capacity: change.capacity, usd: change.after })),
+            confirmHighValues: request.headers['x-confirm-high-values'] === 'true',
+            expectedCatalogHash: currentHash,
+            historyContext: {
+              type: 'spreadsheet_import',
+              filename: safeImportFilename(request.headers['x-import-filename']),
+              rowsRead: validated.summary.rowsRead
+            },
+            catalogPath,
+            catalogModulePath,
+            backupDirectory,
+            historyFile,
+            validateProject,
+            writeCatalogFiles
+          });
+          return sendJson(response, result.ok ? 200 : result.status || 400, result.ok ? result : { ...result, error: result.errors?.join(' | ') });
+        });
+      }
+
       if (url.pathname === '/api/validate-import' && request.method === 'POST') {
         const body = await readJsonBody(request);
         const loaded = await readCatalog(catalogPath);
@@ -312,11 +413,13 @@ export function createCatalogAdminServer(options = {}) {
           const result = await saveCatalogChanges({
             changes: body.changes,
             confirmHighValues: body.confirmHighValues === true,
+            expectedCatalogHash: body.expectedCatalogHash,
             catalogPath,
             catalogModulePath,
             backupDirectory,
             historyFile,
-            validateProject
+            validateProject,
+            writeCatalogFiles
           });
           return sendJson(response, result.ok ? 200 : result.status || 400, result);
         });

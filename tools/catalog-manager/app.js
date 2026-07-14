@@ -1,9 +1,9 @@
 (() => {
   'use strict';
-  const state = { catalog: null, edits: new Map(), group: 'all', model: '', year: '', capacity: '', readAt: null };
+  const state = { catalog: null, edits: new Map(), group: 'all', model: '', year: '', capacity: '', readAt: null, csvFile: null, csvImport: null };
   const moneyUsd = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
   const moneyBrl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
-  const elements = Object.fromEntries(['canonicalFile','newModels','cpoModels','zeroPrices','lastRead','pendingCount','validationStatus','catalogRows','emptyState','previewRate','modelSearch','yearSearch','capacitySearch','reviewButton','reloadButton','message','reviewDialog','diffList','confirmSaveButton','highConfirmLabel','highConfirm','exportDraftButton','importFile','buildButton'].map(id => [id, document.getElementById(id)]));
+  const elements = Object.fromEntries(['canonicalFile','newModels','cpoModels','zeroPrices','lastRead','pendingCount','validationStatus','catalogRows','emptyState','previewRate','modelSearch','yearSearch','capacitySearch','reviewButton','reloadButton','message','reviewDialog','diffList','confirmSaveButton','highConfirmLabel','highConfirm','exportDraftButton','importFile','buildButton','csvDropZone','csvFileName','csvImportFile','validateCsvButton','csvReviewDialog','closeCsvReviewButton','csvReviewFile','csvSpreadsheetHash','csvCurrentHash','csvRowsRead','csvValidRows','csvChangedRows','csvUnchangedRows','csvBlankRows','csvInvalidRows','csvConflicts','csvZeroAfter','csvPositiveAfter','csvErrorsSection','csvErrorList','downloadCsvErrorsButton','csvDiffList','csvNoChanges','csvHighConfirmLabel','csvHighConfirm','cancelCsvImportButton','confirmCsvImportButton'].map(id => [id, document.getElementById(id)]));
 
   function setMessage(text, type = '') {
     elements.message.textContent = text;
@@ -172,6 +172,133 @@
     link.download = filename; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   }
 
+  function downloadText(filename, value, type = 'text/plain;charset=utf-8') {
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([value], { type }));
+    link.download = filename;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  }
+
+  function selectCsvFile(file) {
+    state.csvImport = null;
+    if (!file) {
+      state.csvFile = null;
+      elements.csvFileName.textContent = 'Selecionar arquivo CSV';
+      elements.validateCsvButton.disabled = true;
+      return;
+    }
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+      elements.csvImportFile.value = '';
+      state.csvFile = null;
+      elements.csvFileName.textContent = 'Selecionar arquivo CSV';
+      elements.validateCsvButton.disabled = true;
+      return setMessage('Selecione somente arquivo com extensão .csv.', 'error');
+    }
+    if (file.size === 0 || file.size > 2 * 1024 * 1024) {
+      elements.csvImportFile.value = '';
+      state.csvFile = null;
+      elements.csvFileName.textContent = 'Selecionar arquivo CSV';
+      elements.validateCsvButton.disabled = true;
+      return setMessage(file.size === 0 ? 'O arquivo CSV está vazio.' : 'O arquivo CSV excede o limite de 2 MB.', 'error');
+    }
+    state.csvFile = file;
+    elements.csvFileName.textContent = file.name;
+    elements.validateCsvButton.disabled = false;
+    setMessage(`Arquivo ${file.name} selecionado. Clique em “Importar e validar”.`);
+  }
+
+  function resetCsvImport({ close = true } = {}) {
+    state.csvFile = null;
+    state.csvImport = null;
+    elements.csvImportFile.value = '';
+    elements.csvFileName.textContent = 'Selecionar arquivo CSV';
+    elements.validateCsvButton.disabled = true;
+    elements.csvHighConfirm.checked = false;
+    if (close && elements.csvReviewDialog.open) elements.csvReviewDialog.close();
+  }
+
+  function renderCsvPreview(importState) {
+    const { fileName, result } = importState;
+    const summary = result.summary;
+    elements.csvReviewFile.textContent = `Arquivo: ${fileName}`;
+    elements.csvSpreadsheetHash.textContent = result.spreadsheetHash || '-';
+    elements.csvCurrentHash.textContent = result.currentHash || '-';
+    elements.csvRowsRead.textContent = String(summary.rowsRead);
+    elements.csvValidRows.textContent = String(summary.validRows);
+    elements.csvChangedRows.textContent = String(summary.changedRows);
+    elements.csvUnchangedRows.textContent = String(summary.unchangedRows);
+    elements.csvBlankRows.textContent = String(summary.blankRows);
+    elements.csvInvalidRows.textContent = String(summary.invalidRows);
+    elements.csvConflicts.textContent = String(summary.conflicts);
+    elements.csvZeroAfter.textContent = String(summary.zeroPricesAfter);
+    elements.csvPositiveAfter.textContent = String(summary.positivePricesAfter);
+
+    elements.csvErrorsSection.hidden = result.errors.length === 0;
+    elements.csvErrorList.replaceChildren(...result.errors.map(error => {
+      const item = node('div', 'csv-error-item');
+      item.append(node('strong', '', error.line ? `Linha ${error.line}` : 'Arquivo'), node('span', '', error.message));
+      return item;
+    }));
+    elements.csvDiffList.replaceChildren(...result.changes.map(change => {
+      const item = node('div', 'diff-item');
+      const description = node('div');
+      description.append(node('strong', '', `${change.model} — ${change.capacity}`), node('span', '', 'Alteração válida'));
+      const values = node('div', 'diff-values');
+      values.append(node('s', '', moneyUsd.format(change.before)), node('strong', '', moneyUsd.format(change.after)));
+      item.append(description, values);
+      return item;
+    }));
+    elements.csvNoChanges.hidden = result.changes.length > 0;
+    elements.csvHighConfirmLabel.hidden = result.highValues.length === 0;
+    elements.csvHighConfirm.checked = false;
+    elements.confirmCsvImportButton.disabled = !result.valid || result.changes.length === 0;
+    if (!elements.csvReviewDialog.open) elements.csvReviewDialog.showModal();
+  }
+
+  async function validateCsvImport() {
+    if (!state.csvFile) return setMessage('Selecione um arquivo CSV.', 'error');
+    if (state.edits.size) return setMessage('Salve ou descarte as alterações manuais antes de importar uma planilha.', 'error');
+    elements.validateCsvButton.disabled = true;
+    setMessage('Validando estrutura, preços e versão da planilha...');
+    try {
+      const source = await state.csvFile.text();
+      const result = await api('/api/validate/cpo.csv', { method: 'POST', headers: { 'Content-Type': 'text/csv; charset=utf-8' }, body: source });
+      state.csvImport = { fileName: state.csvFile.name, source, result };
+      renderCsvPreview(state.csvImport);
+      setMessage(result.valid ? `Planilha válida: ${result.changes.length} alteração(ões) aguardando confirmação.` : `Planilha rejeitada: ${result.errors.length} erro(s) encontrado(s).`, result.valid ? 'success' : 'error');
+    } catch (error) {
+      setMessage(`Falha ao validar planilha: ${error.message}`, 'error');
+    } finally {
+      elements.validateCsvButton.disabled = !state.csvFile;
+    }
+  }
+
+  async function confirmCsvImport() {
+    if (!state.csvImport?.result?.valid) return setMessage('Valide uma planilha sem erros antes de confirmar.', 'error');
+    const hasHigh = state.csvImport.result.highValues.length > 0;
+    if (hasHigh && !elements.csvHighConfirm.checked) return setMessage('Confirme explicitamente os valores acima de US$ 10.000,00.', 'error');
+    elements.confirmCsvImportButton.disabled = true;
+    try {
+      const result = await api('/api/import/cpo.csv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'X-Catalog-Hash': state.csvImport.result.currentHash,
+          'X-Confirm-High-Values': hasHigh ? 'true' : 'false',
+          'X-Import-Filename': state.csvImport.fileName
+        },
+        body: state.csvImport.source
+      });
+      resetCsvImport();
+      await loadCatalog();
+      setMessage(`${result.changes.length} preço(s) CPO salvos com backup, histórico e validação concluídos.`, 'success');
+    } catch (error) {
+      setMessage(`Importação não aplicada: ${error.message}`, 'error');
+      elements.confirmCsvImportButton.disabled = false;
+    }
+  }
+
   async function importCatalog(file) {
     try {
       const candidate = JSON.parse(await file.text());
@@ -198,6 +325,31 @@
   elements.confirmSaveButton.addEventListener('click', saveChanges);
   elements.exportDraftButton.addEventListener('click', () => downloadJson('catalog-public-com-alteracoes.json', draftCatalog()));
   elements.importFile.addEventListener('change', () => elements.importFile.files[0] && importCatalog(elements.importFile.files[0]));
+  elements.csvImportFile.addEventListener('change', () => selectCsvFile(elements.csvImportFile.files[0]));
+  elements.csvDropZone.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      elements.csvImportFile.click();
+    }
+  });
+  for (const eventName of ['dragenter', 'dragover']) elements.csvDropZone.addEventListener(eventName, event => {
+    event.preventDefault();
+    elements.csvDropZone.classList.add('dragging');
+  });
+  for (const eventName of ['dragleave', 'drop']) elements.csvDropZone.addEventListener(eventName, event => {
+    event.preventDefault();
+    elements.csvDropZone.classList.remove('dragging');
+  });
+  elements.csvDropZone.addEventListener('drop', event => selectCsvFile(event.dataTransfer.files[0]));
+  elements.validateCsvButton.addEventListener('click', validateCsvImport);
+  elements.closeCsvReviewButton.addEventListener('click', () => resetCsvImport());
+  elements.cancelCsvImportButton.addEventListener('click', () => resetCsvImport());
+  elements.csvReviewDialog.addEventListener('cancel', event => {
+    event.preventDefault();
+    resetCsvImport();
+  });
+  elements.downloadCsvErrorsButton.addEventListener('click', () => state.csvImport?.result?.errorReport && downloadText('erros-importacao-precos-cpo.csv', state.csvImport.result.errorReport, 'text/csv;charset=utf-8'));
+  elements.confirmCsvImportButton.addEventListener('click', confirmCsvImport);
   elements.buildButton.addEventListener('click', async () => {
     elements.buildButton.disabled = true; setMessage('Executando validação e build...');
     try {
@@ -206,6 +358,6 @@
     } catch (error) { setMessage(error.message, 'error'); }
     finally { elements.buildButton.disabled = false; }
   });
-  window.addEventListener('beforeunload', event => { if (state.edits.size) { event.preventDefault(); event.returnValue = ''; } });
+  window.addEventListener('beforeunload', event => { if (state.edits.size || state.csvImport?.result?.changes?.length) { event.preventDefault(); event.returnValue = ''; } });
   loadCatalog().catch(error => { elements.validationStatus.textContent = 'Falha de validação'; elements.validationStatus.classList.add('error'); setMessage(error.message, 'error'); });
 })();
