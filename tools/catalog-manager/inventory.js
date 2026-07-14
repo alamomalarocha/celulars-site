@@ -6,7 +6,7 @@
   const state = {
     activeTab: 'catalog', exists: false, demoMode: false, rows: [], stats: null,
     alerts: [], backups: [], history: [], contentHash: null, catalogHash: null,
-    edits: new Map(), preview: null
+    edits: new Map(), preview: null, csvFile: null, csvSource: '', csvPreview: null
   };
 
   const byId = id => document.getElementById(id);
@@ -15,7 +15,7 @@
     views: [...document.querySelectorAll('[data-manager-view]')],
     demoBanner: byId('inventoryDemoBanner'), setup: byId('inventorySetup'),
     summary: byId('inventorySummary'), workspace: byId('inventoryWorkspace'),
-    operations: byId('inventoryOperations'), status: byId('inventoryStatus'),
+    csvTools: byId('inventoryCsvTools'), operations: byId('inventoryOperations'), status: byId('inventoryStatus'),
     file: byId('inventoryFile'), rows: byId('inventoryRows'), empty: byId('inventoryEmptyState'),
     filter: byId('inventoryFilter'), search: byId('inventorySearch'), pending: byId('inventoryPendingCount'),
     reviewButton: byId('reviewInventoryButton'), reloadButton: byId('reloadInventoryButton'),
@@ -27,7 +27,15 @@
     confirmInitialize: byId('confirmInventoryInitializeButton'), reviewDialog: byId('inventoryReviewDialog'),
     diffList: byId('inventoryDiffList'), warningsSection: byId('inventoryWarningsSection'),
     warnings: byId('inventoryWarnings'), warningConfirm: byId('inventoryWarningConfirm'),
-    confirmSave: byId('confirmInventorySaveButton'), message: byId('message')
+    confirmSave: byId('confirmInventorySaveButton'), message: byId('message'),
+    csvInput: byId('inventoryCsvInput'), csvDrop: byId('inventoryCsvDrop'),
+    csvFile: byId('inventoryCsvFile'), validateCsv: byId('validateInventoryCsvButton'),
+    csvDialog: byId('inventoryCsvReviewDialog'), csvReviewFile: byId('inventoryCsvReviewFile'),
+    csvSpreadsheetHash: byId('inventoryCsvSpreadsheetHash'), csvCurrentHash: byId('inventoryCsvCurrentHash'),
+    csvErrorsSection: byId('inventoryCsvErrorsSection'), csvErrors: byId('inventoryCsvErrors'),
+    csvDiffList: byId('inventoryCsvDiffList'), csvNoChanges: byId('inventoryCsvNoChanges'),
+    csvWarningsSection: byId('inventoryCsvWarningsSection'), csvWarnings: byId('inventoryCsvWarnings'),
+    csvWarningConfirm: byId('inventoryCsvWarningConfirm'), confirmCsv: byId('confirmInventoryCsvButton')
   };
 
   function setMessage(text, kind = '') {
@@ -72,7 +80,7 @@
   }
   function editPayload() { return [...state.edits.entries()].map(([inventory_id, edit]) => ({ inventory_id, ...edit })); }
 
-  function updateEdit(row, field, value) {
+  function updateEdit(row, field, value, { render = true } = {}) {
     const current = effectiveRow(row);
     const next = {
       stock_on_hand: current.stock_on_hand, reserved: current.reserved,
@@ -83,7 +91,8 @@
       .every(key => next[key] === row[key]);
     if (unchanged) state.edits.delete(row.inventory_id);
     else state.edits.set(row.inventory_id, next);
-    renderRows();
+    if (render) renderRows();
+    else updatePending();
   }
 
   function updatePending() {
@@ -97,7 +106,7 @@
     input.value = String(effectiveRow(row)[field]);
     input.setAttribute('aria-label', `${label} de ${row.model}, ${row.capacity}`);
     if (state.edits.has(row.inventory_id)) input.classList.add('changed');
-    input.addEventListener('change', () => {
+    const stageValue = render => {
       const value = Number(input.value);
       if (!Number.isInteger(value) || value < 0) {
         input.classList.add('invalid');
@@ -108,9 +117,13 @@
         input.classList.add('invalid');
         return setMessage('A quantidade reservada nao pode superar o estoque fisico.', 'error');
       }
-      updateEdit(row, field, value);
+      input.classList.remove('invalid');
+      input.classList.toggle('changed', value !== row[field]);
+      updateEdit(row, field, value, { render });
       setMessage('Alteracao local pronta para revisao.');
-    });
+    };
+    input.addEventListener('input', () => stageValue(false));
+    input.addEventListener('change', () => stageValue(true));
     return input;
   }
 
@@ -211,7 +224,8 @@
   function renderInventoryVisibility() {
     if (state.activeTab !== 'inventory') return;
     elements.demoBanner.hidden = !state.demoMode; elements.setup.hidden = state.exists;
-    elements.summary.hidden = !state.exists; elements.workspace.hidden = !state.exists; elements.operations.hidden = !state.exists;
+    elements.summary.hidden = !state.exists; elements.workspace.hidden = !state.exists;
+    elements.csvTools.hidden = !state.exists; elements.operations.hidden = !state.exists;
   }
 
   async function loadInventory() {
@@ -297,6 +311,104 @@
     } catch (error) { setMessage(error.message, 'error'); }
   }
 
+  function csvSummaryValue(id, value) {
+    byId(id).textContent = String(value ?? 0);
+  }
+
+  function resetCsvSelection() {
+    state.csvFile = null; state.csvSource = ''; state.csvPreview = null;
+    elements.csvInput.value = ''; elements.csvFile.textContent = 'Nenhum arquivo selecionado.';
+    elements.validateCsv.disabled = true;
+  }
+
+  async function selectCsvFile(file) {
+    state.csvPreview = null;
+    if (!file) return resetCsvSelection();
+    if (file.size > 2 * 1024 * 1024) {
+      resetCsvSelection();
+      return setMessage('O arquivo CSV de estoque excede 2 MB.', 'error');
+    }
+    state.csvFile = file; state.csvSource = await file.text();
+    elements.csvFile.textContent = `${file.name} - ${Math.max(1, Math.round(file.size / 1024))} KB`;
+    elements.validateCsv.disabled = false;
+    setMessage('Planilha de estoque selecionada. Valide antes de aplicar.');
+  }
+
+  function renderCsvPreview(data) {
+    state.csvPreview = data;
+    elements.csvReviewFile.textContent = `Arquivo: ${state.csvFile?.name || '-'}`;
+    elements.csvSpreadsheetHash.textContent = data.spreadsheetHash || '-';
+    elements.csvCurrentHash.textContent = data.currentHash || '-';
+    const summary = data.summary || {};
+    for (const [id, field] of [
+      ['inventoryCsvRowsRead', 'rowsRead'], ['inventoryCsvValidRows', 'validRows'],
+      ['inventoryCsvChangedRows', 'changedRows'], ['inventoryCsvUnchangedRows', 'unchangedRows'],
+      ['inventoryCsvBlankRows', 'blankRows'], ['inventoryCsvInvalidRows', 'invalidRows'],
+      ['inventoryCsvConflicts', 'conflicts']
+    ]) csvSummaryValue(id, summary[field]);
+
+    const errors = data.errors || [];
+    elements.csvErrorsSection.hidden = errors.length === 0;
+    elements.csvErrors.replaceChildren(...errors.map(error => {
+      const item = node('div', 'csv-error-item');
+      item.append(node('strong', '', error.line ? `Linha ${error.line}` : 'Arquivo'), node('span', '', error.message));
+      return item;
+    }));
+    const changes = data.changes || [];
+    elements.csvDiffList.replaceChildren(...changes.map(change => {
+      const description = diffDescription(change); const item = node('div', 'diff-item');
+      item.append(node('strong', '', description.title), node('span', '', description.detail)); return item;
+    }));
+    elements.csvNoChanges.hidden = changes.length > 0;
+    const warnings = data.warnings || [];
+    elements.csvWarningsSection.hidden = warnings.length === 0;
+    elements.csvWarnings.replaceChildren(...warnings.map(warning => node('div', '', warning.message)));
+    elements.csvWarningConfirm.checked = false;
+    elements.confirmCsv.disabled = !data.valid || changes.length === 0 || warnings.length > 0;
+    elements.csvDialog.showModal();
+  }
+
+  async function validateCsv() {
+    if (!state.csvFile || !state.csvSource) return;
+    elements.validateCsv.disabled = true;
+    try {
+      const data = await api('/api/inventory/validate.csv', {
+        method: 'POST', headers: { 'Content-Type': 'text/csv; charset=utf-8' }, body: state.csvSource
+      });
+      renderCsvPreview(data);
+      setMessage(data.valid ? 'Planilha validada. Revise as diferenças.' : 'A planilha contém erros e não pode ser aplicada.', data.valid ? 'success' : 'error');
+    } catch (error) { setMessage(error.message, 'error'); }
+    finally { elements.validateCsv.disabled = !state.csvFile; }
+  }
+
+  async function applyCsv() {
+    const warnings = state.csvPreview?.warnings || [];
+    if (warnings.length && !elements.csvWarningConfirm.checked) return setMessage('Confirme explicitamente o estoque CPO com preço zerado.', 'error');
+    elements.confirmCsv.disabled = true;
+    try {
+      const data = await api('/api/inventory/import.csv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'X-Inventory-Hash': state.csvPreview.currentHash,
+          'X-Confirm-Stock-Without-Price': String(warnings.length > 0),
+          'X-Import-Filename': state.csvFile.name
+        },
+        body: state.csvSource
+      });
+      elements.csvDialog.close(); resetCsvSelection(); await loadInventory();
+      setMessage(`${data.changes.length} alteração(ões) de estoque aplicadas. Backup: ${data.backupName || 'não necessário'}.`, 'success');
+    } catch (error) { setMessage(error.message, 'error'); elements.confirmCsv.disabled = false; }
+  }
+
+  function downloadCsvErrors() {
+    const source = state.csvPreview?.errorReport;
+    if (!source) return;
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([source], { type: 'text/csv;charset=utf-8' }));
+    link.download = 'erros-estoque-celulars.csv'; link.click(); URL.revokeObjectURL(link.href);
+  }
+
   for (const button of elements.tabs) button.addEventListener('click', () => setTab(button.dataset.managerTab));
   elements.filter.addEventListener('change', renderRows); elements.search.addEventListener('input', renderRows);
   elements.reloadButton.addEventListener('click', () => {
@@ -312,5 +424,15 @@
   byId('closeInventoryReviewButton').addEventListener('click', () => elements.reviewDialog.close());
   byId('cancelInventorySaveButton').addEventListener('click', () => elements.reviewDialog.close());
   elements.confirmSave.addEventListener('click', saveChanges);
+  elements.csvInput.addEventListener('change', () => selectCsvFile(elements.csvInput.files?.[0]).catch(error => setMessage(error.message, 'error')));
+  for (const eventName of ['dragenter', 'dragover']) elements.csvDrop.addEventListener(eventName, event => { event.preventDefault(); elements.csvDrop.classList.add('dragging'); });
+  for (const eventName of ['dragleave', 'drop']) elements.csvDrop.addEventListener(eventName, event => { event.preventDefault(); elements.csvDrop.classList.remove('dragging'); });
+  elements.csvDrop.addEventListener('drop', event => selectCsvFile(event.dataTransfer?.files?.[0]).catch(error => setMessage(error.message, 'error')));
+  elements.validateCsv.addEventListener('click', validateCsv);
+  elements.csvWarningConfirm.addEventListener('change', () => { elements.confirmCsv.disabled = !state.csvPreview?.valid || !(state.csvPreview?.changes || []).length || !elements.csvWarningConfirm.checked; });
+  elements.confirmCsv.addEventListener('click', applyCsv);
+  byId('closeInventoryCsvReviewButton').addEventListener('click', () => elements.csvDialog.close());
+  byId('cancelInventoryCsvButton').addEventListener('click', () => elements.csvDialog.close());
+  byId('downloadInventoryCsvErrorsButton').addEventListener('click', downloadCsvErrors);
   window.addEventListener('beforeunload', event => { if (state.edits.size) { event.preventDefault(); event.returnValue = ''; } });
 })();

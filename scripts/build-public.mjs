@@ -29,7 +29,28 @@ const publicFiles = [
 ];
 
 const generatedPublicFiles = ['data/catalog-public.js'];
-const forbiddenOutputPatterns = [/(?:^|\/)tools(?:\/|$)/, /(?:^|\/)internal(?:\/|$)/, /catalog-manager/i, /(?:^|\/)backups(?:\/|$)/, /(?:^|\/)history(?:\/|$)/, /catalog-admin/i];
+const forbiddenOutputPatterns = [
+  /(?:^|\/)tools(?:\/|$)/,
+  /(?:^|\/)internal(?:\/|$)/,
+  /(?:^|\/)fixtures?(?:\/|$)/,
+  /(?:^|\/)docs?(?:\/|$)/,
+  /(?:^|\/)backups(?:\/|$)/,
+  /(?:^|\/)history(?:\/|$)/,
+  /catalog-manager/i,
+  /catalog-admin/i,
+  /inventory/i,
+  /estoque/i,
+  /disponibilidade-interna/i
+];
+const forbiddenPrivateContentPatterns = [
+  /inventory-private/i,
+  /inventory_hash/i,
+  /inventory_id/i,
+  /stock_on_hand/i,
+  /low_stock_threshold/i,
+  /inventory-changes\.jsonl/i,
+  /\/api\/inventory\//i
+];
 
 function assertOutputDirectoryIsSafe() {
   const expected = path.join(projectRoot, 'dist');
@@ -99,6 +120,11 @@ if (JSON.stringify(outputFiles) !== JSON.stringify(expectedOutputFiles)) {
 }
 for (const file of outputFiles) {
   if (forbiddenOutputPatterns.some(pattern => pattern.test(file))) throw new Error(`Arquivo interno proibido em dist: ${file}`);
+  if (/\.(?:html|css|js|json|txt|xml)$/i.test(file)) {
+    const source = await readFile(path.join(outputDirectory, file), 'utf8');
+    const privatePattern = forbiddenPrivateContentPatterns.find(pattern => pattern.test(source));
+    if (privatePattern) throw new Error(`Conteudo privado de inventario encontrado em dist/${file}: ${privatePattern}`);
+  }
 }
 
 console.log(`Artefato publico criado em ${outputDirectory}`);

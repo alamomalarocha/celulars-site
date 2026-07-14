@@ -8,6 +8,12 @@ import { fileURLToPath } from 'node:url';
 import { cpoCsvErrorReport, exportCpoCsv, validateCpoCsv } from './catalog-csv.mjs';
 import { catalogModuleSource, catalogStats, contentHash, diffCpoPrices, validateCatalog, validateImport } from './catalog-rules.mjs';
 import {
+  exportAvailabilityCsv,
+  exportInventoryCsv,
+  inventoryCsvErrorReport,
+  validateInventoryCsv
+} from './inventory-csv.mjs';
+import {
   initializeInventory,
   listInventoryBackups,
   previewInventoryChanges,
@@ -466,6 +472,88 @@ export function createCatalogAdminServer(options = {}) {
         });
       }
 
+      if (url.pathname === '/api/inventory/export.csv' && request.method === 'GET') {
+        const loadedCatalog = await readCatalog(catalogPath);
+        const loadedInventory = await readInventory(inventoryPath, loadedCatalog.catalog, { allowDemo: demoMode });
+        if (!loadedInventory.exists) return sendJson(response, 404, { error: 'Inventario ainda nao foi criado.' });
+        const exported = exportInventoryCsv(loadedInventory.inventory, loadedCatalog.catalog, loadedInventory.contentHash);
+        response.writeHead(200, {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': 'attachment; filename="estoque-privado-celulars.csv"',
+          'Cache-Control': 'no-store',
+          'X-Content-Type-Options': 'nosniff'
+        });
+        return response.end(exported.csv);
+      }
+
+      if (url.pathname === '/api/inventory/availability.csv' && request.method === 'GET') {
+        const loadedCatalog = await readCatalog(catalogPath);
+        const loadedInventory = await readInventory(inventoryPath, loadedCatalog.catalog, { allowDemo: demoMode });
+        if (!loadedInventory.exists) return sendJson(response, 404, { error: 'Inventario ainda nao foi criado.' });
+        const exported = exportAvailabilityCsv(loadedInventory.inventory, loadedCatalog.catalog);
+        response.writeHead(200, {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': 'attachment; filename="disponibilidade-interna-celulars.csv"',
+          'Cache-Control': 'no-store',
+          'X-Content-Type-Options': 'nosniff'
+        });
+        return response.end(exported.csv);
+      }
+
+      if (url.pathname === '/api/inventory/validate.csv' && request.method === 'POST') {
+        const source = await readCsvBody(request);
+        const loadedCatalog = await readCatalog(catalogPath);
+        const loadedInventory = await readInventory(inventoryPath, loadedCatalog.catalog, { allowDemo: demoMode });
+        if (!loadedInventory.exists) return sendJson(response, 404, { error: 'Inventario ainda nao foi criado.' });
+        const result = validateInventoryCsv(loadedInventory.inventory, loadedCatalog.catalog, loadedInventory.contentHash, source);
+        return sendJson(response, 200, {
+          ...result,
+          errorReport: result.errors.length ? inventoryCsvErrorReport(result.errors) : ''
+        });
+      }
+
+      if (url.pathname === '/api/inventory/import.csv' && request.method === 'POST') {
+        return await runMutableOperation(response, async () => {
+          const source = await readCsvBody(request);
+          const loadedCatalog = await readCatalog(catalogPath);
+          const loadedInventory = await readInventory(inventoryPath, loadedCatalog.catalog, { allowDemo: demoMode });
+          if (!loadedInventory.exists) return sendJson(response, 404, { error: 'Inventario ainda nao foi criado.' });
+          const expectedHash = String(request.headers['x-inventory-hash'] || '');
+          if (!expectedHash || expectedHash !== loadedInventory.contentHash) {
+            return sendJson(response, 409, { error: 'O inventario mudou desde a previa. Valide novamente a planilha.' });
+          }
+          const validated = validateInventoryCsv(loadedInventory.inventory, loadedCatalog.catalog, loadedInventory.contentHash, source);
+          if (!validated.valid) {
+            return sendJson(response, 400, {
+              ...validated,
+              error: 'A planilha deixou de ser valida. Corrija os erros e valide novamente.',
+              errorReport: inventoryCsvErrorReport(validated.errors)
+            });
+          }
+          if (!validated.changes.length) return sendJson(response, 400, { error: 'A planilha nao contem alteracoes de estoque.' });
+          const requiresConfirmation = validated.warnings.some(warning => warning.type === 'stock_without_price');
+          const confirmed = request.headers['x-confirm-stock-without-price'] === 'true';
+          if (requiresConfirmation && !confirmed) return sendJson(response, 400, { error: 'Confirme explicitamente o estoque CPO com preco zerado.' });
+          const result = await saveInventoryChanges({
+            inventoryPath,
+            catalog: loadedCatalog.catalog,
+            changes: validated.changes.map(change => ({ inventory_id: change.inventory_id, ...change.after })),
+            expectedInventoryHash: loadedInventory.contentHash,
+            confirmStockWithoutPrice: confirmed,
+            allowDemo: demoMode,
+            backupDirectory: inventoryBackupDirectory,
+            historyFile: inventoryHistoryFile,
+            historyType: 'spreadsheet_import',
+            historyContext: {
+              filename: safeImportFilename(request.headers['x-import-filename']),
+              rowsRead: validated.summary.rowsRead
+            },
+            ...(inventoryWriteFile ? { writeInventory: inventoryWriteFile } : {})
+          });
+          return sendJson(response, result.ok ? 200 : result.status || 400, result.ok ? result : { ...result, error: result.errors?.join(' | ') });
+        });
+      }
+
       if (url.pathname === '/api/export/current' && request.method === 'GET') {
         const loaded = await readCatalog(catalogPath);
         response.writeHead(200, {
@@ -620,10 +708,12 @@ if (invokedDirectly) {
     const realCatalog = await readCatalog();
     const demoCatalog = structuredClone(realCatalog.catalog);
     let demoPriceIndex = 0;
+    let demoZeroPricePending = true;
     for (const product of demoCatalog.products) {
       if (product.group !== 'cpo') continue;
       for (const capacity of Object.keys(product.capacities)) {
-        product.capacities[capacity].usd = [111.11, 222.22][demoPriceIndex++ % 2];
+        product.capacities[capacity].usd = demoZeroPricePending ? 0 : [111.11, 222.22][demoPriceIndex++ % 2];
+        demoZeroPricePending = false;
       }
     }
     const demoCatalogPath = path.join(demoRoot, 'catalog-public.json');

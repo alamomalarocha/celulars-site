@@ -9,7 +9,8 @@
     "catalog:admin": "node scripts/catalog-admin-server.mjs",
     "catalog:demo": "node scripts/catalog-admin-server.mjs --demo",
     "catalog:test": "node scripts/test-catalog-manager.mjs",
-    "catalog:csv-test": "node scripts/test-catalog-csv.mjs"
+    "catalog:csv-test": "node scripts/test-catalog-csv.mjs",
+    "inventory:test": "node scripts/test-inventory-manager.mjs"
   },
   "engines": {
     "node": ">=20"

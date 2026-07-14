@@ -84,6 +84,16 @@ O fluxo de gravação é:
 
 O gerenciador não executa `git commit`, `git push` ou deploy.
 
+## Estoque e disponibilidade
+
+A aba **Estoque e disponibilidade** mantém quantidades operacionais em uma fonte privada separada do catálogo público. Ela permite criar a estrutura inicial confirmada, editar estoque físico, reserva, limite baixo, status e observação, revisar o diff, salvar com backup/histórico/rollback e importar ou exportar uma planilha própria.
+
+O disponível é sempre calculado como `estoque físico - reservado`. Preço, produto, ano e capacidade permanecem somente leitura nessa aba. Estoque CPO com preço zero gera alerta e confirmação, sem criar preço automaticamente.
+
+O arquivo real `data/inventory-private.json`, seus backups, histórico e CSVs não entram no Git nem em `dist`. O modo `npm run catalog:demo` usa somente dados temporários fictícios e não pode gerar o site.
+
+Instruções completas: [ESTOQUE-E-DISPONIBILIDADE.md](ESTOQUE-E-DISPONIBILIDADE.md).
+
 ## Importação e exportação
 
 **Exportar catálogo atual** baixa a versão salva.
@@ -203,4 +213,4 @@ Nunca editar `dist` manualmente.
 
 Nunca publicar `tools/catalog-manager`, `data/backups` ou `data/history`.
 
-Nunca usar a ferramenta para armazenar custo, margem, fornecedor, estoque, cliente, senha ou token.
+Nunca usar a ferramenta para armazenar custo, margem, fornecedor, cliente, IMEI, serial, senha ou token.

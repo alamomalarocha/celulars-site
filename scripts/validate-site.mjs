@@ -30,7 +30,28 @@ const requiredRootFiles = [
 const expectedDistFiles = [...requiredRootFiles].sort();
 const expectedWhatsapp = '17865466540';
 const expectedEmail = 'contact@celulars.com.br';
-const forbiddenDistPatterns = [/(?:^|\/)tools(?:\/|$)/, /(?:^|\/)internal(?:\/|$)/, /catalog-manager/i, /(?:^|\/)backups(?:\/|$)/, /(?:^|\/)history(?:\/|$)/, /catalog-admin/i];
+const forbiddenDistPatterns = [
+  /(?:^|\/)tools(?:\/|$)/,
+  /(?:^|\/)internal(?:\/|$)/,
+  /(?:^|\/)fixtures?(?:\/|$)/,
+  /(?:^|\/)docs?(?:\/|$)/,
+  /(?:^|\/)backups(?:\/|$)/,
+  /(?:^|\/)history(?:\/|$)/,
+  /catalog-manager/i,
+  /catalog-admin/i,
+  /inventory/i,
+  /estoque/i,
+  /disponibilidade-interna/i
+];
+const forbiddenPrivateContentPatterns = [
+  /inventory-private/i,
+  /inventory_hash/i,
+  /inventory_id/i,
+  /stock_on_hand/i,
+  /low_stock_threshold/i,
+  /inventory-changes\.jsonl/i,
+  /\/api\/inventory\//i
+];
 const textFileExtensions = new Set(['.js', '.mjs', '.json', '.html', '.css', '.md', '.yml', '.yaml']);
 const unicodeScanIgnoredDirectories = new Set(['.git', 'node_modules', 'dist', 'backups', 'history']);
 
@@ -217,6 +238,13 @@ if (validateDist) {
     const distFiles = (await listFiles(distRoot)).sort();
     check(JSON.stringify(distFiles) === JSON.stringify(expectedDistFiles), `Allowlist de dist divergente: ${distFiles.join(', ')}`);
     for (const file of distFiles) check(!forbiddenDistPatterns.some(pattern => pattern.test(file)), `Arquivo interno proibido em dist: ${file}`);
+    for (const file of distFiles) {
+      if (!/\.(?:html|css|js|json|txt|xml)$/i.test(file)) continue;
+      const source = await read(file, distRoot);
+      for (const pattern of forbiddenPrivateContentPatterns) {
+        check(!pattern.test(source), `Conteudo privado de inventario encontrado em dist/${file}: ${pattern}`);
+      }
+    }
     for (const page of activePages) {
       const html = await read(page, distRoot);
       for (const match of html.matchAll(/(?:src|href)="([^"#]+)"/gi)) {

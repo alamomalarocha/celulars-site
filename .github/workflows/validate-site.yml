@@ -38,5 +38,8 @@ jobs:
       - name: Test CPO CSV import and export
         run: npm run catalog:csv-test
 
+      - name: Test private inventory manager
+        run: npm run inventory:test
+
       - name: Confirm build output
         run: test -f dist/index.html && test -f dist/data/catalog-public.js
