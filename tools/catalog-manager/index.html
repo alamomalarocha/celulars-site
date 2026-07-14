@@ -6,13 +6,14 @@
   <title>Gerenciador de catálogo CELULARS</title>
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/csv-styles.css">
+  <link rel="stylesheet" href="/inventory-styles.css">
 </head>
 <body>
   <header class="topbar">
     <div>
       <p class="eyebrow">Ferramenta interna local</p>
-      <h1>Gerenciador de catálogo CELULARS</h1>
-      <p class="subtitle">Edite somente preços CPO em US$. Modelos novos e estrutura do catálogo permanecem protegidos.</p>
+      <h1>Gerenciador interno CELULARS</h1>
+      <p class="subtitle">Catálogo, preços CPO e estoque operacional em áreas separadas e protegidas.</p>
     </div>
     <div class="top-actions">
       <button class="button secondary" id="reloadButton" type="button">Recarregar</button>
@@ -20,8 +21,13 @@
     </div>
   </header>
 
+  <nav class="manager-tabs" aria-label="Áreas do gerenciador">
+    <button class="manager-tab active" type="button" data-manager-tab="catalog" aria-selected="true">Catálogo e preços</button>
+    <button class="manager-tab" type="button" data-manager-tab="inventory" aria-selected="false">Estoque e disponibilidade</button>
+  </nav>
+
   <main>
-    <section class="summary" aria-labelledby="summaryTitle">
+    <section class="summary" aria-labelledby="summaryTitle" data-manager-view="catalog">
       <div class="section-heading">
         <div>
           <p class="eyebrow">Fonte canônica</p>
@@ -39,7 +45,7 @@
       </dl>
     </section>
 
-    <section class="workspace" aria-labelledby="catalogTitle">
+    <section class="workspace" aria-labelledby="catalogTitle" data-manager-view="catalog">
       <div class="section-heading catalog-heading">
         <div>
           <p class="eyebrow">Administração local</p>
@@ -73,7 +79,7 @@
       </div>
     </section>
 
-    <section class="operations" aria-labelledby="operationsTitle">
+    <section class="operations" aria-labelledby="operationsTitle" data-manager-view="catalog">
       <div>
         <p class="eyebrow">Revisão e manutenção</p>
         <h2 id="operationsTitle">Importar, exportar e gerar</h2>
@@ -112,7 +118,7 @@
       </div>
     </section>
 
-    <section class="operations" aria-labelledby="spreadsheetTitle">
+    <section class="operations" aria-labelledby="spreadsheetTitle" data-manager-view="catalog">
       <div>
         <p class="eyebrow">Atualização em lote</p>
         <h2 id="spreadsheetTitle">Planilha de preços CPO</h2>
@@ -134,6 +140,85 @@
           <p>Inclui todas as combinações e preenche <code>new_usd</code> com o valor atual para conferência completa.</p>
           <a class="button secondary" href="/api/export/cpo.csv?mode=complete" download>Baixar catálogo CPO completo</a>
         </div>
+      </div>
+    </section>
+
+    <section class="inventory-demo-banner" id="inventoryDemoBanner" data-manager-view="inventory" hidden>
+      <strong>MODO DEMONSTRAÇÃO</strong>
+      <span>Preços e quantidades são fictícios, isolados em pasta temporária. Build e publicação estão bloqueados.</span>
+    </section>
+
+    <section class="operations inventory-setup" id="inventorySetup" data-manager-view="inventory" hidden aria-labelledby="inventorySetupTitle">
+      <div>
+        <p class="eyebrow">Primeiro uso</p>
+        <h2 id="inventorySetupTitle">Criar estrutura inicial de estoque</h2>
+        <p>Cria uma linha privada para cada combinação real de modelo + capacidade, sem inventar variantes de cor e sem alterar o catálogo.</p>
+      </div>
+      <button class="button primary" id="previewInventoryInitializeButton" type="button">Visualizar estrutura inicial</button>
+    </section>
+
+    <section class="summary" id="inventorySummary" data-manager-view="inventory" hidden aria-labelledby="inventorySummaryTitle">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Dados privados locais</p>
+          <h2 id="inventorySummaryTitle">Resumo do estoque</h2>
+        </div>
+        <span class="status-pill" id="inventoryStatus">Carregando...</span>
+      </div>
+      <dl class="summary-grid inventory-summary-grid">
+        <div><dt>Estoque físico</dt><dd id="inventoryStock">-</dd></div>
+        <div><dt>Reservado</dt><dd id="inventoryReserved">-</dd></div>
+        <div><dt>Disponível</dt><dd id="inventoryAvailable">-</dd></div>
+        <div><dt>Modelos com estoque</dt><dd id="inventoryModelsStocked">-</dd></div>
+        <div><dt>Capacidades com estoque</dt><dd id="inventoryCapacitiesStocked">-</dd></div>
+        <div><dt>Estoque baixo</dt><dd id="inventoryLowStock">-</dd></div>
+        <div><dt>Pausados</dt><dd id="inventoryPaused">-</dd></div>
+        <div><dt>CPO com preço zero</dt><dd id="inventoryZeroPrices">-</dd></div>
+        <div><dt>CPO com preço</dt><dd id="inventoryPositivePrices">-</dd></div>
+      </dl>
+    </section>
+
+    <section class="workspace inventory-workspace" id="inventoryWorkspace" data-manager-view="inventory" hidden aria-labelledby="inventoryTitle">
+      <div class="section-heading catalog-heading">
+        <div>
+          <p class="eyebrow">Administração privada</p>
+          <h2 id="inventoryTitle">Estoque e disponibilidade</h2>
+          <p class="inventory-file" id="inventoryFile">-</p>
+        </div>
+        <div class="button-row">
+          <button class="button secondary" id="reloadInventoryButton" type="button">Recarregar estoque</button>
+          <button class="button primary" id="reviewInventoryButton" type="button" disabled>Revisar alterações</button>
+        </div>
+      </div>
+      <div class="inventory-filters">
+        <label>Exibir<select id="inventoryFilter">
+          <option value="all">Todos</option><option value="new">Novo</option><option value="cpo">CPO</option>
+          <option value="stock">Com estoque</option><option value="no-stock">Sem estoque</option>
+          <option value="reserved">Reservados</option><option value="low-stock">Estoque baixo</option>
+          <option value="paused">Pausados</option><option value="zero-price">Preço zerado</option>
+          <option value="positive-price">Preço preenchido</option>
+        </select></label>
+        <label>Buscar modelo, ano, capacidade ou ID<input id="inventorySearch" type="search" placeholder="Ex.: iPhone 16 Pro, 2024 ou 256 GB"></label>
+        <span class="pending-inventory"><strong id="inventoryPendingCount">0</strong> alteração(ões) não salvas</span>
+      </div>
+      <div class="table-wrap inventory-table-wrap">
+        <table class="inventory-table">
+          <thead><tr><th>Modelo</th><th>Grupo</th><th>Ano</th><th>Capacidade</th><th>Preço USD</th><th>Estoque</th><th>Reservado</th><th>Disponível</th><th>Limite</th><th>Status</th><th>Atualizado</th><th>Observação</th></tr></thead>
+          <tbody id="inventoryRows"></tbody>
+        </table>
+        <p class="empty" id="inventoryEmptyState" hidden>Nenhum item corresponde aos filtros.</p>
+      </div>
+    </section>
+
+    <section class="operations inventory-operations" id="inventoryOperations" data-manager-view="inventory" hidden aria-labelledby="inventoryOperationsTitle">
+      <div>
+        <p class="eyebrow">Controle e recuperação</p>
+        <h2 id="inventoryOperationsTitle">Alertas, backups e histórico</h2>
+      </div>
+      <div class="inventory-operation-grid">
+        <div><h3>Alertas internos</h3><div class="inventory-list" id="inventoryAlerts"></div></div>
+        <div><h3>Backups</h3><div class="inventory-list" id="inventoryBackups"></div></div>
+        <div><h3>Histórico</h3><div class="inventory-list" id="inventoryHistory"></div></div>
       </div>
     </section>
 
@@ -195,6 +280,30 @@
     </div>
   </dialog>
 
+  <dialog id="inventoryInitializeDialog" aria-labelledby="inventoryInitializeTitle">
+    <div class="dialog-card">
+      <div class="dialog-heading"><div><p class="eyebrow">Prévia obrigatória</p><h2 id="inventoryInitializeTitle">Criar inventário privado</h2></div><button class="icon-button" id="closeInventoryInitializeButton" type="button" aria-label="Fechar">×</button></div>
+      <p id="inventoryInitializeSummary">-</p>
+      <dl class="csv-summary inventory-init-summary">
+        <div><dt>Linhas</dt><dd id="inventoryInitializeItems">0</dd></div>
+        <div><dt>Estoque inicial</dt><dd id="inventoryInitializeStock">0</dd></div>
+        <div><dt>Reservado inicial</dt><dd id="inventoryInitializeReserved">0</dd></div>
+      </dl>
+      <label class="high-confirm"><input id="inventoryInitializeConfirm" type="checkbox">Confirmo a criação do arquivo privado, sem estoque real preenchido automaticamente.</label>
+      <div class="dialog-actions"><button class="button secondary" id="cancelInventoryInitializeButton" type="button">Cancelar</button><button class="button primary" id="confirmInventoryInitializeButton" type="button" disabled>Criar estrutura</button></div>
+    </div>
+  </dialog>
+
+  <dialog id="inventoryReviewDialog" aria-labelledby="inventoryReviewTitle">
+    <div class="dialog-card inventory-review-card">
+      <div class="dialog-heading"><div><p class="eyebrow">Prévia obrigatória</p><h2 id="inventoryReviewTitle">Revisar alterações de estoque</h2></div><button class="icon-button" id="closeInventoryReviewButton" type="button" aria-label="Fechar">×</button></div>
+      <div class="diff-list" id="inventoryDiffList"></div>
+      <section id="inventoryWarningsSection" hidden><h3>Atenção</h3><div class="inventory-warning-list" id="inventoryWarnings"></div><label class="high-confirm"><input id="inventoryWarningConfirm" type="checkbox">Confirmo estoque CPO com preço zerado e desejo salvar mesmo assim.</label></section>
+      <div class="dialog-actions"><button class="button secondary" id="cancelInventorySaveButton" type="button">Cancelar</button><button class="button primary" id="confirmInventorySaveButton" type="button">Salvar inventário</button></div>
+    </div>
+  </dialog>
+
   <script src="/app.js"></script>
+  <script src="/inventory.js"></script>
 </body>
 </html>

@@ -7,6 +7,7 @@
     "validate": "node scripts/validate-site.mjs",
     "build": "npm run validate && node scripts/build-public.mjs && node scripts/validate-site.mjs --dist",
     "catalog:admin": "node scripts/catalog-admin-server.mjs",
+    "catalog:demo": "node scripts/catalog-admin-server.mjs --demo",
     "catalog:test": "node scripts/test-catalog-manager.mjs",
     "catalog:csv-test": "node scripts/test-catalog-csv.mjs"
   },

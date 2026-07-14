@@ -1,11 +1,22 @@
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { appendFile, mkdir, readFile, readdir, rename, stat, unlink, writeFile } from 'node:fs/promises';
+import { appendFile, mkdir, mkdtemp, readFile, readdir, rename, rm, stat, unlink, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { cpoCsvErrorReport, exportCpoCsv, validateCpoCsv } from './catalog-csv.mjs';
 import { catalogModuleSource, catalogStats, contentHash, diffCpoPrices, validateCatalog, validateImport } from './catalog-rules.mjs';
+import {
+  initializeInventory,
+  listInventoryBackups,
+  previewInventoryChanges,
+  readInventory,
+  readInventoryHistory,
+  restoreInventoryBackup,
+  saveInventoryChanges
+} from './inventory-service.mjs';
+import { createInitialInventory, enrichInventory, inventoryAlerts, inventoryStats } from './inventory-rules.mjs';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 export const projectRoot = path.resolve(scriptDirectory, '..');
@@ -14,14 +25,19 @@ const defaultCatalogPath = path.join(projectRoot, 'data', 'catalog-public.json')
 const defaultCatalogModulePath = path.join(projectRoot, 'data', 'catalog-public.js');
 const defaultBackupDirectory = path.join(projectRoot, 'data', 'backups');
 const defaultHistoryFile = path.join(projectRoot, 'data', 'history', 'catalog-changes.jsonl');
+const defaultInventoryPath = path.join(projectRoot, 'data', 'inventory-private.json');
+const defaultInventoryBackupDirectory = path.join(projectRoot, 'data', 'backups');
+const defaultInventoryHistoryFile = path.join(projectRoot, 'data', 'history', 'inventory-changes.jsonl');
 const MAX_BODY_BYTES = 2 * 1024 * 1024;
 const HIGH_PRICE_USD = 10000;
 const STATIC_FILES = new Map([
   ['/', { file: 'index.html', type: 'text/html; charset=utf-8' }],
   ['/index.html', { file: 'index.html', type: 'text/html; charset=utf-8' }],
   ['/app.js', { file: 'app.js', type: 'text/javascript; charset=utf-8' }],
+  ['/inventory.js', { file: 'inventory.js', type: 'text/javascript; charset=utf-8' }],
   ['/styles.css', { file: 'styles.css', type: 'text/css; charset=utf-8' }],
-  ['/csv-styles.css', { file: 'csv-styles.css', type: 'text/css; charset=utf-8' }]
+  ['/csv-styles.css', { file: 'csv-styles.css', type: 'text/css; charset=utf-8' }],
+  ['/inventory-styles.css', { file: 'inventory-styles.css', type: 'text/css; charset=utf-8' }]
 ]);
 
 function jsonText(value) {
@@ -268,6 +284,11 @@ export function createCatalogAdminServer(options = {}) {
   const catalogModulePath = options.catalogModulePath === undefined ? defaultCatalogModulePath : options.catalogModulePath;
   const backupDirectory = options.backupDirectory || defaultBackupDirectory;
   const historyFile = options.historyFile || defaultHistoryFile;
+  const inventoryPath = options.inventoryPath || defaultInventoryPath;
+  const inventoryBackupDirectory = options.inventoryBackupDirectory || defaultInventoryBackupDirectory;
+  const inventoryHistoryFile = options.inventoryHistoryFile || defaultInventoryHistoryFile;
+  const inventoryWriteFile = options.inventoryWriteFile;
+  const demoMode = options.demoMode === true;
   const validateProject = options.validateProject || (async () => runNodeFile('scripts/validate-site.mjs'));
   const buildProject = options.buildProject || (async () => ({
     validate: await runNodeFile('scripts/validate-site.mjs'),
@@ -318,7 +339,130 @@ export function createCatalogAdminServer(options = {}) {
           canonicalFile: path.relative(projectRoot, catalogPath),
           contentHash: loaded.validation.contentHash,
           structureHash: loaded.validation.structureHash,
+          demoMode,
           readAt: new Date().toISOString()
+        });
+      }
+
+      if (url.pathname === '/api/inventory' && request.method === 'GET') {
+        const loadedCatalog = await readCatalog(catalogPath);
+        const loadedInventory = await readInventory(inventoryPath, loadedCatalog.catalog, { allowDemo: demoMode });
+        if (!loadedInventory.exists) {
+          const candidate = createInitialInventory(loadedCatalog.catalog);
+          return sendJson(response, 200, {
+            exists: false,
+            demoMode,
+            canonicalFile: demoMode ? '[temporario de demonstracao]' : path.relative(projectRoot, inventoryPath),
+            suggestedItems: candidate.items.length,
+            catalogHash: contentHash(loadedCatalog.source),
+            readAt: new Date().toISOString()
+          });
+        }
+        return sendJson(response, 200, {
+          exists: true,
+          demoMode,
+          inventory: loadedInventory.inventory,
+          rows: enrichInventory(loadedInventory.inventory, loadedCatalog.catalog),
+          stats: loadedInventory.validation.stats,
+          alerts: inventoryAlerts(loadedInventory.inventory, loadedCatalog.catalog),
+          contentHash: loadedInventory.contentHash,
+          catalogHash: contentHash(loadedCatalog.source),
+          canonicalFile: demoMode ? '[temporario de demonstracao]' : path.relative(projectRoot, inventoryPath),
+          readAt: new Date().toISOString()
+        });
+      }
+
+      if (url.pathname === '/api/inventory/initialize-preview' && request.method === 'GET') {
+        const loadedCatalog = await readCatalog(catalogPath);
+        const loadedInventory = await readInventory(inventoryPath, loadedCatalog.catalog, { allowDemo: demoMode });
+        if (loadedInventory.exists) return sendJson(response, 409, { error: 'O inventario ja existe.' });
+        const candidate = createInitialInventory(loadedCatalog.catalog, { demo: demoMode });
+        return sendJson(response, 200, {
+          ok: true,
+          demoMode,
+          catalogHash: contentHash(loadedCatalog.source),
+          stats: inventoryStats(candidate, loadedCatalog.catalog),
+          itemCount: candidate.items.length,
+          defaults: { stock_on_hand: demoMode ? '3/2/1 ficticios' : 0, reserved: demoMode ? 'fixture ficticia' : 0, low_stock_threshold: 1, status: 'active', notes: demoMode ? 'demonstracao' : '' }
+        });
+      }
+
+      if (url.pathname === '/api/inventory/initialize' && request.method === 'POST') {
+        return await runMutableOperation(response, async () => {
+          const body = await readJsonBody(request);
+          if (body.confirm !== true) return sendJson(response, 400, { error: 'Confirme explicitamente a criacao da estrutura de estoque.' });
+          const loadedCatalog = await readCatalog(catalogPath);
+          const result = await initializeInventory({
+            catalog: loadedCatalog.catalog,
+            catalogHash: contentHash(loadedCatalog.source),
+            expectedCatalogHash: body.expectedCatalogHash,
+            inventoryPath,
+            backupDirectory: inventoryBackupDirectory,
+            historyFile: inventoryHistoryFile,
+            demo: demoMode,
+            ...(inventoryWriteFile ? { writeInventory: inventoryWriteFile } : {})
+          });
+          return sendJson(response, result.ok ? 200 : result.status || 400, result.ok ? result : { ...result, error: result.errors?.join(' | ') });
+        });
+      }
+
+      if (url.pathname === '/api/inventory/preview' && request.method === 'POST') {
+        const body = await readJsonBody(request);
+        const loadedCatalog = await readCatalog(catalogPath);
+        const result = await previewInventoryChanges({
+          inventoryPath,
+          catalog: loadedCatalog.catalog,
+          changes: body.changes,
+          confirmStockWithoutPrice: body.confirmStockWithoutPrice === true,
+          allowDemo: demoMode
+        });
+        return sendJson(response, result.ok ? 200 : result.status || 400, result.ok ? result : { ...result, error: result.errors?.join(' | ') });
+      }
+
+      if (url.pathname === '/api/inventory/save' && request.method === 'POST') {
+        return await runMutableOperation(response, async () => {
+          const body = await readJsonBody(request);
+          const loadedCatalog = await readCatalog(catalogPath);
+          const result = await saveInventoryChanges({
+            inventoryPath,
+            catalog: loadedCatalog.catalog,
+            changes: body.changes,
+            expectedInventoryHash: body.expectedInventoryHash,
+            confirmStockWithoutPrice: body.confirmStockWithoutPrice === true,
+            allowDemo: demoMode,
+            backupDirectory: inventoryBackupDirectory,
+            historyFile: inventoryHistoryFile,
+            ...(inventoryWriteFile ? { writeInventory: inventoryWriteFile } : {})
+          });
+          return sendJson(response, result.ok ? 200 : result.status || 400, result.ok ? result : { ...result, error: result.errors?.join(' | ') });
+        });
+      }
+
+      if (url.pathname === '/api/inventory/backups' && request.method === 'GET') {
+        const loadedCatalog = await readCatalog(catalogPath);
+        return sendJson(response, 200, { backups: await listInventoryBackups(inventoryBackupDirectory, loadedCatalog.catalog, { allowDemo: demoMode }) });
+      }
+
+      if (url.pathname === '/api/inventory/history' && request.method === 'GET') {
+        return sendJson(response, 200, { history: await readInventoryHistory(inventoryHistoryFile) });
+      }
+
+      if (url.pathname === '/api/inventory/restore' && request.method === 'POST') {
+        return await runMutableOperation(response, async () => {
+          const body = await readJsonBody(request);
+          if (body.confirm !== true) return sendJson(response, 400, { error: 'Confirme explicitamente a restauracao do backup.' });
+          const loadedCatalog = await readCatalog(catalogPath);
+          const result = await restoreInventoryBackup({
+            inventoryPath,
+            backupDirectory: inventoryBackupDirectory,
+            historyFile: inventoryHistoryFile,
+            backupName: body.backupName,
+            expectedInventoryHash: body.expectedInventoryHash,
+            catalog: loadedCatalog.catalog,
+            allowDemo: demoMode,
+            ...(inventoryWriteFile ? { writeInventory: inventoryWriteFile } : {})
+          });
+          return sendJson(response, result.ok ? 200 : result.status || 400, result.ok ? result : { ...result, error: result.errors?.join(' | ') });
         });
       }
 
@@ -428,6 +572,7 @@ export function createCatalogAdminServer(options = {}) {
       if (url.pathname === '/api/build' && request.method === 'POST') {
         return await runMutableOperation(response, async () => {
           await readJsonBody(request);
+          if (demoMode) return sendJson(response, 403, { error: 'Build bloqueado no modo demonstracao.' });
           const result = await buildProject();
           const loaded = await readCatalog(catalogPath);
           return sendJson(response, 200, {
@@ -467,9 +612,49 @@ const invokedDirectly = process.argv[1] && path.resolve(process.argv[1]) === fil
 if (invokedDirectly) {
   const port = Number(process.env.CELULARS_CATALOG_ADMIN_PORT || 4175);
   if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Porta invalida. Use CELULARS_CATALOG_ADMIN_PORT entre 1024 e 65535.');
-  const manager = createCatalogAdminServer({ port });
+  const demoMode = process.argv.includes('--demo');
+  let demoRoot = null;
+  let managerOptions = { port };
+  if (demoMode) {
+    demoRoot = await mkdtemp(path.join(os.tmpdir(), 'celulars-catalog-demo-'));
+    const realCatalog = await readCatalog();
+    const demoCatalog = structuredClone(realCatalog.catalog);
+    let demoPriceIndex = 0;
+    for (const product of demoCatalog.products) {
+      if (product.group !== 'cpo') continue;
+      for (const capacity of Object.keys(product.capacities)) {
+        product.capacities[capacity].usd = [111.11, 222.22][demoPriceIndex++ % 2];
+      }
+    }
+    const demoCatalogPath = path.join(demoRoot, 'catalog-public.json');
+    const demoInventoryPath = path.join(demoRoot, 'inventory-private.json');
+    await writeFile(demoCatalogPath, jsonText(demoCatalog), 'utf8');
+    await writeFile(demoInventoryPath, jsonText(createInitialInventory(demoCatalog, { demo: true })), 'utf8');
+    managerOptions = {
+      port,
+      demoMode: true,
+      catalogPath: demoCatalogPath,
+      catalogModulePath: null,
+      inventoryPath: demoInventoryPath,
+      backupDirectory: path.join(demoRoot, 'backups'),
+      historyFile: path.join(demoRoot, 'history', 'catalog-changes.jsonl'),
+      inventoryBackupDirectory: path.join(demoRoot, 'backups'),
+      inventoryHistoryFile: path.join(demoRoot, 'history', 'inventory-changes.jsonl')
+    };
+  }
+  const manager = createCatalogAdminServer(managerOptions);
   await manager.listen();
   console.log('Gerenciador CELULARS disponivel em:');
   console.log(`http://127.0.0.1:${port}`);
+  if (demoMode) console.log('MODO DEMONSTRACAO: dados ficticios isolados em pasta temporaria; build bloqueado.');
   console.log('Pressione Ctrl+C para encerrar.');
+  if (demoRoot) {
+    const cleanup = async () => {
+      await manager.close();
+      await rm(demoRoot, { recursive: true, force: true });
+      process.exit(0);
+    };
+    process.once('SIGINT', cleanup);
+    process.once('SIGTERM', cleanup);
+  }
 }

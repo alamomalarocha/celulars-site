@@ -187,6 +187,7 @@ export function inventoryAlerts(inventory, catalog, { staleAfterDays = 30, now =
   for (const row of enrichInventory(inventory, catalog)) {
     if (row.visual_status === 'low_stock') alerts.push({ type: 'low_stock', inventory_id: row.inventory_id, message: 'Estoque baixo.' });
     if (row.reserved > 0) alerts.push({ type: 'reserved', inventory_id: row.inventory_id, message: 'Ha unidades reservadas.' });
+    if (row.reserved > row.available) alerts.push({ type: 'reserved_over_available', inventory_id: row.inventory_id, message: 'Reservado maior que a quantidade disponivel.' });
     if (row.group === 'cpo' && row.stock_on_hand > 0 && row.price_usd === 0) alerts.push({ type: 'stock_without_price', inventory_id: row.inventory_id, message: 'CPO com estoque e preco zerado.' });
     if (row.status === 'active' && row.stock_on_hand === 0) alerts.push({ type: 'active_without_stock', inventory_id: row.inventory_id, message: 'Item ativo sem estoque.' });
     if (row.status === 'paused' && row.stock_on_hand > 0) alerts.push({ type: 'paused_with_stock', inventory_id: row.inventory_id, message: 'Item pausado com estoque.' });
