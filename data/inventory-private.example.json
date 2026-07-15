@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "demo": true,
+  "updated_at": "2026-07-14T00:00:00.000Z",
+  "items": [
+    {
+      "inventory_id": "iphone-17-pro-max-new__256-gb",
+      "product_id": "iphone-17-pro-max-new",
+      "capacity": "256 GB",
+      "color": null,
+      "stock_on_hand": 3,
+      "reserved": 1,
+      "low_stock_threshold": 1,
+      "status": "active",
+      "notes": "Exemplo ficticio. Nao representa estoque real.",
+      "updated_at": "2026-07-14T00:00:00.000Z"
+    }
+  ]
+}

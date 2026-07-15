@@ -1,6 +1,7 @@
 import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { privateArtifactViolation } from './artifact-privacy-rules.mjs';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(scriptDirectory, '..');
@@ -29,8 +30,6 @@ const publicFiles = [
 ];
 
 const generatedPublicFiles = ['data/catalog-public.js'];
-const forbiddenOutputPatterns = [/(?:^|\/)tools(?:\/|$)/, /(?:^|\/)internal(?:\/|$)/, /catalog-manager/i, /(?:^|\/)backups(?:\/|$)/, /(?:^|\/)history(?:\/|$)/, /catalog-admin/i];
-
 function assertOutputDirectoryIsSafe() {
   const expected = path.join(projectRoot, 'dist');
   if (outputDirectory !== expected || path.dirname(outputDirectory) !== projectRoot) {
@@ -98,7 +97,13 @@ if (JSON.stringify(outputFiles) !== JSON.stringify(expectedOutputFiles)) {
   throw new Error(`Artefato inesperado. Gerados: ${outputFiles.join(', ')}`);
 }
 for (const file of outputFiles) {
-  if (forbiddenOutputPatterns.some(pattern => pattern.test(file))) throw new Error(`Arquivo interno proibido em dist: ${file}`);
+  const pathViolation = privateArtifactViolation(file);
+  if (pathViolation) throw new Error(`Arquivo interno proibido em dist: ${file} (${pathViolation.pattern})`);
+  if (/\.(?:html|css|js|json|txt|xml)$/i.test(file)) {
+    const source = await readFile(path.join(outputDirectory, file), 'utf8');
+    const contentViolation = privateArtifactViolation(file, source);
+    if (contentViolation) throw new Error(`Conteudo privado de inventario encontrado em dist/${file}: ${contentViolation.pattern}`);
+  }
 }
 
 console.log(`Artefato publico criado em ${outputDirectory}`);

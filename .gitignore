@@ -1,4 +1,7 @@
 dist/
 data/backups/
 data/history/
-
+data/inventory-private.json
+data/inventory-private.csv
+data/inventory-*.csv
+data/fixtures/
