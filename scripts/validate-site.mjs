@@ -2,6 +2,8 @@ import { access, readFile, readdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { catalogModuleSource, validateCatalog } from './catalog-rules.mjs';
+import { privateArtifactViolation } from './artifact-privacy-rules.mjs';
+import { unsafeUnicodeOccurrences } from './unicode-rules.mjs';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(scriptDirectory, '..');
@@ -30,28 +32,6 @@ const requiredRootFiles = [
 const expectedDistFiles = [...requiredRootFiles].sort();
 const expectedWhatsapp = '17865466540';
 const expectedEmail = 'contact@celulars.com.br';
-const forbiddenDistPatterns = [
-  /(?:^|\/)tools(?:\/|$)/,
-  /(?:^|\/)internal(?:\/|$)/,
-  /(?:^|\/)fixtures?(?:\/|$)/,
-  /(?:^|\/)docs?(?:\/|$)/,
-  /(?:^|\/)backups(?:\/|$)/,
-  /(?:^|\/)history(?:\/|$)/,
-  /catalog-manager/i,
-  /catalog-admin/i,
-  /inventory/i,
-  /estoque/i,
-  /disponibilidade-interna/i
-];
-const forbiddenPrivateContentPatterns = [
-  /inventory-private/i,
-  /inventory_hash/i,
-  /inventory_id/i,
-  /stock_on_hand/i,
-  /low_stock_threshold/i,
-  /inventory-changes\.jsonl/i,
-  /\/api\/inventory\//i
-];
 const textFileExtensions = new Set(['.js', '.mjs', '.json', '.html', '.css', '.md', '.yml', '.yaml']);
 const unicodeScanIgnoredDirectories = new Set(['.git', 'node_modules', 'dist', 'backups', 'history']);
 
@@ -115,7 +95,6 @@ async function listTextFiles(directory, prefix = '') {
 }
 
 async function validateUnicodeControls() {
-  const controlPattern = /[\p{Cc}\p{Cf}]/u;
   const isTextFile = relativePath => path.basename(relativePath) === '.gitignore' || textFileExtensions.has(path.extname(relativePath).toLowerCase());
   const scanFiles = new Set([...requiredRootFiles, 'package.json', '.gitignore'].filter(isTextFile));
   for (const directory of ['.github', 'docs', 'scripts', 'tools']) {
@@ -126,13 +105,8 @@ async function validateUnicodeControls() {
   }
   for (const relativePath of scanFiles) {
     const source = await read(relativePath);
-    for (let position = 0; position < source.length;) {
-      const codePoint = source.codePointAt(position);
-      const character = String.fromCodePoint(codePoint);
-      if (controlPattern.test(character) && character !== '\t' && character !== '\n' && character !== '\r') {
-        errors.push(`Caractere Unicode de controle nao permitido em ${relativePath}, posicao ${position}, code point U+${codePoint.toString(16).toUpperCase().padStart(4, '0')}.`);
-      }
-      position += character.length;
+    for (const occurrence of unsafeUnicodeOccurrences(source)) {
+      errors.push(`Caractere Unicode de controle nao permitido em ${relativePath}, posicao ${occurrence.position}, linha ${occurrence.line}, coluna ${occurrence.column}, code point ${occurrence.hex}.`);
     }
   }
 }
@@ -237,13 +211,12 @@ if (validateDist) {
     check(distStat.isDirectory(), 'dist nao e um diretorio.');
     const distFiles = (await listFiles(distRoot)).sort();
     check(JSON.stringify(distFiles) === JSON.stringify(expectedDistFiles), `Allowlist de dist divergente: ${distFiles.join(', ')}`);
-    for (const file of distFiles) check(!forbiddenDistPatterns.some(pattern => pattern.test(file)), `Arquivo interno proibido em dist: ${file}`);
+    for (const file of distFiles) check(!privateArtifactViolation(file), `Arquivo interno proibido em dist: ${file}`);
     for (const file of distFiles) {
       if (!/\.(?:html|css|js|json|txt|xml)$/i.test(file)) continue;
       const source = await read(file, distRoot);
-      for (const pattern of forbiddenPrivateContentPatterns) {
-        check(!pattern.test(source), `Conteudo privado de inventario encontrado em dist/${file}: ${pattern}`);
-      }
+      const violation = privateArtifactViolation(file, source);
+      check(!violation, `Conteudo privado de inventario encontrado em dist/${file}: ${violation?.pattern}`);
     }
     for (const page of activePages) {
       const html = await read(page, distRoot);

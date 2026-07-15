@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { appendFile, mkdir, readFile, readdir, rename, stat, unlink, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rename, stat, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   applyInventoryChanges,
@@ -57,15 +57,21 @@ async function exists(filePath) {
   }
 }
 
-async function atomicWrite(filePath, contents) {
-  await mkdir(path.dirname(filePath), { recursive: true });
+export async function atomicWriteInventoryFile(filePath, contents, operations = {}) {
+  const makeDirectory = operations.mkdir || mkdir;
+  const writeTemporary = operations.writeFile || writeFile;
+  const readTemporary = operations.readFile || readFile;
+  const replaceFile = operations.rename || rename;
+  const removeTemporary = operations.unlink || unlink;
+
+  await makeDirectory(path.dirname(filePath), { recursive: true });
   const temporaryPath = `${filePath}.tmp-${process.pid}-${randomUUID()}`;
   try {
-    await writeFile(temporaryPath, contents, 'utf8');
-    if (await readFile(temporaryPath, 'utf8') !== contents) throw new Error('Falha ao verificar arquivo temporario do inventario.');
-    await rename(temporaryPath, filePath);
+    await writeTemporary(temporaryPath, contents, 'utf8');
+    if (await readTemporary(temporaryPath, 'utf8') !== contents) throw new Error('Falha ao verificar arquivo temporario do inventario.');
+    await replaceFile(temporaryPath, filePath);
   } catch (error) {
-    await unlink(temporaryPath).catch(() => {});
+    await removeTemporary(temporaryPath).catch(() => {});
     throw error;
   }
 }
@@ -100,12 +106,13 @@ async function createBackup(inventoryPath, backupDirectory) {
 
 async function appendHistory(historyFile, entry) {
   await mkdir(path.dirname(historyFile), { recursive: true });
-  await appendFile(historyFile, `${JSON.stringify(entry)}\n`, 'utf8');
+  const previous = await exists(historyFile) ? await readFile(historyFile, 'utf8') : '';
+  await atomicWriteInventoryFile(historyFile, `${previous}${JSON.stringify(entry)}\n`);
 }
 
 async function restorePrevious(inventoryPath, source) {
   if (source === null) await unlink(inventoryPath).catch(() => {});
-  else await atomicWrite(inventoryPath, source);
+  else await atomicWriteInventoryFile(inventoryPath, source);
 }
 
 export async function initializeInventory({
@@ -117,7 +124,8 @@ export async function initializeInventory({
   historyFile,
   demo = false,
   now = new Date().toISOString(),
-  writeInventory = atomicWrite
+  writeInventory = atomicWriteInventoryFile,
+  writeHistory = appendHistory
 }) {
   if (expectedCatalogHash !== catalogHash) return { ok: false, status: 409, errors: ['O catalogo mudou desde a previa. Recarregue antes de criar o inventario.'] };
   if (await exists(inventoryPath)) return { ok: false, status: 409, errors: ['O inventario real ja existe.'] };
@@ -129,7 +137,7 @@ export async function initializeInventory({
     await writeInventory(inventoryPath, source);
     const written = await readInventory(inventoryPath, catalog, { allowDemo: demo });
     if (written.contentHash !== inventoryContentHash(source)) throw new Error('Hash do inventario inicial gravado diverge da previa.');
-    await appendHistory(historyFile, {
+    await writeHistory(historyFile, {
       changedAt: now,
       type: demo ? 'demo_initialize' : 'initialize',
       demo,
@@ -172,8 +180,9 @@ export async function saveInventoryChanges({
   historyType = 'manual_edit',
   historyContext = {},
   now = new Date().toISOString(),
-  writeInventory = atomicWrite,
-  afterWrite = async () => {}
+  writeInventory = atomicWriteInventoryFile,
+  afterWrite = async () => {},
+  writeHistory = appendHistory
 }) {
   const current = await readInventory(inventoryPath, catalog, { allowDemo });
   if (!current.exists) return { ok: false, status: 404, errors: ['Inventario ainda nao foi criado.'] };
@@ -185,13 +194,14 @@ export async function saveInventoryChanges({
   if (!applied.diff.length) return { ok: false, status: 400, errors: ['As alteracoes enviadas nao modificam o inventario.'], warnings: applied.warnings };
   const nextSource = jsonText(applied.inventory);
   const nextHash = inventoryContentHash(nextSource);
-  const backup = await createBackup(inventoryPath, backupDirectory);
+  let backup = null;
   try {
+    backup = await createBackup(inventoryPath, backupDirectory);
     await writeInventory(inventoryPath, nextSource);
     const written = await readInventory(inventoryPath, catalog, { allowDemo });
     if (written.contentHash !== nextHash) throw new Error('Hash do inventario gravado nao corresponde ao conteudo validado.');
     await afterWrite(written.inventory);
-    await appendHistory(historyFile, {
+    await writeHistory(historyFile, {
       changedAt: now,
       type: historyType,
       demo: current.inventory.demo,
@@ -262,7 +272,8 @@ export async function restoreInventoryBackup({
   expectedInventoryHash,
   catalog,
   allowDemo = false,
-  writeInventory = atomicWrite,
+  writeInventory = atomicWriteInventoryFile,
+  writeHistory = appendHistory,
   now = new Date().toISOString()
 }) {
   if (!/^inventory-private-\d{8}-\d{6}-[a-f0-9]{8}\.json$/i.test(String(backupName || ''))) {
@@ -282,12 +293,13 @@ export async function restoreInventoryBackup({
   }
   const validation = validateInventory(backupInventory, catalog, { allowDemo });
   if (!validation.valid) return { ok: false, status: 400, errors: validation.errors };
-  const safetyBackup = await createBackup(inventoryPath, backupDirectory);
+  let safetyBackup = null;
   try {
+    safetyBackup = await createBackup(inventoryPath, backupDirectory);
     await writeInventory(inventoryPath, backupSource);
     const written = await readInventory(inventoryPath, catalog, { allowDemo });
     const restoredDiff = inventoryDiff(current.inventory, backupInventory);
-    await appendHistory(historyFile, {
+    await writeHistory(historyFile, {
       changedAt: now,
       type: 'restore',
       demo: backupInventory.demo,

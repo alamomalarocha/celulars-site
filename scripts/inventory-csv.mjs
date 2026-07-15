@@ -288,7 +288,7 @@ export function validateInventoryCsv(inventory, catalog, currentHash, source) {
     else {
       changes.push({ inventory_id: inventoryId, before, after });
       if (original.group === 'cpo' && after.stock_on_hand > 0 && original.price_usd === 0) {
-        warnings.push({ type: 'stock_without_price', inventory_id: inventoryId, message: `${original.model} ${original.capacity}: estoque CPO com preco zerado.` });
+        warnings.push({ type: 'stock_without_price', inventory_id: inventoryId, message: `${original.model} ${original.capacity}: este item possui estoque, mas ainda nao possui preco CPO publicado.` });
       }
     }
   }

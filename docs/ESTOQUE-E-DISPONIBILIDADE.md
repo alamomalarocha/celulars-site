@@ -64,6 +64,8 @@ Preço CPO igual a zero significa que a combinação está cadastrada, mas ainda
 
 Outros alertas incluem estoque baixo, item ativo sem estoque, item pausado com estoque, reserva e registro sem atualização recente. Alertas não alteram dados automaticamente.
 
+O alerta de reserva maior que o estoque ainda livre é apenas informativo: ele compara `reserved` com `stock_on_hand - reserved`. A regra estrutural continua sendo `reserved <= stock_on_hand`; somente a violação dessa regra impede a gravação.
+
 ## Edição, revisão e gravação
 
 Campos editáveis: estoque físico, reservado, limite, status e observação. Modelo, grupo, ano, capacidade, preço, disponibilidade e data anterior são somente leitura.

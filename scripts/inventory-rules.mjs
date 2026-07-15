@@ -187,8 +187,8 @@ export function inventoryAlerts(inventory, catalog, { staleAfterDays = 30, now =
   for (const row of enrichInventory(inventory, catalog)) {
     if (row.visual_status === 'low_stock') alerts.push({ type: 'low_stock', inventory_id: row.inventory_id, message: 'Estoque baixo.' });
     if (row.reserved > 0) alerts.push({ type: 'reserved', inventory_id: row.inventory_id, message: 'Ha unidades reservadas.' });
-    if (row.reserved > row.available) alerts.push({ type: 'reserved_over_available', inventory_id: row.inventory_id, message: 'Reservado maior que a quantidade disponivel.' });
-    if (row.group === 'cpo' && row.stock_on_hand > 0 && row.price_usd === 0) alerts.push({ type: 'stock_without_price', inventory_id: row.inventory_id, message: 'CPO com estoque e preco zerado.' });
+    if (row.reserved > row.available) alerts.push({ type: 'reserved_over_free_stock', inventory_id: row.inventory_id, message: 'A quantidade reservada e maior que o estoque ainda livre.' });
+    if (row.group === 'cpo' && row.stock_on_hand > 0 && row.price_usd === 0) alerts.push({ type: 'stock_without_price', inventory_id: row.inventory_id, message: 'Este item possui estoque, mas ainda nao possui preco CPO publicado.' });
     if (row.status === 'active' && row.stock_on_hand === 0) alerts.push({ type: 'active_without_stock', inventory_id: row.inventory_id, message: 'Item ativo sem estoque.' });
     if (row.status === 'paused' && row.stock_on_hand > 0) alerts.push({ type: 'paused_with_stock', inventory_id: row.inventory_id, message: 'Item pausado com estoque.' });
     if (Number.isFinite(Date.parse(row.updated_at)) && now - Date.parse(row.updated_at) > staleMs) alerts.push({ type: 'stale', inventory_id: row.inventory_id, message: 'Atualizacao de estoque antiga.' });
@@ -233,12 +233,12 @@ export function validateInventoryChanges(inventory, catalog, changes, { confirmS
     if (typeof next.notes !== 'string' || next.notes.length > 500) errors.push(`${label}: observacao deve ter no maximo 500 caracteres.`);
     const row = catalogRows.get(change.inventory_id);
     if (row?.group === 'cpo' && next.stock_on_hand > 0 && row.price_usd === 0) {
-      warnings.push({ type: 'stock_without_price', inventory_id: change.inventory_id, message: `${row.model} ${row.capacity}: estoque CPO com preco zerado.` });
+      warnings.push({ type: 'stock_without_price', inventory_id: change.inventory_id, message: `${row.model} ${row.capacity}: este item possui estoque, mas ainda nao possui preco CPO publicado.` });
     }
     normalized.push(next);
   }
 
-  if (warnings.length && !confirmStockWithoutPrice) errors.push('Ha estoque CPO com preco zerado; confirme explicitamente para continuar.');
+  if (warnings.length && !confirmStockWithoutPrice) errors.push('Ha item com estoque sem preco CPO publicado; confirme explicitamente para continuar.');
   return { valid: errors.length === 0, errors, warnings, changes: normalized };
 }
 
