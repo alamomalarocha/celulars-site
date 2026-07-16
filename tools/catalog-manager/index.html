@@ -243,6 +243,17 @@
           <p class="inventory-csv-file" id="inventoryCsvFile">Nenhum arquivo selecionado.</p>
           <button class="button primary" id="validateInventoryCsvButton" type="button" disabled>Importar e validar</button>
         </div>
+        <div>
+          <h3>Estoque por cor</h3>
+          <p>Exporta somente as variantes já detalhadas. Cores são adicionadas ou removidas exclusivamente pela interface.</p>
+          <a class="button secondary" href="/api/inventory/color/export.csv" download>Baixar estoque por cor</a>
+          <label class="inventory-csv-drop inventory-color-csv-drop" id="inventoryColorCsvDrop">
+            <span>Selecione ou arraste o CSV de estoque por cor</span>
+            <input id="inventoryColorCsvInput" type="file" accept=".csv,text/csv" />
+          </label>
+          <p class="inventory-csv-file" id="inventoryColorCsvFile">Nenhum arquivo selecionado.</p>
+          <button class="button primary" id="validateInventoryColorCsvButton" type="button" disabled>Importar e validar por cor</button>
+        </div>
       </div>
     </section>
 
@@ -376,6 +387,48 @@
       <div class="dialog-actions">
         <button class="button secondary" id="cancelInventoryCsvButton" type="button">Cancelar</button>
         <button class="button primary" id="confirmInventoryCsvButton" type="button" disabled>Aplicar planilha</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="inventoryColorCsvReviewDialog" aria-labelledby="inventoryColorCsvReviewTitle">
+    <div class="dialog-card inventory-review-card">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Prévia obrigatória</p><h2 id="inventoryColorCsvReviewTitle">Revisar planilha por cor</h2></div>
+        <button class="icon-button" id="closeInventoryColorCsvReviewButton" type="button" aria-label="Fechar">×</button>
+      </div>
+      <p id="inventoryColorCsvReviewFile">Arquivo: -</p>
+      <dl class="csv-hashes">
+        <div><dt>Hash da planilha</dt><dd id="inventoryColorCsvSpreadsheetHash">-</dd></div>
+        <div><dt>Hash atual</dt><dd id="inventoryColorCsvCurrentHash">-</dd></div>
+      </dl>
+      <dl class="csv-summary">
+        <div><dt>Linhas lidas</dt><dd id="inventoryColorCsvRowsRead">0</dd></div>
+        <div><dt>Válidas</dt><dd id="inventoryColorCsvValidRows">0</dd></div>
+        <div><dt>Alteradas</dt><dd id="inventoryColorCsvChangedRows">0</dd></div>
+        <div><dt>Inalteradas</dt><dd id="inventoryColorCsvUnchangedRows">0</dd></div>
+        <div><dt>Inválidas</dt><dd id="inventoryColorCsvInvalidRows">0</dd></div>
+        <div><dt>Conflitos</dt><dd id="inventoryColorCsvConflicts">0</dd></div>
+        <div><dt>Registros alterados</dt><dd id="inventoryColorCsvRecordsChanged">0</dd></div>
+      </dl>
+      <section class="csv-review-section" id="inventoryColorCsvErrorsSection" hidden>
+        <div class="csv-section-heading"><h3>Erros encontrados</h3><button class="button secondary compact" id="downloadInventoryColorCsvErrorsButton" type="button">Baixar relatório de erros</button></div>
+        <div class="csv-error-list" id="inventoryColorCsvErrors"></div>
+      </section>
+      <section class="csv-review-section">
+        <h3>Diferenças por cor</h3>
+        <div class="diff-list" id="inventoryColorCsvDiffList"></div>
+        <p class="empty" id="inventoryColorCsvNoChanges">Nenhuma alteração encontrada.</p>
+      </section>
+      <section id="inventoryColorCsvWarningsSection" hidden>
+        <h3>Atenção</h3>
+        <div class="inventory-warning-list" id="inventoryColorCsvWarnings"></div>
+        <label class="high-confirm"><input id="inventoryColorCsvWarningConfirm" type="checkbox">Confirmo estoque CPO por cor com preço zerado e desejo aplicar mesmo assim.</label>
+      </section>
+      <label class="high-confirm"><input id="inventoryColorCsvSaveConfirm" type="checkbox">Revisei as cores e quantidades e confirmo esta importação.</label>
+      <div class="dialog-actions">
+        <button class="button secondary" id="cancelInventoryColorCsvButton" type="button">Cancelar</button>
+        <button class="button primary" id="confirmInventoryColorCsvButton" type="button" disabled>Aplicar planilha por cor</button>
       </div>
     </div>
   </dialog>

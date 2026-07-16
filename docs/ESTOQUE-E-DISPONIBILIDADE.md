@@ -36,7 +36,9 @@ Se `data/inventory-private.json` ainda não existir, a aba oferece **Criar estru
 
 A estrutura é derivada somente das combinações reais de produto e capacidade do catálogo. Ela não cria cores por capacidade e não altera preço, modelo, ano, cor ou catálogo público. Todos os estoques e reservas começam em zero, o limite começa em um, o status começa como `active` e as notas começam vazias.
 
-O campo `color` permanece `null` nesta fase. Estoque por modelo, capacidade e cor é uma evolução futura; não se deve presumir que toda cor exista em toda capacidade.
+O campo `color` permanece `null`. O controle opcional por cor usa `tracking_mode = by_color` e uma lista explícita `color_variants`; ele nunca cria todas as combinações de cores por capacidades. Registros antigos sem esses campos continuam agregados.
+
+Instruções completas do detalhamento: [ESTOQUE-POR-COR.md](ESTOQUE-POR-COR.md).
 
 ## Significado dos campos
 
@@ -69,6 +71,8 @@ O alerta de reserva maior que o estoque ainda livre é apenas informativo: ele c
 ## Edição, revisão e gravação
 
 Campos editáveis: estoque físico, reservado, limite, status e observação. Modelo, grupo, ano, capacidade, preço, disponibilidade e data anterior são somente leitura.
+
+Em registros detalhados por cor, estoque físico e reservado agregados são derivados e ficam somente leitura. A edição acontece nas variantes. Limite, status e observação continuam agregados.
 
 Antes de salvar, revise o diff por modelo, capacidade, campo, valor anterior e valor novo. A gravação exige confirmação explícita.
 
@@ -117,19 +121,26 @@ A validação bloqueia hash antigo, ID duplicado ou inexistente, produto/capacid
 
 **Baixar relatório de disponibilidade** gera uma planilha interna com preço, estoque físico, reserva, disponível, status operacional e situação do preço.
 
+### Planilha de estoque por cor
+
+**Baixar planilha de estoque por cor** exporta somente variantes ativas em `tracking_mode = by_color`. Apenas estoque físico e reservado podem ser editados. Não é permitido criar, remover ou renomear cores por CSV.
+
+No CSV agregado, registros por cor continuam exibindo totais derivados. Alterar esses totais é bloqueado com orientação para usar `estoque-por-cor-celulars.csv`.
+
 ## Testes e build
 
 Execute:
 
 ```powershell
 npm run inventory:test
+npm run inventory:color-test
 npm run catalog:test
 npm run catalog:csv-test
 npm run validate
 npm run build
 ```
 
-Os testes usam arquivos temporários e preservam o catálogo real byte a byte. Eles cobrem criação, validações, CSV, XSS, concorrência, build simultâneo, rollback, demo e limite de tamanho.
+Os testes usam arquivos temporários e preservam catálogo e inventário real byte a byte. Eles cobrem criação, compatibilidade com registros antigos, regras agregadas e por cor, CSV, XSS, concorrência, build simultâneo, rollback, demo e limite de tamanho.
 
 O build usa allowlist explícita. `dist` não pode conter inventário, example, regras, ferramenta, API interna, CSV, fixtures, backups, histórico ou documentação interna. Rotas como `/inventory/`, `/data/inventory-private.json`, `/tools/`, `/internal/` e `/catalog-manager/` não existem no artefato estático e devem retornar 404.
 

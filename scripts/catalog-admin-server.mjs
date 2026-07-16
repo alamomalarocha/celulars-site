@@ -14,6 +14,11 @@ import {
   validateInventoryCsv
 } from './inventory-csv.mjs';
 import {
+  exportInventoryColorCsv,
+  inventoryColorCsvErrorReport,
+  validateInventoryColorCsv
+} from './inventory-color-csv.mjs';
+import {
   initializeInventory,
   listInventoryBackups,
   previewInventoryColorChanges,
@@ -535,6 +540,20 @@ export function createCatalogAdminServer(options = {}) {
         return response.end(exported.csv);
       }
 
+      if (url.pathname === '/api/inventory/color/export.csv' && request.method === 'GET') {
+        const loadedCatalog = await readCatalog(catalogPath);
+        const loadedInventory = await readInventory(inventoryPath, loadedCatalog.catalog, { allowDemo: demoMode });
+        if (!loadedInventory.exists) return sendJson(response, 404, { error: 'Inventario ainda nao foi criado.' });
+        const exported = exportInventoryColorCsv(loadedInventory.inventory, loadedCatalog.catalog, loadedInventory.contentHash);
+        response.writeHead(200, {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': 'attachment; filename="estoque-por-cor-celulars.csv"',
+          'Cache-Control': 'no-store',
+          'X-Content-Type-Options': 'nosniff'
+        });
+        return response.end(exported.csv);
+      }
+
       if (url.pathname === '/api/inventory/validate.csv' && request.method === 'POST') {
         const source = await readCsvBody(request);
         const loadedCatalog = await readCatalog(catalogPath);
@@ -579,6 +598,72 @@ export function createCatalogAdminServer(options = {}) {
             backupDirectory: inventoryBackupDirectory,
             historyFile: inventoryHistoryFile,
             historyType: 'spreadsheet_import',
+            historyContext: {
+              filename: safeImportFilename(request.headers['x-import-filename']),
+              rowsRead: validated.summary.rowsRead
+            },
+            ...(inventoryWriteFile ? { writeInventory: inventoryWriteFile } : {})
+          });
+          return sendJson(response, result.ok ? 200 : result.status || 400, result.ok ? result : { ...result, error: result.errors?.join(' | ') });
+        });
+      }
+
+      if (url.pathname === '/api/inventory/color/validate.csv' && request.method === 'POST') {
+        const source = await readCsvBody(request);
+        const loadedCatalog = await readCatalog(catalogPath);
+        const loadedInventory = await readInventory(inventoryPath, loadedCatalog.catalog, { allowDemo: demoMode });
+        if (!loadedInventory.exists) return sendJson(response, 404, { error: 'Inventario ainda nao foi criado.' });
+        const result = validateInventoryColorCsv(
+          loadedInventory.inventory,
+          loadedCatalog.catalog,
+          loadedInventory.contentHash,
+          source
+        );
+        return sendJson(response, 200, {
+          ...result,
+          errorReport: result.errors.length ? inventoryColorCsvErrorReport(result.errors) : ''
+        });
+      }
+
+      if (url.pathname === '/api/inventory/color/import.csv' && request.method === 'POST') {
+        return await runMutableOperation(response, async () => {
+          const source = await readCsvBody(request);
+          const loadedCatalog = await readCatalog(catalogPath);
+          const loadedInventory = await readInventory(inventoryPath, loadedCatalog.catalog, { allowDemo: demoMode });
+          if (!loadedInventory.exists) return sendJson(response, 404, { error: 'Inventario ainda nao foi criado.' });
+          const expectedHash = String(request.headers['x-inventory-hash'] || '');
+          if (!expectedHash || expectedHash !== loadedInventory.contentHash) {
+            return sendJson(response, 409, { error: 'O inventario mudou desde a previa. Valide novamente a planilha por cor.' });
+          }
+          const validated = validateInventoryColorCsv(
+            loadedInventory.inventory,
+            loadedCatalog.catalog,
+            loadedInventory.contentHash,
+            source
+          );
+          if (!validated.valid) {
+            return sendJson(response, 400, {
+              ...validated,
+              error: 'A planilha por cor deixou de ser valida. Corrija os erros e valide novamente.',
+              errorReport: inventoryColorCsvErrorReport(validated.errors)
+            });
+          }
+          if (!validated.operations.length) return sendJson(response, 400, { error: 'A planilha nao contem alteracoes de estoque por cor.' });
+          const requiresConfirmation = validated.warnings.some(warning => warning.type === 'stock_without_price');
+          const confirmed = request.headers['x-confirm-stock-without-price'] === 'true';
+          if (requiresConfirmation && !confirmed) {
+            return sendJson(response, 400, { error: 'Confirme explicitamente o estoque CPO por cor com preco zerado.' });
+          }
+          const result = await saveInventoryColorChanges({
+            inventoryPath,
+            catalog: loadedCatalog.catalog,
+            operations: validated.operations,
+            expectedInventoryHash: loadedInventory.contentHash,
+            confirmStockWithoutPrice: confirmed,
+            allowDemo: demoMode,
+            backupDirectory: inventoryBackupDirectory,
+            historyFile: inventoryHistoryFile,
+            historyType: 'color_spreadsheet_import',
             historyContext: {
               filename: safeImportFilename(request.headers['x-import-filename']),
               rowsRead: validated.summary.rowsRead

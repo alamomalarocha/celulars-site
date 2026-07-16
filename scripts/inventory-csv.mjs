@@ -1,4 +1,4 @@
-import { enrichInventory, inventoryContentHash } from './inventory-rules.mjs';
+import { enrichInventory, inventoryContentHash, inventoryTrackingMode } from './inventory-rules.mjs';
 
 export const INVENTORY_CSV_COLUMNS = [
   'inventory_hash', 'inventory_id', 'product_id', 'model', 'year', 'group', 'capacity',
@@ -271,6 +271,15 @@ export function validateInventoryCsv(inventory, catalog, currentHash, source) {
       if (checked.error) errors.push({ line: row.line, inventory_id: inventoryId, message: checked.error });
     }
     if ([stock, reserved, threshold, status, notes].some(checked => checked.error)) continue;
+    if (inventoryTrackingMode(original) === 'by_color'
+      && (stock.value !== original.stock_on_hand || reserved.value !== original.reserved)) {
+      errors.push({
+        line: row.line,
+        inventory_id: inventoryId,
+        message: 'Estoque e reservado deste registro sao derivados das cores. Use a planilha estoque-por-cor-celulars.csv.'
+      });
+      continue;
+    }
     if (reserved.value > stock.value) {
       errors.push({ line: row.line, inventory_id: inventoryId, message: 'reserved nao pode superar stock_on_hand.' });
       continue;

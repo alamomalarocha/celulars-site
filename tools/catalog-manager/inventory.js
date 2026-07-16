@@ -7,7 +7,8 @@
     activeTab: 'catalog', exists: false, demoMode: false, rows: [], stats: null,
     alerts: [], backups: [], history: [], contentHash: null, catalogHash: null,
     edits: new Map(), expanded: new Set(), preview: null, csvFile: null, csvSource: '', csvPreview: null,
-    colorOperation: null, colorPreview: null
+    colorOperation: null, colorPreview: null,
+    colorCsvFile: null, colorCsvSource: '', colorCsvPreview: null
   };
 
   const COLOR_SWATCHES = Object.freeze({
@@ -52,6 +53,15 @@
     csvDiffList: byId('inventoryCsvDiffList'), csvNoChanges: byId('inventoryCsvNoChanges'),
     csvWarningsSection: byId('inventoryCsvWarningsSection'), csvWarnings: byId('inventoryCsvWarnings'),
     csvWarningConfirm: byId('inventoryCsvWarningConfirm'), confirmCsv: byId('confirmInventoryCsvButton'),
+    colorCsvInput: byId('inventoryColorCsvInput'), colorCsvDrop: byId('inventoryColorCsvDrop'),
+    colorCsvFile: byId('inventoryColorCsvFile'), validateColorCsv: byId('validateInventoryColorCsvButton'),
+    colorCsvDialog: byId('inventoryColorCsvReviewDialog'), colorCsvReviewFile: byId('inventoryColorCsvReviewFile'),
+    colorCsvSpreadsheetHash: byId('inventoryColorCsvSpreadsheetHash'), colorCsvCurrentHash: byId('inventoryColorCsvCurrentHash'),
+    colorCsvErrorsSection: byId('inventoryColorCsvErrorsSection'), colorCsvErrors: byId('inventoryColorCsvErrors'),
+    colorCsvDiffList: byId('inventoryColorCsvDiffList'), colorCsvNoChanges: byId('inventoryColorCsvNoChanges'),
+    colorCsvWarningsSection: byId('inventoryColorCsvWarningsSection'), colorCsvWarnings: byId('inventoryColorCsvWarnings'),
+    colorCsvWarningConfirm: byId('inventoryColorCsvWarningConfirm'), colorCsvSaveConfirm: byId('inventoryColorCsvSaveConfirm'),
+    confirmColorCsv: byId('confirmInventoryColorCsvButton'),
     colorDialog: byId('inventoryColorDialog'), colorTitle: byId('inventoryColorTitle'),
     colorContext: byId('inventoryColorContext'), colorGuidance: byId('inventoryColorGuidance'),
     colorEditor: byId('inventoryColorEditor'), colorCurrentStock: byId('inventoryColorCurrentStock'),
@@ -491,7 +501,7 @@
 
   function updateColorSaveState() {
     const warningRequired = (state.colorPreview?.warnings || []).length > 0;
-    elements.confirmColorSave.disabled = !state.colorSaveConfirm.checked || (warningRequired && !elements.colorWarningConfirm.checked);
+    elements.confirmColorSave.disabled = !elements.colorSaveConfirm.checked || (warningRequired && !elements.colorWarningConfirm.checked);
   }
 
   async function saveColorOperation() {
@@ -761,6 +771,131 @@
     link.download = 'erros-estoque-celulars.csv'; link.click(); URL.revokeObjectURL(link.href);
   }
 
+  function resetColorCsvSelection() {
+    state.colorCsvFile = null;
+    state.colorCsvSource = '';
+    state.colorCsvPreview = null;
+    elements.colorCsvInput.value = '';
+    elements.colorCsvFile.textContent = 'Nenhum arquivo selecionado.';
+    elements.validateColorCsv.disabled = true;
+  }
+
+  async function selectColorCsvFile(file) {
+    state.colorCsvPreview = null;
+    if (!file) return resetColorCsvSelection();
+    if (file.size > 2 * 1024 * 1024) {
+      resetColorCsvSelection();
+      return setMessage('O arquivo CSV por cor excede 2 MB.', 'error');
+    }
+    state.colorCsvFile = file;
+    state.colorCsvSource = await file.text();
+    elements.colorCsvFile.textContent = `${file.name} - ${Math.max(1, Math.round(file.size / 1024))} KB`;
+    elements.validateColorCsv.disabled = false;
+    setMessage('Planilha por cor selecionada. Valide antes de aplicar.');
+  }
+
+  function updateColorCsvSaveState() {
+    const preview = state.colorCsvPreview;
+    const warningsRequired = (preview?.warnings || []).length > 0;
+    elements.confirmColorCsv.disabled = !preview?.valid
+      || !(preview?.changes || []).length
+      || !elements.colorCsvSaveConfirm.checked
+      || (warningsRequired && !elements.colorCsvWarningConfirm.checked);
+  }
+
+  function renderColorCsvPreview(data) {
+    state.colorCsvPreview = data;
+    elements.colorCsvReviewFile.textContent = `Arquivo: ${state.colorCsvFile?.name || '-'}`;
+    elements.colorCsvSpreadsheetHash.textContent = data.spreadsheetHash || '-';
+    elements.colorCsvCurrentHash.textContent = data.currentHash || '-';
+    const summary = data.summary || {};
+    for (const [id, field] of [
+      ['inventoryColorCsvRowsRead', 'rowsRead'], ['inventoryColorCsvValidRows', 'validRows'],
+      ['inventoryColorCsvChangedRows', 'changedRows'], ['inventoryColorCsvUnchangedRows', 'unchangedRows'],
+      ['inventoryColorCsvInvalidRows', 'invalidRows'], ['inventoryColorCsvConflicts', 'conflicts'],
+      ['inventoryColorCsvRecordsChanged', 'recordsChanged']
+    ]) csvSummaryValue(id, summary[field]);
+
+    const errors = data.errors || [];
+    elements.colorCsvErrorsSection.hidden = errors.length === 0;
+    elements.colorCsvErrors.replaceChildren(...errors.map(error => {
+      const item = node('div', 'csv-error-item');
+      item.append(node('strong', '', error.line ? `Linha ${error.line}` : 'Arquivo'), node('span', '', error.message));
+      return item;
+    }));
+    const changes = data.changes || [];
+    elements.colorCsvDiffList.replaceChildren(...changes.map(change => {
+      const row = originalRow(change.inventory_id);
+      const item = node('div', 'diff-item');
+      item.append(
+        node('strong', '', `${row?.model || change.inventory_id} - ${row?.capacity || ''} - ${change.color}`),
+        node('span', '', `estoque: ${change.before.stock_on_hand} -> ${change.after.stock_on_hand} | reservado: ${change.before.reserved} -> ${change.after.reserved}`)
+      );
+      return item;
+    }));
+    elements.colorCsvNoChanges.hidden = changes.length > 0;
+    const warnings = data.warnings || [];
+    elements.colorCsvWarningsSection.hidden = warnings.length === 0;
+    elements.colorCsvWarnings.replaceChildren(...warnings.map(warning => node('div', '', warning.message)));
+    elements.colorCsvWarningConfirm.checked = false;
+    elements.colorCsvSaveConfirm.checked = false;
+    updateColorCsvSaveState();
+    elements.colorCsvDialog.showModal();
+  }
+
+  async function validateColorCsv() {
+    if (!state.colorCsvFile || !state.colorCsvSource) return;
+    elements.validateColorCsv.disabled = true;
+    try {
+      const data = await api('/api/inventory/color/validate.csv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/csv; charset=utf-8' },
+        body: state.colorCsvSource
+      });
+      renderColorCsvPreview(data);
+      setMessage(data.valid ? 'Planilha por cor validada. Revise as diferenças.' : 'A planilha por cor contém erros.', data.valid ? 'success' : 'error');
+    } catch (error) {
+      setMessage(error.message, 'error');
+    } finally {
+      elements.validateColorCsv.disabled = !state.colorCsvFile;
+    }
+  }
+
+  async function applyColorCsv() {
+    if (elements.confirmColorCsv.disabled) return;
+    const warnings = state.colorCsvPreview?.warnings || [];
+    elements.confirmColorCsv.disabled = true;
+    try {
+      const data = await api('/api/inventory/color/import.csv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'X-Inventory-Hash': state.colorCsvPreview.currentHash,
+          'X-Confirm-Stock-Without-Price': String(warnings.length > 0),
+          'X-Import-Filename': state.colorCsvFile.name
+        },
+        body: state.colorCsvSource
+      });
+      elements.colorCsvDialog.close();
+      resetColorCsvSelection();
+      await loadInventory();
+      setMessage(`${data.changes.length} registro(s) por cor aplicados. Backup: ${data.backupName || 'não necessário'}.`, 'success');
+    } catch (error) {
+      setMessage(error.message, 'error');
+      elements.confirmColorCsv.disabled = false;
+    }
+  }
+
+  function downloadColorCsvErrors() {
+    const source = state.colorCsvPreview?.errorReport;
+    if (!source) return;
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([source], { type: 'text/csv;charset=utf-8' }));
+    link.download = 'erros-estoque-por-cor-celulars.csv';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
   for (const button of elements.tabs) button.addEventListener('click', () => setTab(button.dataset.managerTab));
   elements.filter.addEventListener('change', renderRows);
   elements.colorFilter.addEventListener('change', renderRows);
@@ -788,6 +923,17 @@
   byId('closeInventoryCsvReviewButton').addEventListener('click', () => elements.csvDialog.close());
   byId('cancelInventoryCsvButton').addEventListener('click', () => elements.csvDialog.close());
   byId('downloadInventoryCsvErrorsButton').addEventListener('click', downloadCsvErrors);
+  elements.colorCsvInput.addEventListener('change', () => selectColorCsvFile(elements.colorCsvInput.files?.[0]).catch(error => setMessage(error.message, 'error')));
+  for (const eventName of ['dragenter', 'dragover']) elements.colorCsvDrop.addEventListener(eventName, event => { event.preventDefault(); elements.colorCsvDrop.classList.add('dragging'); });
+  for (const eventName of ['dragleave', 'drop']) elements.colorCsvDrop.addEventListener(eventName, event => { event.preventDefault(); elements.colorCsvDrop.classList.remove('dragging'); });
+  elements.colorCsvDrop.addEventListener('drop', event => selectColorCsvFile(event.dataTransfer?.files?.[0]).catch(error => setMessage(error.message, 'error')));
+  elements.validateColorCsv.addEventListener('click', validateColorCsv);
+  elements.colorCsvWarningConfirm.addEventListener('change', updateColorCsvSaveState);
+  elements.colorCsvSaveConfirm.addEventListener('change', updateColorCsvSaveState);
+  elements.confirmColorCsv.addEventListener('click', applyColorCsv);
+  byId('closeInventoryColorCsvReviewButton').addEventListener('click', () => elements.colorCsvDialog.close());
+  byId('cancelInventoryColorCsvButton').addEventListener('click', () => elements.colorCsvDialog.close());
+  byId('downloadInventoryColorCsvErrorsButton').addEventListener('click', downloadColorCsvErrors);
   elements.previewColor.addEventListener('click', previewColorEditor);
   byId('closeInventoryColorButton').addEventListener('click', () => elements.colorDialog.close());
   byId('cancelInventoryColorButton').addEventListener('click', () => elements.colorDialog.close());

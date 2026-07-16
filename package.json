@@ -10,7 +10,8 @@
     "catalog:demo": "node scripts/catalog-admin-server.mjs --demo",
     "catalog:test": "node scripts/test-catalog-manager.mjs",
     "catalog:csv-test": "node scripts/test-catalog-csv.mjs",
-    "inventory:test": "node scripts/test-inventory-manager.mjs"
+    "inventory:test": "node scripts/test-inventory-manager.mjs",
+    "inventory:color-test": "node scripts/test-inventory-color.mjs"
   },
   "engines": {
     "node": ">=20"

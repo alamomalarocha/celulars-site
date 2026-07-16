@@ -409,6 +409,10 @@ body.inventory-active .top-actions {
   white-space: nowrap;
 }
 
+.inventory-color-csv-drop {
+  margin-top: 12px;
+}
+
 .inventory-operation-grid > div {
   min-width: 0;
   padding: 17px;
