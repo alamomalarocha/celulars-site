@@ -16,12 +16,15 @@ import {
 import {
   initializeInventory,
   listInventoryBackups,
+  previewInventoryColorChanges,
   previewInventoryChanges,
   readInventory,
   readInventoryHistory,
   restoreInventoryBackup,
+  saveInventoryColorChanges,
   saveInventoryChanges
 } from './inventory-service.mjs';
+import { createDemoColorInventory } from './inventory-color-rules.mjs';
 import { createInitialInventory, enrichInventory, inventoryAlerts, inventoryStats } from './inventory-rules.mjs';
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -444,6 +447,38 @@ export function createCatalogAdminServer(options = {}) {
         });
       }
 
+      if (url.pathname === '/api/inventory/color/preview' && request.method === 'POST') {
+        const body = await readJsonBody(request);
+        const loadedCatalog = await readCatalog(catalogPath);
+        const result = await previewInventoryColorChanges({
+          inventoryPath,
+          catalog: loadedCatalog.catalog,
+          operations: body.operations,
+          confirmStockWithoutPrice: body.confirmStockWithoutPrice === true,
+          allowDemo: demoMode
+        });
+        return sendJson(response, result.ok ? 200 : result.status || 400, result.ok ? result : { ...result, error: result.errors?.join(' | ') });
+      }
+
+      if (url.pathname === '/api/inventory/color/save' && request.method === 'POST') {
+        return await runMutableOperation(response, async () => {
+          const body = await readJsonBody(request);
+          const loadedCatalog = await readCatalog(catalogPath);
+          const result = await saveInventoryColorChanges({
+            inventoryPath,
+            catalog: loadedCatalog.catalog,
+            operations: body.operations,
+            expectedInventoryHash: body.expectedInventoryHash,
+            confirmStockWithoutPrice: body.confirmStockWithoutPrice === true,
+            allowDemo: demoMode,
+            backupDirectory: inventoryBackupDirectory,
+            historyFile: inventoryHistoryFile,
+            ...(inventoryWriteFile ? { writeInventory: inventoryWriteFile } : {})
+          });
+          return sendJson(response, result.ok ? 200 : result.status || 400, result.ok ? result : { ...result, error: result.errors?.join(' | ') });
+        });
+      }
+
       if (url.pathname === '/api/inventory/backups' && request.method === 'GET') {
         const loadedCatalog = await readCatalog(catalogPath);
         return sendJson(response, 200, { backups: await listInventoryBackups(inventoryBackupDirectory, loadedCatalog.catalog, { allowDemo: demoMode }) });
@@ -708,18 +743,16 @@ if (invokedDirectly) {
     const realCatalog = await readCatalog();
     const demoCatalog = structuredClone(realCatalog.catalog);
     let demoPriceIndex = 0;
-    let demoZeroPricePending = true;
     for (const product of demoCatalog.products) {
       if (product.group !== 'cpo') continue;
       for (const capacity of Object.keys(product.capacities)) {
-        product.capacities[capacity].usd = demoZeroPricePending ? 0 : [111.11, 222.22][demoPriceIndex++ % 2];
-        demoZeroPricePending = false;
+        product.capacities[capacity].usd = [111.11, 222.22, 333.33][demoPriceIndex++ % 3];
       }
     }
     const demoCatalogPath = path.join(demoRoot, 'catalog-public.json');
     const demoInventoryPath = path.join(demoRoot, 'inventory-private.json');
     await writeFile(demoCatalogPath, jsonText(demoCatalog), 'utf8');
-    await writeFile(demoInventoryPath, jsonText(createInitialInventory(demoCatalog, { demo: true })), 'utf8');
+    await writeFile(demoInventoryPath, jsonText(createDemoColorInventory(demoCatalog)), 'utf8');
     managerOptions = {
       port,
       demoMode: true,
