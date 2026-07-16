@@ -7,6 +7,7 @@ import {
   inventoryContentHash,
   validateInventory
 } from './inventory-rules.mjs';
+import { applyInventoryColorOperations } from './inventory-color-rules.mjs';
 
 function jsonText(value) {
   return `${JSON.stringify(value, null, 2)}\n`;
@@ -21,12 +22,13 @@ function fieldHistory(diff, inventory) {
   const entries = [];
   for (const change of diff) {
     const item = items.get(change.inventory_id);
-    for (const field of ['stock_on_hand', 'reserved', 'low_stock_threshold', 'status', 'notes']) {
-      if (change.before[field] === change.after[field]) continue;
+    for (const field of ['tracking_mode', 'stock_on_hand', 'reserved', 'low_stock_threshold', 'status', 'notes', 'color_variants']) {
+      if (JSON.stringify(change.before[field]) === JSON.stringify(change.after[field])) continue;
       entries.push({
         inventory_id: change.inventory_id,
         product_id: item?.product_id || null,
         capacity: item?.capacity || null,
+        action: change.action || null,
         field,
         before: change.before[field],
         after: change.after[field]
@@ -38,12 +40,12 @@ function fieldHistory(diff, inventory) {
 
 function inventoryDiff(beforeInventory, afterInventory) {
   const after = new Map(afterInventory.items.map(item => [item.inventory_id, item]));
-  const fields = ['stock_on_hand', 'reserved', 'low_stock_threshold', 'status', 'notes'];
+  const fields = ['tracking_mode', 'stock_on_hand', 'reserved', 'low_stock_threshold', 'status', 'notes', 'color_variants'];
   return beforeInventory.items.flatMap(item => {
     const next = after.get(item.inventory_id);
     if (!next) return [];
-    const before = Object.fromEntries(fields.map(field => [field, item[field]]));
-    const afterValues = Object.fromEntries(fields.map(field => [field, next[field]]));
+    const before = Object.fromEntries(fields.map(field => [field, field === 'tracking_mode' ? item[field] || 'aggregate' : item[field]]));
+    const afterValues = Object.fromEntries(fields.map(field => [field, field === 'tracking_mode' ? next[field] || 'aggregate' : next[field]]));
     return JSON.stringify(before) === JSON.stringify(afterValues) ? [] : [{ inventory_id: item.inventory_id, before, after: afterValues }];
   });
 }
@@ -168,6 +170,27 @@ export async function previewInventoryChanges({ inventoryPath, catalog, changes,
   };
 }
 
+export async function previewInventoryColorChanges({
+  inventoryPath,
+  catalog,
+  operations,
+  confirmStockWithoutPrice = false,
+  allowDemo = false
+}) {
+  const current = await readInventory(inventoryPath, catalog, { allowDemo });
+  if (!current.exists) return { ok: false, status: 404, errors: ['Inventario ainda nao foi criado.'] };
+  const applied = applyInventoryColorOperations(current.inventory, catalog, operations, { confirmStockWithoutPrice });
+  return {
+    ok: applied.valid,
+    status: applied.valid ? 200 : 400,
+    errors: applied.errors,
+    warnings: applied.warnings,
+    changes: applied.diff,
+    currentHash: current.contentHash,
+    nextHash: applied.inventory ? inventoryContentHash(jsonText(applied.inventory)) : null
+  };
+}
+
 export async function saveInventoryChanges({
   inventoryPath,
   catalog,
@@ -227,6 +250,74 @@ export async function saveInventoryChanges({
       ok: false,
       status: 500,
       errors: [`Gravacao do inventario revertida: ${error.message}`],
+      rolledBack: true,
+      backupName: backup?.backupName || null
+    };
+  }
+}
+
+export async function saveInventoryColorChanges({
+  inventoryPath,
+  catalog,
+  operations,
+  expectedInventoryHash,
+  confirmStockWithoutPrice = false,
+  allowDemo = false,
+  backupDirectory,
+  historyFile,
+  historyType = 'color_edit',
+  historyContext = {},
+  now = new Date().toISOString(),
+  writeInventory = atomicWriteInventoryFile,
+  afterWrite = async () => {},
+  writeHistory = appendHistory
+}) {
+  const current = await readInventory(inventoryPath, catalog, { allowDemo });
+  if (!current.exists) return { ok: false, status: 404, errors: ['Inventario ainda nao foi criado.'] };
+  if (!expectedInventoryHash || expectedInventoryHash !== current.contentHash) {
+    return { ok: false, status: 409, errors: ['O inventario mudou desde a previa. Recarregue e revise novamente.'] };
+  }
+  const applied = applyInventoryColorOperations(current.inventory, catalog, operations, {
+    confirmStockWithoutPrice,
+    now
+  });
+  if (!applied.valid) return { ok: false, status: 400, errors: applied.errors, warnings: applied.warnings };
+  if (!applied.diff.length) return { ok: false, status: 400, errors: ['As operacoes enviadas nao modificam o inventario.'], warnings: applied.warnings };
+  const nextSource = jsonText(applied.inventory);
+  const nextHash = inventoryContentHash(nextSource);
+  let backup = null;
+  try {
+    backup = await createBackup(inventoryPath, backupDirectory);
+    await writeInventory(inventoryPath, nextSource);
+    const written = await readInventory(inventoryPath, catalog, { allowDemo });
+    if (written.contentHash !== nextHash) throw new Error('Hash do inventario gravado nao corresponde ao conteudo validado.');
+    await afterWrite(written.inventory);
+    await writeHistory(historyFile, {
+      changedAt: now,
+      type: historyType,
+      demo: current.inventory.demo,
+      ...historyContext,
+      changeCount: applied.diff.length,
+      beforeHash: current.contentHash,
+      afterHash: nextHash,
+      changes: fieldHistory(applied.diff, current.inventory)
+    });
+    return {
+      ok: true,
+      changes: applied.diff,
+      warnings: applied.warnings,
+      backupName: backup?.backupName || null,
+      beforeHash: current.contentHash,
+      afterHash: nextHash,
+      inventory: written.inventory,
+      stats: written.validation.stats
+    };
+  } catch (error) {
+    await restorePrevious(inventoryPath, current.source);
+    return {
+      ok: false,
+      status: 500,
+      errors: [`Gravacao do inventario por cor revertida: ${error.message}`],
       rolledBack: true,
       backupName: backup?.backupName || null
     };
