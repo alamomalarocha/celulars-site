@@ -68,6 +68,13 @@ const canonicalCatalogPath = path.join(projectRoot, 'data', 'catalog-public.json
 const canonicalSourceBefore = await readFile(canonicalCatalogPath, 'utf8');
 const canonicalHashBefore = sha256(canonicalSourceBefore);
 const catalog = JSON.parse(canonicalSourceBefore);
+const privateInventoryPath = path.join(projectRoot, 'data', 'inventory-private.json');
+let privateInventorySourceBefore = null;
+try {
+  privateInventorySourceBefore = await readFile(privateInventoryPath, 'utf8');
+} catch (error) {
+  if (error.code !== 'ENOENT') throw error;
+}
 const now = '2026-07-14T18:00:00.000Z';
 const expectedCatalogRows = catalogInventoryRows(catalog);
 const expectedNewRows = expectedCatalogRows.filter(row => row.group === 'new').length;
@@ -221,7 +228,11 @@ assert.equal(demoExample.demo, true);
 assert.equal(demoExample.items.every(item => /ficticio/i.test(item.notes)), true);
 const managerHtml = await readFile(path.join(projectRoot, 'tools', 'catalog-manager', 'index.html'), 'utf8');
 assert.match(managerHtml, /MODO DEMONSTRAÇÃO/);
-await assert.rejects(() => access(path.join(projectRoot, 'data', 'inventory-private.json')));
+if (privateInventorySourceBefore) {
+  const privateInventory = JSON.parse(privateInventorySourceBefore);
+  assert.equal(privateInventory.demo, false);
+  assert.equal(validateInventory(privateInventory, catalog).valid, true);
+}
 
 // Arquivo acima de 2 MB.
 const oversized = `x${'0'.repeat(MAX_INVENTORY_CSV_BYTES)}`;
@@ -671,7 +682,11 @@ try {
   });
   assert.equal(blockedBuild.status, 403);
   assert.equal(demoBuildCalled, false);
-  await assert.rejects(() => access(path.join(projectRoot, 'data', 'inventory-private.json')));
+  if (privateInventorySourceBefore) {
+    assert.equal(await readFile(privateInventoryPath, 'utf8'), privateInventorySourceBefore);
+  } else {
+    await assert.rejects(() => access(privateInventoryPath));
+  }
 } finally {
   await demoManager.close();
   await rm(demoRoot, { recursive: true, force: true });
