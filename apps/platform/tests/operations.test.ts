@@ -59,6 +59,16 @@ test('catalog, prices and immutable inventory ledger stay scoped and auditable',
     assert.throws(() => recordInventoryMovement(database, admin, {
       inventoryItemId: item.id, movementType: 'SALE', quantity: 10_000, notes: 'Venda impossivel DEMO'
     }), /INSUFFICIENT_INVENTORY/);
+    const transfer = recordInventoryMovement(database, admin, {
+      inventoryItemId: item.id,
+      movementType: 'TRANSFER',
+      quantity: 1,
+      notes: 'Transferencia interna de homologacao DEMO'
+    }) as { movementType: string; quantity: number };
+    assert.equal(transfer.movementType, 'TRANSFER');
+    assert.equal(transfer.quantity, 1);
+    assert.equal(Number(database.prepare(`SELECT COUNT(*) AS count FROM inventory_movements
+      WHERE inventory_item_id=? AND movement_type='TRANSFER'`).get(item.id)?.count), 1);
   } finally {
     database.close();
     removeDatabase(databasePath);

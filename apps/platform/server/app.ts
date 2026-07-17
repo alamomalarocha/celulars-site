@@ -4,6 +4,17 @@ import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
 import { AuthService, AuthenticationError } from './auth.js';
 import { clearSessionCookie, parseCookies, sessionCookie, sessionCookieName } from './cookies.js';
+import {
+  convertQuoteToOrder,
+  createQuote,
+  createReservation,
+  orderData,
+  quoteData,
+  releaseReservation,
+  transitionOrder,
+  transitionQuote,
+  updateShipment
+} from './commerce.js';
 import { conversationData, createConversation, createMessage, createRequest, requestData, transitionRequest } from './communications.js';
 import { companyData, createCustomer, customerData, transitionCompanyApproval, updateCustomer } from './crm.js';
 import { dashboardData, notificationData } from './dashboard.js';
@@ -60,6 +71,25 @@ interface RequestBody {
 interface RequestStatusBody { readonly status?: string; readonly assignedUserId?: string | null }
 interface ConversationBody { readonly subject?: string; readonly customerId?: string | null }
 interface MessageBody { readonly conversationId?: string; readonly body?: string; readonly messageType?: string }
+interface QuoteBody {
+  readonly companyId?: string | null;
+  readonly customerId?: string | null;
+  readonly variantId?: string;
+  readonly quantity?: number;
+  readonly unitPriceCents?: number;
+  readonly notes?: string;
+}
+interface CommerceStatusBody { readonly status?: string }
+interface ConvertQuoteBody { readonly deliveryMethod?: string; readonly addressDemo?: string; readonly carrierDemo?: string }
+interface ReservationBody { readonly orderId?: string; readonly inventoryItemId?: string; readonly quantity?: number; readonly expiresAt?: string }
+interface ShipmentBody {
+  readonly orderId?: string;
+  readonly status?: string;
+  readonly method?: string;
+  readonly carrierDemo?: string;
+  readonly trackingDemo?: string;
+  readonly shippingCostCents?: number;
+}
 
 export interface PlatformApplication {
   readonly server: Server;
@@ -277,6 +307,69 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, 201, result);
         return;
       }
+      if (method === 'GET' && url.pathname === '/api/quotes') {
+        requirePermission(principal, 'quotes.read');
+        sendJson(response, 200, quoteData(database, principal));
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/quotes') {
+        requirePermission(principal, 'quotes.write');
+        const result = createQuote(database, principal, await readJson<QuoteBody>(request));
+        audit(database, principal, 'QUOTE_CREATE', 'QUOTE', String((result as { id: string }).id), request);
+        sendJson(response, 201, result);
+        return;
+      }
+      const quoteStatusMatch = url.pathname.match(/^\/api\/quotes\/([^/]+)\/status$/);
+      if (method === 'POST' && quoteStatusMatch?.[1]) {
+        requirePermission(principal, 'quotes.write');
+        const result = transitionQuote(database, principal, decodeURIComponent(quoteStatusMatch[1]), await readJson<CommerceStatusBody>(request));
+        audit(database, principal, 'QUOTE_STATUS', 'QUOTE', String((result as { id: string }).id), request);
+        sendJson(response, 200, result);
+        return;
+      }
+      const quoteConvertMatch = url.pathname.match(/^\/api\/quotes\/([^/]+)\/convert$/);
+      if (method === 'POST' && quoteConvertMatch?.[1]) {
+        requirePermission(principal, 'orders.write');
+        const result = convertQuoteToOrder(database, principal, decodeURIComponent(quoteConvertMatch[1]), await readJson<ConvertQuoteBody>(request));
+        audit(database, principal, 'QUOTE_CONVERT', 'ORDER', String((result as { id: string }).id), request);
+        sendJson(response, 201, result);
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/orders') {
+        requirePermission(principal, 'orders.read');
+        sendJson(response, 200, orderData(database, principal));
+        return;
+      }
+      const orderStatusMatch = url.pathname.match(/^\/api\/orders\/([^/]+)\/status$/);
+      if (method === 'POST' && orderStatusMatch?.[1]) {
+        requirePermission(principal, 'orders.write');
+        const result = transitionOrder(database, principal, decodeURIComponent(orderStatusMatch[1]), await readJson<CommerceStatusBody>(request));
+        audit(database, principal, 'ORDER_STATUS', 'ORDER', String((result as { id: string }).id), request);
+        sendJson(response, 200, result);
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/reservations') {
+        requirePermission(principal, 'inventory.write');
+        const result = createReservation(database, principal, await readJson<ReservationBody>(request));
+        audit(database, principal, 'RESERVATION_CREATE', 'RESERVATION', String((result as { id: string }).id), request);
+        sendJson(response, 201, result);
+        return;
+      }
+      const reservationReleaseMatch = url.pathname.match(/^\/api\/reservations\/([^/]+)\/release$/);
+      if (method === 'POST' && reservationReleaseMatch?.[1]) {
+        requirePermission(principal, 'inventory.write');
+        const result = releaseReservation(database, principal, decodeURIComponent(reservationReleaseMatch[1]));
+        audit(database, principal, 'RESERVATION_RELEASE', 'RESERVATION', String((result as { id: string }).id), request);
+        sendJson(response, 200, result);
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/shipments') {
+        requirePermission(principal, 'orders.write');
+        const result = updateShipment(database, principal, await readJson<ShipmentBody>(request));
+        audit(database, principal, 'SHIPMENT_UPDATE', 'ORDER', String((result as { orderId: string }).orderId), request);
+        sendJson(response, 200, result);
+        return;
+      }
 
       sendJson(response, 404, { error: 'Rota nao encontrada.' });
     } catch (error) {
@@ -288,11 +381,11 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, error instanceof Error && error.message === 'PAYLOAD_TOO_LARGE' ? 413 : 400, { error: 'Solicitacao invalida.' });
         return;
       }
-      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE'].includes(error.message)) {
-        sendJson(response, 400, { error: 'Dados da operacao DEMO invalidos.' });
+      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE','INVALID_QUOTE','INVALID_QUOTE_STATUS','INVALID_ORDER','INVALID_ORDER_STATUS','INVALID_RESERVATION','INVALID_SHIPMENT','INVALID_SHIPMENT_STATUS'].includes(error.message)) {
+        sendJson(response, 400, { error: 'Dados da operacao DEMO invalidos.', code: error.message });
         return;
       }
-      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND','REQUEST_NOT_FOUND','CONVERSATION_NOT_FOUND'].includes(error.message)) {
+      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND','REQUEST_NOT_FOUND','CONVERSATION_NOT_FOUND','QUOTE_NOT_FOUND','ORDER_NOT_FOUND','RESERVATION_NOT_FOUND'].includes(error.message)) {
         sendJson(response, 404, { error: 'Registro DEMO nao encontrado.' });
         return;
       }
@@ -301,7 +394,11 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         return;
       }
       if (error instanceof Error && error.message === 'INSUFFICIENT_INVENTORY') {
-        sendJson(response, 409, { error: 'Saldo de estoque insuficiente para esta operacao DEMO.' });
+        sendJson(response, 409, { error: 'Saldo de estoque insuficiente para esta operacao DEMO.', code: error.message });
+        return;
+      }
+      if (error instanceof Error && error.message === 'INCOMPLETE_RESERVATION') {
+        sendJson(response, 409, { error: 'O pedido precisa ter reserva completa antes de avancar.', code: error.message });
         return;
       }
       if (error instanceof Error && error.message.startsWith('FORBIDDEN:')) {

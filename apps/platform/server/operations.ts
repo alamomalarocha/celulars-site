@@ -108,7 +108,8 @@ function movementDeltas(type: string, quantity: number): { physical: number; res
   const rules: Readonly<Record<string, { physical: number; reserved: number }>> = {
     RECEIPT: { physical: 1, reserved: 0 }, RETURN: { physical: 1, reserved: 0 }, ADJUSTMENT_IN: { physical: 1, reserved: 0 },
     SALE: { physical: -1, reserved: 0 }, ADJUSTMENT_OUT: { physical: -1, reserved: 0 },
-    RESERVATION: { physical: 0, reserved: 1 }, RELEASE: { physical: 0, reserved: -1 }, CANCELLATION: { physical: 1, reserved: 0 }
+    RESERVATION: { physical: 0, reserved: 1 }, RELEASE: { physical: 0, reserved: -1 },
+    TRANSFER: { physical: 0, reserved: 0 }, CANCELLATION: { physical: 0, reserved: -1 }
   };
   const rule = rules[type];
   return rule ? { physical: rule.physical * quantity, reserved: rule.reserved * quantity } : null;
