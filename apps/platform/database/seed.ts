@@ -10,7 +10,7 @@ const FIXED_NOW = '2026-07-17T12:00:00.000Z';
 const permissionCodes = [
   'catalog.read', 'catalog.write', 'prices.read', 'prices.write', 'inventory.read', 'inventory.write',
   'customers.read', 'customers.write', 'companies.read', 'companies.approve', 'quotes.read', 'quotes.write',
-  'orders.read', 'orders.write', 'messages.read', 'messages.write', 'users.read', 'users.write',
+  'orders.read', 'orders.write', 'requests.read', 'requests.write', 'messages.read', 'messages.write', 'users.read', 'users.write',
   'settings.read', 'settings.write', 'audit.read'
 ] as const;
 
@@ -136,7 +136,7 @@ export function seedDatabase(
     }
     const adminPermissions = [...permissionCodes];
     const employeePermissions = permissionCodes.filter((code) => !['users.read','users.write','settings.read','settings.write','audit.read','companies.approve'].includes(code));
-    const wholesalePermissions = ['catalog.read','prices.read','quotes.read','quotes.write','orders.read','messages.read','messages.write','companies.read'] as const;
+    const wholesalePermissions = ['catalog.read','prices.read','quotes.read','quotes.write','orders.read','requests.read','requests.write','messages.read','messages.write','companies.read'] as const;
     for (const [roleId, codes] of [['role-admin', adminPermissions], ['role-employee', employeePermissions], ['role-wholesale', wholesalePermissions]] as const) {
       for (const code of codes) {
         const permission = database.prepare('SELECT id FROM permissions WHERE code = ?').get(code);

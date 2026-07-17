@@ -4,6 +4,7 @@ import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
 import { AuthService, AuthenticationError } from './auth.js';
 import { clearSessionCookie, parseCookies, sessionCookie, sessionCookieName } from './cookies.js';
+import { conversationData, createConversation, createMessage, createRequest, requestData, transitionRequest } from './communications.js';
 import { companyData, createCustomer, customerData, transitionCompanyApproval, updateCustomer } from './crm.js';
 import { dashboardData, notificationData } from './dashboard.js';
 import { readJson, sendEmpty, sendJson } from './http.js';
@@ -47,6 +48,18 @@ interface CompanyApprovalBody {
   readonly status?: string;
   readonly notes?: string;
 }
+
+interface RequestBody {
+  readonly title?: string;
+  readonly description?: string;
+  readonly leadType?: string;
+  readonly priority?: string;
+  readonly customerId?: string | null;
+}
+
+interface RequestStatusBody { readonly status?: string; readonly assignedUserId?: string | null }
+interface ConversationBody { readonly subject?: string; readonly customerId?: string | null }
+interface MessageBody { readonly conversationId?: string; readonly body?: string; readonly messageType?: string }
 
 export interface PlatformApplication {
   readonly server: Server;
@@ -225,6 +238,45 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, 201, result);
         return;
       }
+      if (method === 'GET' && url.pathname === '/api/requests') {
+        requirePermission(principal, 'requests.read');
+        sendJson(response, 200, requestData(database, principal));
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/requests') {
+        requirePermission(principal, 'requests.write');
+        const result = createRequest(database, principal, await readJson<RequestBody>(request));
+        audit(database, principal, 'REQUEST_CREATE', 'REQUEST', String((result as { id: string }).id), request);
+        sendJson(response, 201, result);
+        return;
+      }
+      const requestStatusMatch = url.pathname.match(/^\/api\/requests\/([^/]+)\/status$/);
+      if (method === 'POST' && requestStatusMatch?.[1]) {
+        requirePermission(principal, 'requests.write');
+        const result = transitionRequest(database, principal, decodeURIComponent(requestStatusMatch[1]), await readJson<RequestStatusBody>(request));
+        audit(database, principal, 'REQUEST_STATUS', 'REQUEST', String((result as { id: string }).id), request);
+        sendJson(response, 200, result);
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/conversations') {
+        requirePermission(principal, 'messages.read');
+        sendJson(response, 200, conversationData(database, principal));
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/conversations') {
+        requirePermission(principal, 'messages.write');
+        const result = createConversation(database, principal, await readJson<ConversationBody>(request));
+        audit(database, principal, 'CONVERSATION_CREATE', 'CONVERSATION', String((result as { id: string }).id), request);
+        sendJson(response, 201, result);
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/messages') {
+        requirePermission(principal, 'messages.write');
+        const result = createMessage(database, principal, await readJson<MessageBody>(request));
+        audit(database, principal, 'MESSAGE_CREATE', 'MESSAGE', String((result as { id: string }).id), request);
+        sendJson(response, 201, result);
+        return;
+      }
 
       sendJson(response, 404, { error: 'Rota nao encontrada.' });
     } catch (error) {
@@ -236,11 +288,11 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, error instanceof Error && error.message === 'PAYLOAD_TOO_LARGE' ? 413 : 400, { error: 'Solicitacao invalida.' });
         return;
       }
-      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL'].includes(error.message)) {
+      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE'].includes(error.message)) {
         sendJson(response, 400, { error: 'Dados da operacao DEMO invalidos.' });
         return;
       }
-      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND'].includes(error.message)) {
+      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND','REQUEST_NOT_FOUND','CONVERSATION_NOT_FOUND'].includes(error.message)) {
         sendJson(response, 404, { error: 'Registro DEMO nao encontrado.' });
         return;
       }

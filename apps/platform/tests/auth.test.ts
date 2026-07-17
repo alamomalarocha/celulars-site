@@ -84,6 +84,35 @@ test('server auth enforces cookie sessions, origin, CSRF and RBAC', async () => 
     assert.equal(forbiddenInventory.status, 403);
     const forbiddenCustomers = await fetch(`${baseUrl}/api/customers`, { headers: { Cookie: wholesaler.cookie } });
     assert.equal(forbiddenCustomers.status, 403);
+    const wholesaleRequests = await fetch(`${baseUrl}/api/requests`, { headers: { Cookie: wholesaler.cookie } });
+    assert.equal(wholesaleRequests.status, 200);
+    const wholesaleRequestPayload = await wholesaleRequests.json() as { requests: readonly { company_id: string }[] };
+    assert.ok(wholesaleRequestPayload.requests.every((row) => row.company_id === 'company-demo-1'));
+    const wholesaleConversations = await fetch(`${baseUrl}/api/conversations`, { headers: { Cookie: wholesaler.cookie } });
+    assert.equal(wholesaleConversations.status, 200);
+    const wholesaleConversationPayload = await wholesaleConversations.json() as {
+      conversations: readonly { id: string; company_id: string }[];
+      messages: readonly { message_type: string }[];
+    };
+    assert.ok(wholesaleConversationPayload.conversations.every((row) => row.company_id === 'company-demo-1'));
+    assert.ok(wholesaleConversationPayload.messages.every((row) => row.message_type !== 'INTERNAL_NOTE'));
+    const firstConversation = wholesaleConversationPayload.conversations[0];
+    assert.ok(firstConversation?.id);
+    const forbiddenInternalNote = await fetch(`${baseUrl}/api/messages`, {
+      method: 'POST',
+      headers: {
+        Cookie: wholesaler.cookie,
+        Origin: config.allowedOrigin,
+        'X-CSRF-Token': wholesaler.csrf,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        conversationId: firstConversation?.id,
+        body: 'Nota interna proibida no teste DEMO.',
+        messageType: 'INTERNAL_NOTE'
+      })
+    });
+    assert.equal(forbiddenInternalNote.status, 403);
     const ownCompany = await fetch(`${baseUrl}/api/companies`, { headers: { Cookie: wholesaler.cookie } });
     assert.equal(ownCompany.status, 200);
     const ownCompanyPayload = await ownCompany.json() as { companies: readonly { id: string }[] };
