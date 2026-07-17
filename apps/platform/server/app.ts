@@ -142,9 +142,19 @@ function companyFor(database: PlatformDatabase, entityType: 'QUOTE' | 'ORDER' | 
   return row?.company_id ? String(row.company_id) : null;
 }
 
+function sensitiveWrite(pathname: string): boolean {
+  return /^\/api\/(?:admin|settings|prices\/revisions|inventory\/movements|reservations|shipments)(?:\/|$)/.test(pathname)
+    || /^\/api\/companies\/[^/]+\/approval$/.test(pathname)
+    || /^\/api\/quotes\/[^/]+\/(?:status|convert)$/.test(pathname)
+    || /^\/api\/orders\/[^/]+\/status$/.test(pathname);
+}
+
 export function createPlatformApplication(database: PlatformDatabase, config: PlatformConfig): PlatformApplication {
   const auth = new AuthService(database, config);
   const loginLimiter = new RateLimiter(5, 15 * 60 * 1000);
+  const writeLimiter = new RateLimiter(120, 60 * 1000);
+  const sensitiveLimiter = new RateLimiter(30, 60 * 1000);
+  const messageLimiter = new RateLimiter(30, 60 * 1000);
 
   async function handler(request: IncomingMessage, response: ServerResponse): Promise<void> {
     applySecurityHeaders(response);
@@ -196,6 +206,16 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (unsafe && !auth.verifyCsrf(principal, headerValue(request.headers['x-csrf-token']))) {
         sendJson(response, 403, { error: 'Token CSRF invalido.' });
         return;
+      }
+      if (unsafe) {
+        const limiter = url.pathname === '/api/messages' || url.pathname === '/api/conversations'
+          ? messageLimiter
+          : sensitiveWrite(url.pathname) ? sensitiveLimiter : writeLimiter;
+        const key = `${principal.userId}:${url.pathname}`;
+        if (!limiter.consume(key)) {
+          sendJson(response, 429, { error: 'Limite temporario de operacoes atingido. Aguarde e tente novamente.' });
+          return;
+        }
       }
 
       if (method === 'GET' && url.pathname === '/api/auth/me') {
@@ -482,6 +502,10 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
     } catch (error) {
       if (error instanceof AuthenticationError) {
         sendJson(response, 401, { error: 'Credenciais invalidas ou acesso temporariamente indisponivel.' });
+        return;
+      }
+      if (error instanceof Error && error.message === 'UNSUPPORTED_MEDIA_TYPE') {
+        sendJson(response, 415, { error: 'O corpo da solicitacao deve usar application/json.' });
         return;
       }
       if (error instanceof SyntaxError || (error instanceof Error && ['EMPTY_BODY', 'PAYLOAD_TOO_LARGE'].includes(error.message))) {
