@@ -175,6 +175,13 @@
         <div><dt>Pausados</dt><dd id="inventoryPaused">-</dd></div>
         <div><dt>CPO com preço zero</dt><dd id="inventoryZeroPrices">-</dd></div>
         <div><dt>CPO com preço</dt><dd id="inventoryPositivePrices">-</dd></div>
+        <div><dt>Registros agregados</dt><dd id="inventoryAggregateRecords">-</dd></div>
+        <div><dt>Registros por cor</dt><dd id="inventoryByColorRecords">-</dd></div>
+        <div><dt>Variantes de cor</dt><dd id="inventoryColorVariants">-</dd></div>
+        <div><dt>Estoque detalhado</dt><dd id="inventoryColorStock">-</dd></div>
+        <div><dt>Reservado detalhado</dt><dd id="inventoryColorReserved">-</dd></div>
+        <div><dt>Inconsistências</dt><dd id="inventoryColorInconsistencies">-</dd></div>
+        <div><dt>CPO por cor sem preço</dt><dd id="inventoryCpoByColorZero">-</dd></div>
       </dl>
     </section>
 
@@ -196,14 +203,16 @@
           <option value="stock">Com estoque</option><option value="no-stock">Sem estoque</option>
           <option value="reserved">Reservados</option><option value="low-stock">Estoque baixo</option>
           <option value="paused">Pausados</option><option value="zero-price">Preço zerado</option>
-          <option value="positive-price">Preço preenchido</option>
+          <option value="positive-price">Preço preenchido</option><option value="aggregate">Estoque agregado</option>
+          <option value="by-color">Estoque por cor</option>
         </select></label>
-        <label>Buscar modelo, ano, capacidade ou ID<input id="inventorySearch" type="search" placeholder="Ex.: iPhone 16 Pro, 2024 ou 256 GB"></label>
+        <label>Cor detalhada<select id="inventoryColorFilter"><option value="">Todas as cores</option></select></label>
+        <label>Buscar modelo, ano, capacidade, cor ou ID<input id="inventorySearch" type="search" placeholder="Ex.: iPhone 16 Pro, 256 GB ou Blue"></label>
         <span class="pending-inventory"><strong id="inventoryPendingCount">0</strong> alteração(ões) não salvas</span>
       </div>
       <div class="table-wrap inventory-table-wrap">
         <table class="inventory-table">
-          <thead><tr><th>Modelo</th><th>Grupo</th><th>Ano</th><th>Capacidade</th><th>Preço USD</th><th>Estoque</th><th>Reservado</th><th>Disponível</th><th>Limite</th><th>Status</th><th>Atualizado</th><th>Observação</th></tr></thead>
+          <thead><tr><th>Modelo</th><th>Grupo</th><th>Ano</th><th>Capacidade</th><th>Preço USD</th><th>Modo</th><th>Estoque</th><th>Reservado</th><th>Disponível</th><th>Limite</th><th>Status</th><th>Atualizado</th><th>Observação</th><th>Ações</th></tr></thead>
           <tbody id="inventoryRows"></tbody>
         </table>
         <p class="empty" id="inventoryEmptyState" hidden>Nenhum item corresponde aos filtros.</p>
@@ -233,6 +242,17 @@
           </label>
           <p class="inventory-csv-file" id="inventoryCsvFile">Nenhum arquivo selecionado.</p>
           <button class="button primary" id="validateInventoryCsvButton" type="button" disabled>Importar e validar</button>
+        </div>
+        <div>
+          <h3>Estoque por cor</h3>
+          <p>Exporta somente as variantes já detalhadas. Cores são adicionadas ou removidas exclusivamente pela interface.</p>
+          <a class="button secondary" href="/api/inventory/color/export.csv" download>Baixar estoque por cor</a>
+          <label class="inventory-csv-drop inventory-color-csv-drop" id="inventoryColorCsvDrop">
+            <span>Selecione ou arraste o CSV de estoque por cor</span>
+            <input id="inventoryColorCsvInput" type="file" accept=".csv,text/csv" />
+          </label>
+          <p class="inventory-csv-file" id="inventoryColorCsvFile">Nenhum arquivo selecionado.</p>
+          <button class="button primary" id="validateInventoryColorCsvButton" type="button" disabled>Importar e validar por cor</button>
         </div>
       </div>
     </section>
@@ -367,6 +387,90 @@
       <div class="dialog-actions">
         <button class="button secondary" id="cancelInventoryCsvButton" type="button">Cancelar</button>
         <button class="button primary" id="confirmInventoryCsvButton" type="button" disabled>Aplicar planilha</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="inventoryColorCsvReviewDialog" aria-labelledby="inventoryColorCsvReviewTitle">
+    <div class="dialog-card inventory-review-card">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Prévia obrigatória</p><h2 id="inventoryColorCsvReviewTitle">Revisar planilha por cor</h2></div>
+        <button class="icon-button" id="closeInventoryColorCsvReviewButton" type="button" aria-label="Fechar">×</button>
+      </div>
+      <p id="inventoryColorCsvReviewFile">Arquivo: -</p>
+      <dl class="csv-hashes">
+        <div><dt>Hash da planilha</dt><dd id="inventoryColorCsvSpreadsheetHash">-</dd></div>
+        <div><dt>Hash atual</dt><dd id="inventoryColorCsvCurrentHash">-</dd></div>
+      </dl>
+      <dl class="csv-summary">
+        <div><dt>Linhas lidas</dt><dd id="inventoryColorCsvRowsRead">0</dd></div>
+        <div><dt>Válidas</dt><dd id="inventoryColorCsvValidRows">0</dd></div>
+        <div><dt>Alteradas</dt><dd id="inventoryColorCsvChangedRows">0</dd></div>
+        <div><dt>Inalteradas</dt><dd id="inventoryColorCsvUnchangedRows">0</dd></div>
+        <div><dt>Inválidas</dt><dd id="inventoryColorCsvInvalidRows">0</dd></div>
+        <div><dt>Conflitos</dt><dd id="inventoryColorCsvConflicts">0</dd></div>
+        <div><dt>Registros alterados</dt><dd id="inventoryColorCsvRecordsChanged">0</dd></div>
+      </dl>
+      <section class="csv-review-section" id="inventoryColorCsvErrorsSection" hidden>
+        <div class="csv-section-heading"><h3>Erros encontrados</h3><button class="button secondary compact" id="downloadInventoryColorCsvErrorsButton" type="button">Baixar relatório de erros</button></div>
+        <div class="csv-error-list" id="inventoryColorCsvErrors"></div>
+      </section>
+      <section class="csv-review-section">
+        <h3>Diferenças por cor</h3>
+        <div class="diff-list" id="inventoryColorCsvDiffList"></div>
+        <p class="empty" id="inventoryColorCsvNoChanges">Nenhuma alteração encontrada.</p>
+      </section>
+      <section id="inventoryColorCsvWarningsSection" hidden>
+        <h3>Atenção</h3>
+        <div class="inventory-warning-list" id="inventoryColorCsvWarnings"></div>
+        <label class="high-confirm"><input id="inventoryColorCsvWarningConfirm" type="checkbox">Confirmo estoque CPO por cor com preço zerado e desejo aplicar mesmo assim.</label>
+      </section>
+      <label class="high-confirm"><input id="inventoryColorCsvSaveConfirm" type="checkbox">Revisei as cores e quantidades e confirmo esta importação.</label>
+      <div class="dialog-actions">
+        <button class="button secondary" id="cancelInventoryColorCsvButton" type="button">Cancelar</button>
+        <button class="button primary" id="confirmInventoryColorCsvButton" type="button" disabled>Aplicar planilha por cor</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="inventoryColorDialog" aria-labelledby="inventoryColorTitle">
+    <div class="dialog-card inventory-color-dialog-card">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Estoque opcional por cor</p><h2 id="inventoryColorTitle">Detalhar estoque por cor</h2></div>
+        <button class="icon-button" id="closeInventoryColorButton" type="button" aria-label="Fechar">×</button>
+      </div>
+      <p id="inventoryColorContext">-</p>
+      <p class="inventory-color-guidance" id="inventoryColorGuidance"></p>
+      <div class="inventory-color-editor" id="inventoryColorEditor"></div>
+      <dl class="csv-summary inventory-color-totals">
+        <div><dt>Estoque atual</dt><dd id="inventoryColorCurrentStock">0</dd></div>
+        <div><dt>Estoque por cor</dt><dd id="inventoryColorNextStock">0</dd></div>
+        <div><dt>Reservado atual</dt><dd id="inventoryColorCurrentReserved">0</dd></div>
+        <div><dt>Reservado por cor</dt><dd id="inventoryColorNextReserved">0</dd></div>
+      </dl>
+      <div class="dialog-actions">
+        <button class="button secondary" id="cancelInventoryColorButton" type="button">Cancelar</button>
+        <button class="button primary" id="previewInventoryColorButton" type="button">Revisar alteração</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="inventoryColorReviewDialog" aria-labelledby="inventoryColorReviewTitle">
+    <div class="dialog-card inventory-review-card">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">Confirmação obrigatória</p><h2 id="inventoryColorReviewTitle">Revisar estoque por cor</h2></div>
+        <button class="icon-button" id="closeInventoryColorReviewButton" type="button" aria-label="Fechar">×</button>
+      </div>
+      <div class="diff-list" id="inventoryColorDiffList"></div>
+      <section id="inventoryColorWarningsSection" hidden>
+        <h3>Atenção</h3>
+        <div class="inventory-warning-list" id="inventoryColorWarnings"></div>
+        <label class="high-confirm"><input id="inventoryColorWarningConfirm" type="checkbox">Confirmo estoque CPO com preço zerado e desejo salvar mesmo assim.</label>
+      </section>
+      <label class="high-confirm"><input id="inventoryColorSaveConfirm" type="checkbox">Revisei as cores e quantidades e confirmo esta alteração.</label>
+      <div class="dialog-actions">
+        <button class="button secondary" id="cancelInventoryColorReviewButton" type="button">Cancelar</button>
+        <button class="button primary" id="confirmInventoryColorSaveButton" type="button" disabled>Salvar estoque por cor</button>
       </div>
     </div>
   </dialog>

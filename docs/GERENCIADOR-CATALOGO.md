@@ -86,13 +86,17 @@ O gerenciador não executa `git commit`, `git push` ou deploy.
 
 ## Estoque e disponibilidade
 
-A aba **Estoque e disponibilidade** mantém quantidades operacionais em uma fonte privada separada do catálogo público. Ela permite criar a estrutura inicial confirmada, editar estoque físico, reserva, limite baixo, status e observação, revisar o diff, salvar com backup/histórico/rollback e importar ou exportar uma planilha própria.
+A aba **Estoque e disponibilidade** mantém quantidades operacionais em uma fonte privada separada do catálogo público. Ela permite criar a estrutura inicial confirmada, editar estoque físico, reserva, limite baixo, status e observação, revisar o diff, salvar com backup/histórico/rollback e importar ou exportar planilhas próprias.
 
 O disponível é sempre calculado como `estoque físico - reservado`. Preço, produto, ano e capacidade permanecem somente leitura nessa aba. Estoque CPO com preço zero gera alerta e confirmação, sem criar preço automaticamente.
+
+Cada combinação de modelo e capacidade pode permanecer agregada ou ser detalhada explicitamente por cores oficiais do catálogo. Nenhuma cor é criada automaticamente. No modo por cor, os totais são derivados e a interface oferece expansão das variantes, edição, adição de cor zerada, remoção de cor zerada e consolidação segura.
 
 O arquivo real `data/inventory-private.json`, seus backups, histórico e CSVs não entram no Git nem em `dist`. O modo `npm run catalog:demo` usa somente dados temporários fictícios e não pode gerar o site.
 
 Instruções completas: [ESTOQUE-E-DISPONIBILIDADE.md](ESTOQUE-E-DISPONIBILIDADE.md).
+
+Detalhamento por cor: [ESTOQUE-POR-COR.md](ESTOQUE-POR-COR.md).
 
 ## Importação e exportação
 
@@ -125,6 +129,8 @@ Também é possível executar os testes internos:
 
 ```powershell
 npm run catalog:test
+npm run inventory:test
+npm run inventory:color-test
 ```
 
 Os testes usam uma fixture temporária e não alteram preços reais.

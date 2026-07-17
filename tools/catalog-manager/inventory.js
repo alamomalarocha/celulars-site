@@ -6,8 +6,24 @@
   const state = {
     activeTab: 'catalog', exists: false, demoMode: false, rows: [], stats: null,
     alerts: [], backups: [], history: [], contentHash: null, catalogHash: null,
-    edits: new Map(), preview: null, csvFile: null, csvSource: '', csvPreview: null
+    edits: new Map(), expanded: new Set(), preview: null, csvFile: null, csvSource: '', csvPreview: null,
+    colorOperation: null, colorPreview: null,
+    colorCsvFile: null, colorCsvSource: '', colorCsvPreview: null
   };
+
+  const COLOR_SWATCHES = Object.freeze({
+    Black: '#1d1d1f', White: '#f5f5f2', Silver: '#d9d9d6', Gold: '#d8c3a5',
+    Blue: '#9bb8d3', Green: '#a8b89a', Yellow: '#f2df86', Pink: '#e9b8c1',
+    Purple: '#b5a6c9', Red: '#c73b3f', '(PRODUCT)RED': '#c72535', Midnight: '#1d2730',
+    Starlight: '#e7dfcf', Graphite: '#555354', 'Space Black': '#29282d',
+    'Deep Purple': '#594f63', 'Sierra Blue': '#9fb6c8', 'Pacific Blue': '#5f7883',
+    'Alpine Green': '#57685a', 'Black Titanium': '#3b3a38', 'White Titanium': '#dedbd4',
+    'Natural Titanium': '#aaa49b', 'Blue Titanium': '#536477', 'Desert Titanium': '#b9a58d',
+    'Cosmic Orange': '#d96b34', 'Deep Blue': '#334a70', 'Cloud White': '#f3f2ed',
+    'Light Gold': '#d8c79e', 'Sky Blue': '#a9c7dd', 'Mist Blue': '#b8cbd8',
+    Sage: '#9fab90', Lavender: '#bcb0ce', 'Soft Pink': '#e6bdc3', Teal: '#5f9695',
+    Ultramarine: '#3f5eb4'
+  });
 
   const byId = id => document.getElementById(id);
   const elements = {
@@ -17,7 +33,8 @@
     summary: byId('inventorySummary'), workspace: byId('inventoryWorkspace'),
     csvTools: byId('inventoryCsvTools'), operations: byId('inventoryOperations'), status: byId('inventoryStatus'),
     file: byId('inventoryFile'), rows: byId('inventoryRows'), empty: byId('inventoryEmptyState'),
-    filter: byId('inventoryFilter'), search: byId('inventorySearch'), pending: byId('inventoryPendingCount'),
+    filter: byId('inventoryFilter'), colorFilter: byId('inventoryColorFilter'),
+    search: byId('inventorySearch'), pending: byId('inventoryPendingCount'),
     reviewButton: byId('reviewInventoryButton'), reloadButton: byId('reloadInventoryButton'),
     initializeButton: byId('previewInventoryInitializeButton'), alerts: byId('inventoryAlerts'),
     backups: byId('inventoryBackups'), history: byId('inventoryHistory'),
@@ -35,7 +52,25 @@
     csvErrorsSection: byId('inventoryCsvErrorsSection'), csvErrors: byId('inventoryCsvErrors'),
     csvDiffList: byId('inventoryCsvDiffList'), csvNoChanges: byId('inventoryCsvNoChanges'),
     csvWarningsSection: byId('inventoryCsvWarningsSection'), csvWarnings: byId('inventoryCsvWarnings'),
-    csvWarningConfirm: byId('inventoryCsvWarningConfirm'), confirmCsv: byId('confirmInventoryCsvButton')
+    csvWarningConfirm: byId('inventoryCsvWarningConfirm'), confirmCsv: byId('confirmInventoryCsvButton'),
+    colorCsvInput: byId('inventoryColorCsvInput'), colorCsvDrop: byId('inventoryColorCsvDrop'),
+    colorCsvFile: byId('inventoryColorCsvFile'), validateColorCsv: byId('validateInventoryColorCsvButton'),
+    colorCsvDialog: byId('inventoryColorCsvReviewDialog'), colorCsvReviewFile: byId('inventoryColorCsvReviewFile'),
+    colorCsvSpreadsheetHash: byId('inventoryColorCsvSpreadsheetHash'), colorCsvCurrentHash: byId('inventoryColorCsvCurrentHash'),
+    colorCsvErrorsSection: byId('inventoryColorCsvErrorsSection'), colorCsvErrors: byId('inventoryColorCsvErrors'),
+    colorCsvDiffList: byId('inventoryColorCsvDiffList'), colorCsvNoChanges: byId('inventoryColorCsvNoChanges'),
+    colorCsvWarningsSection: byId('inventoryColorCsvWarningsSection'), colorCsvWarnings: byId('inventoryColorCsvWarnings'),
+    colorCsvWarningConfirm: byId('inventoryColorCsvWarningConfirm'), colorCsvSaveConfirm: byId('inventoryColorCsvSaveConfirm'),
+    confirmColorCsv: byId('confirmInventoryColorCsvButton'),
+    colorDialog: byId('inventoryColorDialog'), colorTitle: byId('inventoryColorTitle'),
+    colorContext: byId('inventoryColorContext'), colorGuidance: byId('inventoryColorGuidance'),
+    colorEditor: byId('inventoryColorEditor'), colorCurrentStock: byId('inventoryColorCurrentStock'),
+    colorNextStock: byId('inventoryColorNextStock'), colorCurrentReserved: byId('inventoryColorCurrentReserved'),
+    colorNextReserved: byId('inventoryColorNextReserved'), previewColor: byId('previewInventoryColorButton'),
+    colorReviewDialog: byId('inventoryColorReviewDialog'), colorDiffList: byId('inventoryColorDiffList'),
+    colorWarningsSection: byId('inventoryColorWarningsSection'), colorWarnings: byId('inventoryColorWarnings'),
+    colorWarningConfirm: byId('inventoryColorWarningConfirm'), colorSaveConfirm: byId('inventoryColorSaveConfirm'),
+    confirmColorSave: byId('confirmInventoryColorSaveButton')
   };
 
   function setMessage(text, kind = '') {
@@ -55,6 +90,21 @@
     if (className) element.className = className;
     if (text !== undefined) element.textContent = text;
     return element;
+  }
+
+  function actionButton(text, className, handler, label = text) {
+    const button = node('button', `button ${className}`, text);
+    button.type = 'button';
+    button.setAttribute('aria-label', label);
+    button.addEventListener('click', handler);
+    return button;
+  }
+
+  function colorSwatch(color) {
+    const swatch = node('span', 'inventory-color-swatch');
+    swatch.style.setProperty('--inventory-color', COLOR_SWATCHES[color] || '#b8b8bd');
+    swatch.setAttribute('aria-hidden', 'true');
+    return swatch;
   }
 
   function setTab(tab) {
@@ -100,11 +150,17 @@
     elements.reviewButton.disabled = state.edits.size === 0;
   }
 
-  function numberInput(row, field, label) {
+  function numberInput(row, field, label, { readOnly = false } = {}) {
     const input = document.createElement('input');
     input.className = 'inventory-input'; input.type = 'number'; input.min = '0'; input.step = '1'; input.inputMode = 'numeric';
     input.value = String(effectiveRow(row)[field]);
     input.setAttribute('aria-label', `${label} de ${row.model}, ${row.capacity}`);
+    if (readOnly) {
+      input.readOnly = true;
+      input.classList.add('inventory-input-readonly');
+      input.title = 'Total calculado pelas variantes de cor.';
+      return input;
+    }
     if (state.edits.has(row.inventory_id)) input.classList.add('changed');
     const stageValue = render => {
       const value = Number(input.value);
@@ -136,7 +192,9 @@
   function matches(row) {
     const effective = effectiveRow(row);
     const query = elements.search.value.trim().toLowerCase();
-    if (query && !`${row.model} ${row.year} ${row.capacity} ${row.inventory_id}`.toLowerCase().includes(query)) return false;
+    const detailedColors = (row.color_variants || []).map(variant => variant.color);
+    if (query && !`${row.model} ${row.year} ${row.capacity} ${row.inventory_id} ${detailedColors.join(' ')}`.toLowerCase().includes(query)) return false;
+    if (elements.colorFilter.value && !detailedColors.includes(elements.colorFilter.value)) return false;
     switch (elements.filter.value) {
       case 'new': return row.group === 'new';
       case 'cpo': return row.group === 'cpo';
@@ -147,6 +205,8 @@
       case 'paused': return effective.status === 'paused';
       case 'zero-price': return row.price_usd === 0;
       case 'positive-price': return row.price_usd > 0;
+      case 'aggregate': return row.tracking_mode === 'aggregate';
+      case 'by-color': return row.tracking_mode === 'by_color';
       default: return true;
     }
   }
@@ -164,8 +224,10 @@
       tr.append(makeCell('Ano', row.year));
       tr.append(makeCell('Capacidade', node('strong', '', row.capacity)));
       tr.append(makeCell('Preco USD', row.price_usd > 0 ? moneyUsd.format(row.price_usd) : 'US$ 0,00'));
-      tr.append(makeCell('Estoque', numberInput(row, 'stock_on_hand', 'Estoque fisico')));
-      tr.append(makeCell('Reservado', numberInput(row, 'reserved', 'Reservado')));
+      const byColor = row.tracking_mode === 'by_color';
+      tr.append(makeCell('Modo', node('span', `inventory-mode-badge ${byColor ? 'by-color' : 'aggregate'}`, byColor ? 'Por cor' : 'Agregado')));
+      tr.append(makeCell('Estoque', numberInput(row, 'stock_on_hand', 'Estoque fisico', { readOnly: byColor })));
+      tr.append(makeCell('Reservado', numberInput(row, 'reserved', 'Reservado', { readOnly: byColor })));
       const availability = node('strong', `inventory-available${effective.available < 0 ? ' inventory-negative' : ''}`, String(effective.available));
       const visualStatus = effective.status === 'archived' ? 'archived' : effective.status === 'paused' ? 'paused' : effective.available === 0 ? 'out_of_stock' : effective.available <= effective.low_stock_threshold ? 'low_stock' : 'available';
       availability.append(node('span', `inventory-state ${visualStatus}`, ({ available: 'Disponivel', low_stock: 'Estoque baixo', out_of_stock: 'Sem estoque', paused: 'Pausado', archived: 'Arquivado' })[visualStatus]));
@@ -184,9 +246,288 @@
       notes.setAttribute('aria-label', `Observacao de ${row.model}, ${row.capacity}`);
       notes.addEventListener('change', () => updateEdit(row, 'notes', notes.value));
       tr.append(makeCell('Observacao', notes));
+      const actions = node('div', 'inventory-row-actions');
+      if (byColor) {
+        const expanded = state.expanded.has(row.inventory_id);
+        actions.append(
+          actionButton(expanded ? 'Ocultar cores' : 'Ver cores', 'secondary compact', () => {
+            if (expanded) state.expanded.delete(row.inventory_id);
+            else state.expanded.add(row.inventory_id);
+            renderRows();
+          }, `${expanded ? 'Ocultar' : 'Exibir'} variantes de ${row.model}, ${row.capacity}`),
+          actionButton('Editar cores', 'secondary compact', () => openColorEditor(row, 'update')),
+          actionButton('Consolidar estoque', 'secondary compact danger-subtle', () => previewColorOperation({
+            action: 'consolidate',
+            inventory_id: row.inventory_id
+          }, row))
+        );
+      } else {
+        actions.append(actionButton('Detalhar por cor', 'secondary compact', () => openColorEditor(row, 'enable')));
+      }
+      tr.append(makeCell('Acoes', actions));
       fragment.append(tr);
+      if (byColor && state.expanded.has(row.inventory_id)) fragment.append(renderVariantDetail(row));
     }
     elements.rows.replaceChildren(fragment); elements.empty.hidden = visible > 0; updatePending();
+  }
+
+  function renderVariantDetail(row) {
+    const tr = document.createElement('tr');
+    tr.className = 'inventory-color-detail-row';
+    const td = document.createElement('td');
+    td.colSpan = 14;
+    const panel = node('section', 'inventory-color-detail');
+    const heading = node('div', 'inventory-color-detail-heading');
+    const title = node('div');
+    title.append(node('strong', '', `${row.model} - ${row.capacity}`), node('span', '', `${row.color_variants.length} cor(es) detalhada(s)`));
+    const remaining = row.colors.filter(color => !row.color_variants.some(variant => variant.color === color));
+    const add = actionButton('Adicionar cor', 'secondary compact', () => openColorEditor(row, 'add'));
+    add.disabled = remaining.length === 0;
+    heading.append(title, add);
+    const variants = node('div', 'inventory-color-variant-grid');
+    for (const variant of row.color_variants) {
+      const card = node('article', 'inventory-color-variant');
+      const name = node('div', 'inventory-color-name');
+      name.append(colorSwatch(variant.color), node('strong', '', variant.color));
+      const values = node('dl', 'inventory-color-values');
+      for (const [label, value] of [['Fisico', variant.stock_on_hand], ['Reservado', variant.reserved], ['Disponivel', variant.available]]) {
+        const item = document.createElement('div');
+        item.append(node('dt', '', label), node('dd', '', String(value)));
+        values.append(item);
+      }
+      const remove = actionButton('Remover', 'secondary compact danger-subtle', () => previewColorOperation({
+        action: 'remove',
+        inventory_id: row.inventory_id,
+        color: variant.color
+      }, row), `Remover a cor ${variant.color} de ${row.model}, ${row.capacity}`);
+      remove.disabled = variant.stock_on_hand !== 0 || variant.reserved !== 0 || row.color_variants.length === 1;
+      card.append(name, values, remove);
+      variants.append(card);
+    }
+    panel.append(heading, variants);
+    td.append(panel);
+    tr.append(td);
+    return tr;
+  }
+
+  function colorNumberInput(color, field, value, disabled = false) {
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = '0';
+    input.step = '1';
+    input.inputMode = 'numeric';
+    input.className = 'inventory-input inventory-color-number';
+    input.value = String(value);
+    input.disabled = disabled;
+    input.dataset.field = field;
+    input.setAttribute('aria-label', `${field === 'stock_on_hand' ? 'Estoque fisico' : 'Reservado'} da cor ${color}`);
+    input.addEventListener('input', updateColorEditorTotals);
+    return input;
+  }
+
+  function colorEditRow(color, stock, reserved, { selectable = false, selected = false } = {}) {
+    const row = node('div', 'inventory-color-edit-row');
+    row.dataset.color = color;
+    const identity = node('label', 'inventory-color-edit-name');
+    let checkbox = null;
+    if (selectable) {
+      checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = selected;
+      checkbox.dataset.role = 'select-color';
+      identity.append(checkbox);
+    }
+    identity.append(colorSwatch(color), node('span', '', color));
+    const stockInput = colorNumberInput(color, 'stock_on_hand', stock, selectable && !selected);
+    const reservedInput = colorNumberInput(color, 'reserved', reserved, selectable && !selected);
+    if (checkbox) {
+      checkbox.addEventListener('change', () => {
+        stockInput.disabled = !checkbox.checked;
+        reservedInput.disabled = !checkbox.checked;
+        if (!checkbox.checked) {
+          stockInput.value = '0';
+          reservedInput.value = '0';
+        }
+        updateColorEditorTotals();
+      });
+    }
+    const stockLabel = node('label', 'inventory-color-field', 'Estoque');
+    stockLabel.append(stockInput);
+    const reservedLabel = node('label', 'inventory-color-field', 'Reservado');
+    reservedLabel.append(reservedInput);
+    row.append(identity, stockLabel, reservedLabel);
+    return row;
+  }
+
+  function openColorEditor(row, mode) {
+    if (state.edits.size) {
+      return setMessage('Salve ou descarte as alteracoes agregadas antes de editar variantes de cor.', 'error');
+    }
+    state.colorOperation = { mode, row };
+    state.colorPreview = null;
+    elements.colorEditor.replaceChildren();
+    elements.colorContext.textContent = `${row.model} - ${row.capacity}`;
+    elements.colorCurrentStock.textContent = String(row.stock_on_hand);
+    elements.colorCurrentReserved.textContent = String(row.reserved);
+
+    if (mode === 'enable') {
+      elements.colorTitle.textContent = 'Detalhar estoque por cor';
+      elements.colorGuidance.textContent = 'Selecione somente as cores que deseja controlar. A soma deve preservar exatamente os totais atuais.';
+      for (const color of row.colors) elements.colorEditor.append(colorEditRow(color, 0, 0, { selectable: true }));
+    } else if (mode === 'update') {
+      elements.colorTitle.textContent = 'Editar variantes de cor';
+      elements.colorGuidance.textContent = 'Os totais agregados serao recalculados automaticamente a partir destas variantes.';
+      for (const variant of row.color_variants) {
+        elements.colorEditor.append(colorEditRow(variant.color, variant.stock_on_hand, variant.reserved));
+      }
+    } else {
+      elements.colorTitle.textContent = 'Adicionar cor ao detalhamento';
+      elements.colorGuidance.textContent = 'A nova cor entra com estoque e reservado zerados.';
+      const selectLabel = node('label', 'inventory-color-add-label', 'Cor oficial do catalogo');
+      const select = document.createElement('select');
+      select.className = 'inventory-select inventory-color-add-select';
+      select.dataset.role = 'add-color';
+      for (const color of row.colors.filter(candidate => !row.color_variants.some(variant => variant.color === candidate))) {
+        const option = document.createElement('option');
+        option.value = color;
+        option.textContent = color;
+        select.append(option);
+      }
+      selectLabel.append(select);
+      elements.colorEditor.append(selectLabel);
+    }
+    updateColorEditorTotals();
+    elements.colorDialog.showModal();
+  }
+
+  function selectedColorEditorRows() {
+    return [...elements.colorEditor.querySelectorAll('.inventory-color-edit-row')].filter(editorRow => {
+      const checkbox = editorRow.querySelector('[data-role="select-color"]');
+      return !checkbox || checkbox.checked;
+    });
+  }
+
+  function colorVariantsFromEditor() {
+    const variants = [];
+    for (const editorRow of selectedColorEditorRows()) {
+      const stock = Number(editorRow.querySelector('[data-field="stock_on_hand"]').value);
+      const reserved = Number(editorRow.querySelector('[data-field="reserved"]').value);
+      if (!Number.isInteger(stock) || stock < 0 || !Number.isInteger(reserved) || reserved < 0 || reserved > stock) {
+        throw new Error(`${editorRow.dataset.color}: use inteiros validos e mantenha reservado menor ou igual ao estoque.`);
+      }
+      variants.push({ color: editorRow.dataset.color, stock_on_hand: stock, reserved });
+    }
+    return variants;
+  }
+
+  function updateColorEditorTotals() {
+    if (!state.colorOperation) return;
+    if (state.colorOperation.mode === 'add') {
+      elements.colorNextStock.textContent = String(state.colorOperation.row.stock_on_hand);
+      elements.colorNextReserved.textContent = String(state.colorOperation.row.reserved);
+      return;
+    }
+    let variants = [];
+    try { variants = colorVariantsFromEditor(); } catch {}
+    elements.colorNextStock.textContent = String(variants.reduce((total, variant) => total + variant.stock_on_hand, 0));
+    elements.colorNextReserved.textContent = String(variants.reduce((total, variant) => total + variant.reserved, 0));
+  }
+
+  function operationFromColorEditor() {
+    const { mode, row } = state.colorOperation;
+    if (mode === 'add') {
+      const color = elements.colorEditor.querySelector('[data-role="add-color"]')?.value;
+      if (!color) throw new Error('Selecione uma cor oficial para adicionar.');
+      return { action: 'add', inventory_id: row.inventory_id, color };
+    }
+    const color_variants = colorVariantsFromEditor();
+    if (!color_variants.length) throw new Error('Selecione pelo menos uma cor.');
+    if (mode === 'enable') {
+      const stock = color_variants.reduce((total, variant) => total + variant.stock_on_hand, 0);
+      const reserved = color_variants.reduce((total, variant) => total + variant.reserved, 0);
+      if (stock !== row.stock_on_hand || reserved !== row.reserved) {
+        throw new Error(`A soma deve preservar estoque ${row.stock_on_hand} e reservado ${row.reserved}.`);
+      }
+    }
+    return { action: mode, inventory_id: row.inventory_id, color_variants };
+  }
+
+  function colorDiffDescription(change, row) {
+    const beforeColors = change.before.color_variants.map(variant => `${variant.color}: ${variant.stock_on_hand}/${variant.reserved}`).join(', ') || 'sem detalhamento';
+    const afterColors = change.after.color_variants.map(variant => `${variant.color}: ${variant.stock_on_hand}/${variant.reserved}`).join(', ') || 'sem detalhamento';
+    return {
+      title: `${row.model} - ${row.capacity}`,
+      detail: `${change.before.tracking_mode} -> ${change.after.tracking_mode} | estoque ${change.before.stock_on_hand} -> ${change.after.stock_on_hand} | reservado ${change.before.reserved} -> ${change.after.reserved} | cores: ${beforeColors} -> ${afterColors}`
+    };
+  }
+
+  async function previewColorOperation(operation, row) {
+    if (state.edits.size) return setMessage('Salve ou descarte as alteracoes agregadas antes de editar variantes de cor.', 'error');
+    try {
+      const data = await api('/api/inventory/color/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operations: [operation], confirmStockWithoutPrice: true })
+      });
+      state.colorOperation = { mode: operation.action, row, operation };
+      state.colorPreview = data;
+      elements.colorDiffList.replaceChildren(...data.changes.map(change => {
+        const description = colorDiffDescription(change, row);
+        const item = node('div', 'diff-item');
+        item.append(node('strong', '', description.title), node('span', '', description.detail));
+        return item;
+      }));
+      const warnings = data.warnings || [];
+      elements.colorWarningsSection.hidden = warnings.length === 0;
+      elements.colorWarnings.replaceChildren(...warnings.map(warning => node('div', '', warning.message)));
+      elements.colorWarningConfirm.checked = false;
+      elements.colorSaveConfirm.checked = false;
+      updateColorSaveState();
+      if (elements.colorDialog.open) elements.colorDialog.close();
+      elements.colorReviewDialog.showModal();
+    } catch (error) {
+      setMessage(error.data?.errors?.join(' | ') || error.message, 'error');
+    }
+  }
+
+  async function previewColorEditor() {
+    try {
+      const operation = operationFromColorEditor();
+      await previewColorOperation(operation, state.colorOperation.row);
+    } catch (error) {
+      setMessage(error.message, 'error');
+    }
+  }
+
+  function updateColorSaveState() {
+    const warningRequired = (state.colorPreview?.warnings || []).length > 0;
+    elements.confirmColorSave.disabled = !elements.colorSaveConfirm.checked || (warningRequired && !elements.colorWarningConfirm.checked);
+  }
+
+  async function saveColorOperation() {
+    const operation = state.colorOperation?.operation;
+    if (!operation || elements.confirmColorSave.disabled) return;
+    elements.confirmColorSave.disabled = true;
+    try {
+      const warnings = state.colorPreview?.warnings || [];
+      const data = await api('/api/inventory/color/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          operations: [operation],
+          expectedInventoryHash: state.contentHash,
+          confirmStockWithoutPrice: warnings.length > 0
+        })
+      });
+      elements.colorReviewDialog.close();
+      state.colorOperation = null;
+      state.colorPreview = null;
+      await loadInventory();
+      setMessage(`${data.changes.length} alteracao por cor salva. Backup: ${data.backupName || 'nao necessario'}.`, 'success');
+    } catch (error) {
+      setMessage(error.data?.errors?.join(' | ') || error.message, 'error');
+      elements.confirmColorSave.disabled = false;
+    }
   }
 
   function renderSummary() {
@@ -194,8 +535,28 @@
     const values = { inventoryStock: stats.stockOnHand, inventoryReserved: stats.reserved, inventoryAvailable: stats.available,
       inventoryModelsStocked: stats.modelsWithStock, inventoryCapacitiesStocked: stats.capacitiesWithStock,
       inventoryLowStock: stats.lowStock, inventoryPaused: stats.paused,
-      inventoryZeroPrices: stats.cpoZeroPrices, inventoryPositivePrices: stats.cpoPositivePrices };
+      inventoryZeroPrices: stats.cpoZeroPrices, inventoryPositivePrices: stats.cpoPositivePrices,
+      inventoryAggregateRecords: stats.aggregateRecords, inventoryByColorRecords: stats.byColorRecords,
+      inventoryColorVariants: stats.colorVariants, inventoryColorStock: stats.colorStockOnHand,
+      inventoryColorReserved: stats.colorReserved, inventoryColorInconsistencies: stats.colorInconsistencies,
+      inventoryCpoByColorZero: stats.cpoByColorZeroPrices };
     for (const [id, value] of Object.entries(values)) byId(id).textContent = value ?? '-';
+  }
+
+  function renderColorFilter() {
+    const previous = elements.colorFilter.value;
+    const colors = [...new Set(state.rows.flatMap(row => (row.color_variants || []).map(variant => variant.color)))].sort((a, b) => a.localeCompare(b, 'en'));
+    const first = document.createElement('option');
+    first.value = '';
+    first.textContent = 'Todas as cores';
+    const options = colors.map(color => {
+      const option = document.createElement('option');
+      option.value = color;
+      option.textContent = color;
+      return option;
+    });
+    elements.colorFilter.replaceChildren(first, ...options);
+    elements.colorFilter.value = colors.includes(previous) ? previous : '';
   }
 
   function renderList(container, items, emptyText, itemBuilder) {
@@ -238,9 +599,10 @@
       renderInventoryVisibility(); return setMessage(`Inventario ainda nao criado. A estrutura tera ${data.suggestedItems} combinacoes.`, 'success');
     }
     state.rows = data.rows; state.stats = data.stats; state.alerts = data.alerts; state.contentHash = data.contentHash;
+    state.expanded = new Set([...state.expanded].filter(id => state.rows.some(row => row.inventory_id === id && row.tracking_mode === 'by_color')));
     elements.file.textContent = `${data.canonicalFile} - hash ${data.contentHash.slice(0, 12)}...`;
     elements.status.textContent = state.demoMode ? 'Demonstracao isolada' : 'Inventario privado valido'; elements.status.classList.remove('error');
-    renderInventoryVisibility(); renderSummary(); renderRows(); await loadOperations();
+    renderInventoryVisibility(); renderSummary(); renderColorFilter(); renderRows(); await loadOperations();
     setMessage(`Inventario carregado: ${data.rows.length} combinacoes privadas.`, 'success');
   }
 
@@ -409,8 +771,135 @@
     link.download = 'erros-estoque-celulars.csv'; link.click(); URL.revokeObjectURL(link.href);
   }
 
+  function resetColorCsvSelection() {
+    state.colorCsvFile = null;
+    state.colorCsvSource = '';
+    state.colorCsvPreview = null;
+    elements.colorCsvInput.value = '';
+    elements.colorCsvFile.textContent = 'Nenhum arquivo selecionado.';
+    elements.validateColorCsv.disabled = true;
+  }
+
+  async function selectColorCsvFile(file) {
+    state.colorCsvPreview = null;
+    if (!file) return resetColorCsvSelection();
+    if (file.size > 2 * 1024 * 1024) {
+      resetColorCsvSelection();
+      return setMessage('O arquivo CSV por cor excede 2 MB.', 'error');
+    }
+    state.colorCsvFile = file;
+    state.colorCsvSource = await file.text();
+    elements.colorCsvFile.textContent = `${file.name} - ${Math.max(1, Math.round(file.size / 1024))} KB`;
+    elements.validateColorCsv.disabled = false;
+    setMessage('Planilha por cor selecionada. Valide antes de aplicar.');
+  }
+
+  function updateColorCsvSaveState() {
+    const preview = state.colorCsvPreview;
+    const warningsRequired = (preview?.warnings || []).length > 0;
+    elements.confirmColorCsv.disabled = !preview?.valid
+      || !(preview?.changes || []).length
+      || !elements.colorCsvSaveConfirm.checked
+      || (warningsRequired && !elements.colorCsvWarningConfirm.checked);
+  }
+
+  function renderColorCsvPreview(data) {
+    state.colorCsvPreview = data;
+    elements.colorCsvReviewFile.textContent = `Arquivo: ${state.colorCsvFile?.name || '-'}`;
+    elements.colorCsvSpreadsheetHash.textContent = data.spreadsheetHash || '-';
+    elements.colorCsvCurrentHash.textContent = data.currentHash || '-';
+    const summary = data.summary || {};
+    for (const [id, field] of [
+      ['inventoryColorCsvRowsRead', 'rowsRead'], ['inventoryColorCsvValidRows', 'validRows'],
+      ['inventoryColorCsvChangedRows', 'changedRows'], ['inventoryColorCsvUnchangedRows', 'unchangedRows'],
+      ['inventoryColorCsvInvalidRows', 'invalidRows'], ['inventoryColorCsvConflicts', 'conflicts'],
+      ['inventoryColorCsvRecordsChanged', 'recordsChanged']
+    ]) csvSummaryValue(id, summary[field]);
+
+    const errors = data.errors || [];
+    elements.colorCsvErrorsSection.hidden = errors.length === 0;
+    elements.colorCsvErrors.replaceChildren(...errors.map(error => {
+      const item = node('div', 'csv-error-item');
+      item.append(node('strong', '', error.line ? `Linha ${error.line}` : 'Arquivo'), node('span', '', error.message));
+      return item;
+    }));
+    const changes = data.changes || [];
+    elements.colorCsvDiffList.replaceChildren(...changes.map(change => {
+      const row = originalRow(change.inventory_id);
+      const item = node('div', 'diff-item');
+      item.append(
+        node('strong', '', `${row?.model || change.inventory_id} - ${row?.capacity || ''} - ${change.color}`),
+        node('span', '', `estoque: ${change.before.stock_on_hand} -> ${change.after.stock_on_hand} | reservado: ${change.before.reserved} -> ${change.after.reserved}`)
+      );
+      return item;
+    }));
+    elements.colorCsvNoChanges.hidden = changes.length > 0;
+    const warnings = data.warnings || [];
+    elements.colorCsvWarningsSection.hidden = warnings.length === 0;
+    elements.colorCsvWarnings.replaceChildren(...warnings.map(warning => node('div', '', warning.message)));
+    elements.colorCsvWarningConfirm.checked = false;
+    elements.colorCsvSaveConfirm.checked = false;
+    updateColorCsvSaveState();
+    elements.colorCsvDialog.showModal();
+  }
+
+  async function validateColorCsv() {
+    if (!state.colorCsvFile || !state.colorCsvSource) return;
+    elements.validateColorCsv.disabled = true;
+    try {
+      const data = await api('/api/inventory/color/validate.csv', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/csv; charset=utf-8' },
+        body: state.colorCsvSource
+      });
+      renderColorCsvPreview(data);
+      setMessage(data.valid ? 'Planilha por cor validada. Revise as diferenças.' : 'A planilha por cor contém erros.', data.valid ? 'success' : 'error');
+    } catch (error) {
+      setMessage(error.message, 'error');
+    } finally {
+      elements.validateColorCsv.disabled = !state.colorCsvFile;
+    }
+  }
+
+  async function applyColorCsv() {
+    if (elements.confirmColorCsv.disabled) return;
+    const warnings = state.colorCsvPreview?.warnings || [];
+    elements.confirmColorCsv.disabled = true;
+    try {
+      const data = await api('/api/inventory/color/import.csv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'X-Inventory-Hash': state.colorCsvPreview.currentHash,
+          'X-Confirm-Stock-Without-Price': String(warnings.length > 0),
+          'X-Import-Filename': state.colorCsvFile.name
+        },
+        body: state.colorCsvSource
+      });
+      elements.colorCsvDialog.close();
+      resetColorCsvSelection();
+      await loadInventory();
+      setMessage(`${data.changes.length} registro(s) por cor aplicados. Backup: ${data.backupName || 'não necessário'}.`, 'success');
+    } catch (error) {
+      setMessage(error.message, 'error');
+      elements.confirmColorCsv.disabled = false;
+    }
+  }
+
+  function downloadColorCsvErrors() {
+    const source = state.colorCsvPreview?.errorReport;
+    if (!source) return;
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([source], { type: 'text/csv;charset=utf-8' }));
+    link.download = 'erros-estoque-por-cor-celulars.csv';
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
   for (const button of elements.tabs) button.addEventListener('click', () => setTab(button.dataset.managerTab));
-  elements.filter.addEventListener('change', renderRows); elements.search.addEventListener('input', renderRows);
+  elements.filter.addEventListener('change', renderRows);
+  elements.colorFilter.addEventListener('change', renderRows);
+  elements.search.addEventListener('input', renderRows);
   elements.reloadButton.addEventListener('click', () => {
     if (state.edits.size && !window.confirm('Descartar alteracoes de estoque ainda nao salvas?')) return;
     loadInventory().catch(error => setMessage(error.message, 'error'));
@@ -434,5 +923,24 @@
   byId('closeInventoryCsvReviewButton').addEventListener('click', () => elements.csvDialog.close());
   byId('cancelInventoryCsvButton').addEventListener('click', () => elements.csvDialog.close());
   byId('downloadInventoryCsvErrorsButton').addEventListener('click', downloadCsvErrors);
+  elements.colorCsvInput.addEventListener('change', () => selectColorCsvFile(elements.colorCsvInput.files?.[0]).catch(error => setMessage(error.message, 'error')));
+  for (const eventName of ['dragenter', 'dragover']) elements.colorCsvDrop.addEventListener(eventName, event => { event.preventDefault(); elements.colorCsvDrop.classList.add('dragging'); });
+  for (const eventName of ['dragleave', 'drop']) elements.colorCsvDrop.addEventListener(eventName, event => { event.preventDefault(); elements.colorCsvDrop.classList.remove('dragging'); });
+  elements.colorCsvDrop.addEventListener('drop', event => selectColorCsvFile(event.dataTransfer?.files?.[0]).catch(error => setMessage(error.message, 'error')));
+  elements.validateColorCsv.addEventListener('click', validateColorCsv);
+  elements.colorCsvWarningConfirm.addEventListener('change', updateColorCsvSaveState);
+  elements.colorCsvSaveConfirm.addEventListener('change', updateColorCsvSaveState);
+  elements.confirmColorCsv.addEventListener('click', applyColorCsv);
+  byId('closeInventoryColorCsvReviewButton').addEventListener('click', () => elements.colorCsvDialog.close());
+  byId('cancelInventoryColorCsvButton').addEventListener('click', () => elements.colorCsvDialog.close());
+  byId('downloadInventoryColorCsvErrorsButton').addEventListener('click', downloadColorCsvErrors);
+  elements.previewColor.addEventListener('click', previewColorEditor);
+  byId('closeInventoryColorButton').addEventListener('click', () => elements.colorDialog.close());
+  byId('cancelInventoryColorButton').addEventListener('click', () => elements.colorDialog.close());
+  byId('closeInventoryColorReviewButton').addEventListener('click', () => elements.colorReviewDialog.close());
+  byId('cancelInventoryColorReviewButton').addEventListener('click', () => elements.colorReviewDialog.close());
+  elements.colorWarningConfirm.addEventListener('change', updateColorSaveState);
+  elements.colorSaveConfirm.addEventListener('change', updateColorSaveState);
+  elements.confirmColorSave.addEventListener('click', saveColorOperation);
   window.addEventListener('beforeunload', event => { if (state.edits.size) { event.preventDefault(); event.returnValue = ''; } });
 })();

@@ -41,5 +41,8 @@ jobs:
       - name: Test private inventory manager
         run: npm run inventory:test
 
+      - name: Test optional inventory by color
+        run: npm run inventory:color-test
+
       - name: Confirm build output
         run: test -f dist/index.html && test -f dist/data/catalog-public.js
