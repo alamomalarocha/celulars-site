@@ -1,0 +1,41 @@
+(function platformClient(){
+  'use strict';
+  const root=document.getElementById('platform-root');
+  const state={user:null,csrf:'',dashboard:null,currentView:'dashboard',menuOpen:false};
+
+  function element(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node}
+  function button(label,className,onClick){const node=element('button',className,label);node.type='button';node.addEventListener('click',onClick);return node}
+  function replace(node){if(!root)return;root.replaceChildren(node)}
+  function demoBanner(){return element('div','demo-banner','AMBIENTE DE DEMONSTRAÇÃO - DADOS FICTÍCIOS - SEM TRANSAÇÕES REAIS')}
+  async function api(path,options={}){const headers={Accept:'application/json',...(options.headers||{})};if(options.body)headers['Content-Type']='application/json';if(state.csrf&&options.method&&options.method!=='GET')headers['X-CSRF-Token']=state.csrf;const response=await fetch(path,{credentials:'same-origin',...options,headers});const payload=response.status===204?null:await response.json();if(!response.ok){const error=new Error(payload&&payload.error?payload.error:'Falha na solicitação.');error.status=response.status;throw error}return payload}
+  function brand(){const wrap=element('div','brand-lockup');wrap.append(element('div','brand-mark','C'));const copy=element('div');copy.append(element('h1','brand-title','CELULARS Operações'),element('p','brand-subtitle','Plataforma interna'));wrap.append(copy);return wrap}
+
+  function loginView(message=''){
+    const page=element('div');page.append(demoBanner());const content=element('main','login-page');const panel=element('section','login-panel');panel.append(brand());
+    const form=element('form');const emailField=element('div','field');const emailLabel=element('label',null,'E-mail');emailLabel.htmlFor='login-email';const email=element('input');email.id='login-email';email.type='email';email.autocomplete='username';email.required=true;emailField.append(emailLabel,email);
+    const passwordField=element('div','field');const passwordLabel=element('label',null,'Senha');passwordLabel.htmlFor='login-password';const password=element('input');password.id='login-password';password.type='password';password.autocomplete='current-password';password.required=true;password.minLength=8;passwordField.append(passwordLabel,password);
+    const submit=element('button','primary-button','Entrar');submit.type='submit';const error=element('p','form-error',message);error.setAttribute('role','alert');form.append(emailField,passwordField,submit,error);
+    form.addEventListener('submit',async event=>{event.preventDefault();submit.disabled=true;error.textContent='';try{const payload=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:email.value,password:password.value})});state.user=payload.user;state.csrf=payload.user.csrfToken;await loadDashboard();renderShell()}catch(failure){error.textContent=failure.message}finally{submit.disabled=false}});
+    panel.append(form);content.append(panel);page.append(content);replace(page);email.focus();
+  }
+
+  function navigation(){
+    const roles=state.user.roles||[];const admin=roles.includes('ADMIN');const wholesale=roles.includes('WHOLESALE');
+    if(wholesale)return [['dashboard','Visão geral'],['catalog','Catálogo'],['prices','Preços'],['quotes','Cotações'],['orders','Pedidos'],['messages','Mensagens'],['company','Empresa']];
+    const items=[['dashboard','Visão geral'],['catalog','Catálogo'],['prices','Preços'],['inventory','Inventário'],['customers','CRM'],['companies','Empresas'],['requests','Solicitações'],['messages','Mensagens'],['quotes','Cotações'],['orders','Pedidos'],['notifications','Notificações']];
+    if(admin)items.push(['audit','Auditoria'],['settings','Configurações']);return items;
+  }
+  function menuButton(){const control=element('button','menu-button');control.type='button';control.setAttribute('aria-label','Abrir menu');control.setAttribute('aria-expanded',String(state.menuOpen));control.append(element('span'),element('span'),element('span'));control.addEventListener('click',()=>{state.menuOpen=!state.menuOpen;renderShell()});return control}
+  function topbar(){const bar=element('header','topbar');bar.append(menuButton());const brandNode=element('div','topbar-brand');brandNode.append(element('div','brand-mark','C'),element('span',null,'CELULARS Operações'));bar.append(brandNode);const user=element('div','topbar-user');user.append(element('strong',null,state.user.displayName),element('span',null,(state.user.roles||[]).join(' / ')));bar.append(user,button('Sair','logout-button',logout));return bar}
+  function sidebar(){const aside=element('aside',`sidebar${state.menuOpen?' open':''}`);const nav=element('nav','nav-list');nav.setAttribute('aria-label','Navegação principal');for(const [key,label]of navigation()){const item=button(label,`nav-button${state.currentView===key?' active':''}`,()=>{state.currentView=key;state.menuOpen=false;renderShell()});if(state.currentView===key)item.setAttribute('aria-current','page');nav.append(item)}aside.append(nav);return aside}
+  function titleFor(key){const item=navigation().find(entry=>entry[0]===key);return item?item[1]:'Visão geral'}
+  function pageHeader(title,subtitle){const header=element('div','page-header');const copy=element('div');copy.append(element('h1',null,title),element('p',null,subtitle));header.append(copy,element('span','profile-chip',(state.dashboard&&state.dashboard.profile)||'DEMO'));return header}
+  const metricLabels={products:'Produtos',unreadNotifications:'Notificações',openRequests:'Solicitações abertas',companiesInReview:'Empresas em análise',activeOrders:'Pedidos ativos',lowStock:'Estoque baixo',quotes:'Cotações',orders:'Pedidos',conversations:'Conversas'};
+  function dashboardView(){const wrap=element('div');wrap.append(pageHeader('Visão geral','Operação CELULARS em ambiente de demonstração'));const grid=element('section','metric-grid');for(const [key,value]of Object.entries(state.dashboard.metrics||{})){const card=element('article',`metric-card${key==='lowStock'&&Number(value)>0?' alert':''}`);card.append(element('span',null,metricLabels[key]||key),element('strong',null,String(value)));grid.append(card)}wrap.append(grid);const band=element('section','content-band');const heading=element('div','section-heading');heading.append(element('h2',null,'Atividade recente'),element('span',null,'Dados fictícios'));band.append(heading);const list=element('div','activity-list');for(const row of state.dashboard.recent||[]){const entry=element('div','activity-row');const copy=element('div');copy.append(element('strong',null,row.label),element('span',null,new Date(row.created_at).toLocaleString('pt-BR')));entry.append(copy,element('span','activity-status',row.status));list.append(entry)}if(!list.childNodes.length)list.append(element('p','brand-subtitle','Nenhuma atividade recente.'));band.append(list);wrap.append(band);return wrap}
+  function moduleView(){const wrap=element('div');const title=titleFor(state.currentView);wrap.append(pageHeader(title,'Ambiente operacional DEMO'));const band=element('section','content-band module-placeholder');const copy=element('div');copy.append(element('strong',null,title),element('span',null,'Dados de demonstração'));band.append(copy);wrap.append(band);return wrap}
+  function renderShell(){const page=element('div');page.append(demoBanner());const shell=element('div','app-shell');shell.append(topbar(),sidebar());const main=element('main','main-content');main.id='main-content';main.append(state.currentView==='dashboard'?dashboardView():moduleView());shell.append(main);page.append(shell);replace(page)}
+  async function loadDashboard(){state.dashboard=await api('/api/dashboard')}
+  async function logout(){try{await api('/api/auth/logout',{method:'POST'})}catch(failure){console.warn('Logout local:',failure.message)}state.user=null;state.csrf='';loginView()}
+  async function boot(){replace(element('div','loading','Carregando ambiente DEMO...'));try{const payload=await api('/api/auth/me');state.user=payload.user;state.csrf=payload.user.csrfToken;await loadDashboard();renderShell()}catch(failure){loginView(failure.status===401?'':'Não foi possível iniciar a plataforma.') }}
+  void boot();
+}());

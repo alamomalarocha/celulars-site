@@ -4,10 +4,12 @@ import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
 import { AuthService, AuthenticationError } from './auth.js';
 import { clearSessionCookie, parseCookies, sessionCookie, sessionCookieName } from './cookies.js';
+import { dashboardData, notificationData } from './dashboard.js';
 import { readJson, sendEmpty, sendJson } from './http.js';
 import { RateLimiter } from './rate-limit.js';
 import { requirePermission } from './rbac.js';
 import { applySecurityHeaders, validUnsafeOrigin } from './security.js';
+import { serveStatic } from './static.js';
 import type { Principal } from './types.js';
 
 interface LoginBody {
@@ -54,6 +56,8 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
     const unsafe = !['GET', 'HEAD', 'OPTIONS'].includes(method);
 
     try {
+      if (method === 'GET' && serveStatic(url.pathname, response, config)) return;
+
       if (unsafe && !validUnsafeOrigin(headerValue(request.headers.origin), config)) {
         sendJson(response, 403, { error: 'Origem da solicitacao nao autorizada.' });
         return;
@@ -99,6 +103,14 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
 
       if (method === 'GET' && url.pathname === '/api/auth/me') {
         sendJson(response, 200, { user: publicPrincipal(principal), environment: 'DEMO' });
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/dashboard') {
+        sendJson(response, 200, dashboardData(database, principal));
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/notifications') {
+        sendJson(response, 200, { notifications: notificationData(database, principal) });
         return;
       }
       if (method === 'POST' && url.pathname === '/api/auth/logout') {

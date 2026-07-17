@@ -50,9 +50,20 @@ test('server auth enforces cookie sessions, origin, CSRF and RBAC', async () => 
   }
 
   try {
+    const shell = await fetch(`${baseUrl}/`);
+    assert.equal(shell.status, 200);
+    assert.match(shell.headers.get('content-type') ?? '', /text\/html/);
+    assert.match(shell.headers.get('content-security-policy') ?? '', /default-src 'self'/);
+
     const admin = await login('admin@demo.invalid');
     const me = await fetch(`${baseUrl}/api/auth/me`, { headers: { Cookie: admin.cookie } });
     assert.equal(me.status, 200);
+    const adminDashboard = await fetch(`${baseUrl}/api/dashboard`, { headers: { Cookie: admin.cookie } });
+    assert.equal(adminDashboard.status, 200);
+    const adminDashboardPayload = await adminDashboard.json() as { profile: string; metrics: { products: number; openRequests: number } };
+    assert.equal(adminDashboardPayload.profile, 'ADMIN');
+    assert.ok(adminDashboardPayload.metrics.products > 0);
+    assert.ok(adminDashboardPayload.metrics.openRequests > 0);
     const adminUsers = await fetch(`${baseUrl}/api/admin/users`, { headers: { Cookie: admin.cookie } });
     assert.equal(adminUsers.status, 200);
     const withoutCsrf = await fetch(`${baseUrl}/api/auth/logout`, {
@@ -69,6 +80,13 @@ test('server auth enforces cookie sessions, origin, CSRF and RBAC', async () => 
     assert.equal(forbidden.status, 403);
     const catalog = await fetch(`${baseUrl}/api/catalog/products`, { headers: { Cookie: wholesaler.cookie } });
     assert.equal(catalog.status, 200);
+    const wholesaleDashboard = await fetch(`${baseUrl}/api/dashboard`, { headers: { Cookie: wholesaler.cookie } });
+    assert.equal(wholesaleDashboard.status, 200);
+    const wholesaleDashboardPayload = await wholesaleDashboard.json() as { profile: string; metrics: { products: number; quotes: number; orders: number } };
+    assert.equal(wholesaleDashboardPayload.profile, 'WHOLESALE');
+    assert.ok(wholesaleDashboardPayload.metrics.products > 0);
+    assert.ok(wholesaleDashboardPayload.metrics.quotes > 0);
+    assert.ok(wholesaleDashboardPayload.metrics.orders > 0);
 
     const logout = await fetch(`${baseUrl}/api/auth/logout`, {
       method: 'POST', headers: { Cookie: admin.cookie, Origin: config.allowedOrigin, 'X-CSRF-Token': admin.csrf }

@@ -2,7 +2,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const root = path.resolve('apps/platform');
-const allowedExtensions = new Set(['.ts', '.sql', '.css', '.html', '.md', '.json']);
+const allowedExtensions = new Set(['.ts', '.js', '.sql', '.css', '.html', '.md', '.json']);
 const ignored = new Set(['build', 'data', 'node_modules', 'test-results', 'playwright-report']);
 const errors = [];
 
@@ -34,4 +34,3 @@ if (errors.length) {
 } else {
   console.log('Lint da plataforma DEMO aprovado.');
 }
-
