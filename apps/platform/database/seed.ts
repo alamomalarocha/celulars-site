@@ -11,7 +11,7 @@ const permissionCodes = [
   'catalog.read', 'catalog.write', 'prices.read', 'prices.write', 'inventory.read', 'inventory.write',
   'customers.read', 'customers.write', 'companies.read', 'companies.approve', 'quotes.read', 'quotes.write',
   'orders.read', 'orders.write', 'requests.read', 'requests.write', 'messages.read', 'messages.write', 'users.read', 'users.write',
-  'settings.read', 'settings.write', 'audit.read'
+  'settings.read', 'settings.write', 'audit.read', 'reports.read'
 ] as const;
 
 const mutableTables = [
@@ -135,8 +135,8 @@ export function seedDatabase(
         .run(id('permission', index + 1), code, `Permissao DEMO ${code}`, FIXED_NOW);
     }
     const adminPermissions = [...permissionCodes];
-    const employeePermissions = permissionCodes.filter((code) => !['users.read','users.write','settings.read','settings.write','audit.read','companies.approve'].includes(code));
-    const wholesalePermissions = ['catalog.read','prices.read','quotes.read','quotes.write','orders.read','requests.read','requests.write','messages.read','messages.write','companies.read'] as const;
+    const employeePermissions = permissionCodes.filter((code) => !['users.read','users.write','settings.read','settings.write','companies.approve'].includes(code));
+    const wholesalePermissions = ['catalog.read','prices.read','quotes.read','quotes.write','orders.read','requests.read','requests.write','messages.read','messages.write','companies.read','reports.read'] as const;
     for (const [roleId, codes] of [['role-admin', adminPermissions], ['role-employee', employeePermissions], ['role-wholesale', wholesalePermissions]] as const) {
       for (const code of codes) {
         const permission = database.prepare('SELECT id FROM permissions WHERE code = ?').get(code);
@@ -264,18 +264,23 @@ export function seedDatabase(
         VALUES (?,?,?,?,?,'user-demo-admin',?)`).run(id('approval', index), `company-demo-${index}`, 'SUBMITTED', companies[index]?.[6] ?? 'UNDER_REVIEW', 'Decisao ficticia DEMO.', FIXED_NOW);
     }
     for (let index = 1; index <= 12; index += 1) {
-      database.prepare(`INSERT INTO notifications (id,user_id,notification_type,title,body,created_at)
-        VALUES (?,?,?,?,?,?)`).run(id('notification', index), index % 4 === 0 ? 'user-demo-admin' : id('user-employee', ((index - 1) % 3) + 1),
-        requiredAt(['NEW_REQUEST','COMPANY_REVIEW','QUOTE_ACCEPTED','LOW_STOCK'], index % 4, 'tipo de notificacao'), `Notificacao DEMO ${index}`, 'Evento ficticio para homologacao.', FIXED_NOW);
+      database.prepare(`INSERT INTO notifications (id,user_id,notification_type,title,body,entity_type,entity_id,dedupe_key,created_at)
+        VALUES (?,?,?,?,?,?,?,?,?)`).run(id('notification', index), index % 4 === 0 ? 'user-demo-admin' : id('user-employee', ((index - 1) % 3) + 1),
+        requiredAt(['NEW_REQUEST','COMPANY_REVIEW','QUOTE_ACCEPTED','LOW_STOCK'], index % 4, 'tipo de notificacao'), `Notificacao DEMO ${index}`, 'Evento ficticio para homologacao.',
+        'DEMO_ENTITY', `demo-${index}`, `SEED:${index}`, FIXED_NOW);
       database.prepare(`INSERT INTO audit_events
-        (id,actor_user_id,action,entity_type,entity_id,before_json,after_json,ip_address,user_agent,created_at)
-        VALUES (?,?,?,?,?,?,?,?,?,?)`).run(id('audit', index), index % 2 === 0 ? 'user-demo-admin' : id('user-employee', ((index - 1) % 3) + 1),
-        requiredAt(['CREATE','UPDATE','APPROVE','INVENTORY_MOVEMENT'], index % 4, 'acao de auditoria'), 'DEMO_ENTITY', `demo-${index}`, null, JSON.stringify({ demo: true, index }), '127.0.0.1', 'CELULARS-DEMO-SEED', FIXED_NOW);
+        (id,actor_user_id,actor_role,action,entity_type,entity_id,before_json,after_json,company_id,ip_address,user_agent,created_at)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).run(id('audit', index), index % 2 === 0 ? 'user-demo-admin' : id('user-employee', ((index - 1) % 3) + 1),
+        index % 2 === 0 ? 'ADMIN' : 'EMPLOYEE', requiredAt(['CREATE','UPDATE','APPROVE','INVENTORY_MOVEMENT'], index % 4, 'acao de auditoria'),
+        'DEMO_ENTITY', `demo-${index}`, null, JSON.stringify({ demo: true, index }), 'company-demo-internal', '127.0.0.1', 'CELULARS-DEMO-SEED', FIXED_NOW);
     }
 
     const settings = {
       operation_name: 'CELULARS DEMO', currency: 'USD', celulares_adjustment: '0.1500', brazil_cpo_shipping: '125.00',
-      brazil_new_shipping: '200.00', reservation_minutes: '60', default_language: 'pt-BR', low_stock_threshold: '2'
+      brazil_new_shipping: '200.00', reservation_minutes: '60', default_language: 'pt-BR', low_stock_threshold: '2',
+      notification_templates: JSON.stringify({ request: 'Nova solicitacao DEMO', quote: 'Cotacao DEMO atualizada', order: 'Pedido DEMO atualizado' }),
+      default_order_status: 'DRAFT', quote_sequence_prefix: 'DEMO-Q', order_sequence_prefix: 'DEMO-O',
+      notifications_enabled: 'true', demo_mode: 'true'
     };
     let settingIndex = 0;
     for (const [key, value] of Object.entries(settings)) {

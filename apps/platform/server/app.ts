@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
@@ -17,7 +16,21 @@ import {
 } from './commerce.js';
 import { conversationData, createConversation, createMessage, createRequest, requestData, transitionRequest } from './communications.js';
 import { companyData, createCustomer, customerData, transitionCompanyApproval, updateCustomer } from './crm.js';
-import { dashboardData, notificationData } from './dashboard.js';
+import { dashboardData } from './dashboard.js';
+import {
+  auditData,
+  markAllNotificationsRead,
+  markNotificationRead,
+  notificationData,
+  notifyCompany,
+  notifyInternal,
+  recordAudit,
+  refreshOperationalNotifications,
+  reportsCsv,
+  reportsData,
+  settingsData,
+  updateSetting
+} from './governance.js';
 import { readJson, sendEmpty, sendJson } from './http.js';
 import { catalogData, createPriceRevision, inventoryData, priceData, priceListData, recordInventoryMovement } from './operations.js';
 import { RateLimiter } from './rate-limit.js';
@@ -90,6 +103,7 @@ interface ShipmentBody {
   readonly trackingDemo?: string;
   readonly shippingCostCents?: number;
 }
+interface SettingBody { readonly value?: unknown }
 
 export interface PlatformApplication {
   readonly server: Server;
@@ -112,11 +126,20 @@ function publicPrincipal(principal: Principal): object {
   };
 }
 
-function audit(database: PlatformDatabase, principal: Principal | null, action: string, entityType: string, entityId: string, request: IncomingMessage): void {
-  database.prepare(`INSERT INTO audit_events
-    (id,actor_user_id,action,entity_type,entity_id,ip_address,user_agent,created_at)
-    VALUES (?,?,?,?,?,?,?,?)`).run(randomUUID(), principal?.userId ?? null, action, entityType, entityId,
-    request.socket.remoteAddress ?? 'unknown', request.headers['user-agent'] ?? 'unknown', new Date().toISOString());
+function auditContext(request: IncomingMessage, after?: unknown, before?: unknown, companyId?: string | null): object {
+  return {
+    before,
+    after,
+    companyId,
+    ipAddress: request.socket.remoteAddress ?? 'unknown',
+    userAgent: request.headers['user-agent'] ?? 'unknown'
+  };
+}
+
+function companyFor(database: PlatformDatabase, entityType: 'QUOTE' | 'ORDER' | 'CONVERSATION', entityId: string): string | null {
+  const table = entityType === 'QUOTE' ? 'quotes' : entityType === 'ORDER' ? 'orders' : 'conversations';
+  const row = database.prepare(`SELECT company_id FROM ${table} WHERE id=?`).get(entityId);
+  return row?.company_id ? String(row.company_id) : null;
 }
 
 export function createPlatformApplication(database: PlatformDatabase, config: PlatformConfig): PlatformApplication {
@@ -158,7 +181,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         });
         loginLimiter.reset(key);
         response.setHeader('Set-Cookie', sessionCookie(result.token, config));
-        audit(database, result.principal, 'LOGIN', 'SESSION', result.principal.sessionId, request);
+        recordAudit(database, result.principal, 'LOGIN', 'SESSION', result.principal.sessionId, auditContext(request));
         sendJson(response, 200, { user: publicPrincipal(result.principal), environment: 'DEMO' });
         return;
       }
@@ -180,16 +203,63 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         return;
       }
       if (method === 'GET' && url.pathname === '/api/dashboard') {
+        refreshOperationalNotifications(database);
         sendJson(response, 200, dashboardData(database, principal));
         return;
       }
       if (method === 'GET' && url.pathname === '/api/notifications') {
-        sendJson(response, 200, { notifications: notificationData(database, principal) });
+        refreshOperationalNotifications(database);
+        sendJson(response, 200, notificationData(database, principal));
+        return;
+      }
+      const notificationReadMatch = url.pathname.match(/^\/api\/notifications\/([^/]+)\/read$/);
+      if (method === 'POST' && notificationReadMatch?.[1]) {
+        sendJson(response, 200, markNotificationRead(database, principal, decodeURIComponent(notificationReadMatch[1])));
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/notifications/read-all') {
+        sendJson(response, 200, markAllNotificationsRead(database, principal));
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/audit') {
+        requirePermission(principal, 'audit.read');
+        sendJson(response, 200, auditData(database, principal, {
+          from: url.searchParams.get('from'), to: url.searchParams.get('to'), userId: url.searchParams.get('userId'),
+          role: url.searchParams.get('role'), action: url.searchParams.get('action'),
+          entityType: url.searchParams.get('entityType'), companyId: url.searchParams.get('companyId')
+        }));
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/settings') {
+        requirePermission(principal, 'settings.read');
+        sendJson(response, 200, settingsData(database));
+        return;
+      }
+      const settingMatch = url.pathname.match(/^\/api\/settings\/([^/]+)$/);
+      if (method === 'PATCH' && settingMatch?.[1]) {
+        requirePermission(principal, 'settings.write');
+        const result = updateSetting(database, principal, decodeURIComponent(settingMatch[1]), (await readJson<SettingBody>(request)).value);
+        recordAudit(database, principal, 'SETTINGS_CHANGE', 'SETTING', result.key, auditContext(request, { value: result.value }, { value: result.previousValue }));
+        sendJson(response, 200, result);
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/reports') {
+        requirePermission(principal, 'reports.read');
+        sendJson(response, 200, reportsData(database, principal));
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/reports.csv') {
+        requirePermission(principal, 'reports.read');
+        const csv = reportsCsv(database, principal);
+        response.statusCode = 200;
+        response.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        response.setHeader('Content-Disposition', 'attachment; filename="relatorio-celulars-demo.csv"');
+        response.end(csv);
         return;
       }
       if (method === 'POST' && url.pathname === '/api/auth/logout') {
         auth.logout(principal.sessionId);
-        audit(database, principal, 'LOGOUT', 'SESSION', principal.sessionId, request);
+        recordAudit(database, principal, 'LOGOUT', 'SESSION', principal.sessionId, auditContext(request));
         response.setHeader('Set-Cookie', clearSessionCookie(config));
         sendEmpty(response);
         return;
@@ -219,7 +289,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && url.pathname === '/api/prices/revisions') {
         requirePermission(principal, 'prices.write');
         const result = createPriceRevision(database, principal, await readJson<PriceRevisionBody>(request));
-        audit(database, principal, 'PRICE_REVISION', 'PRICE', String((result as { id: string }).id), request);
+        recordAudit(database, principal, 'PRICE_CHANGE', 'PRICE', String((result as { id: string }).id), auditContext(request, result));
         sendJson(response, 201, result);
         return;
       }
@@ -231,7 +301,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && url.pathname === '/api/inventory/movements') {
         requirePermission(principal, 'inventory.write');
         const result = recordInventoryMovement(database, principal, await readJson<InventoryMovementBody>(request));
-        audit(database, principal, 'INVENTORY_MOVEMENT', 'INVENTORY_ITEM', String((result as { inventoryItemId: string }).inventoryItemId), request);
+        recordAudit(database, principal, 'INVENTORY_MOVEMENT', 'INVENTORY_ITEM', String((result as { inventoryItemId: string }).inventoryItemId), auditContext(request, result));
         sendJson(response, 201, result);
         return;
       }
@@ -243,15 +313,17 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && url.pathname === '/api/customers') {
         requirePermission(principal, 'customers.write');
         const result = createCustomer(database, principal, await readJson<CustomerBody>(request));
-        audit(database, principal, 'CUSTOMER_CREATE', 'CUSTOMER', String((result as { id: string }).id), request);
+        recordAudit(database, principal, 'CREATE', 'CUSTOMER', String((result as { id: string }).id), auditContext(request, result));
         sendJson(response, 201, result);
         return;
       }
       const customerMatch = url.pathname.match(/^\/api\/customers\/([^/]+)$/);
       if (method === 'PATCH' && customerMatch?.[1]) {
         requirePermission(principal, 'customers.write');
-        const result = updateCustomer(database, principal, decodeURIComponent(customerMatch[1]), await readJson<CustomerBody>(request));
-        audit(database, principal, 'CUSTOMER_UPDATE', 'CUSTOMER', String((result as { id: string }).id), request);
+        const customerId = decodeURIComponent(customerMatch[1]);
+        const before = database.prepare('SELECT name,email,country,language,source,status,notes,company_id FROM customers WHERE id=?').get(customerId);
+        const result = updateCustomer(database, principal, customerId, await readJson<CustomerBody>(request));
+        recordAudit(database, principal, 'UPDATE', 'CUSTOMER', String((result as { id: string }).id), auditContext(request, result, before));
         sendJson(response, 200, result);
         return;
       }
@@ -264,7 +336,13 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && approvalMatch?.[1]) {
         requirePermission(principal, 'companies.approve');
         const result = transitionCompanyApproval(database, principal, decodeURIComponent(approvalMatch[1]), await readJson<CompanyApprovalBody>(request));
-        audit(database, principal, 'COMPANY_APPROVAL', 'COMPANY', String((result as { companyId: string }).companyId), request);
+        const companyResult = result as { companyId: string; fromStatus: string; toStatus: string };
+        const action = companyResult.toStatus === 'APPROVED' ? 'APPROVE' : companyResult.toStatus === 'REJECTED' ? 'REJECT' : companyResult.toStatus === 'SUSPENDED' ? 'SUSPEND' : 'UPDATE';
+        recordAudit(database, principal, action, 'COMPANY', companyResult.companyId, auditContext(request, result, { status: companyResult.fromStatus }, companyResult.companyId));
+        notifyCompany(database, companyResult.companyId, {
+          type: `COMPANY_${companyResult.toStatus}`, title: `Empresa DEMO: ${companyResult.toStatus}`,
+          body: `O status da empresa foi atualizado para ${companyResult.toStatus}.`, entityType: 'COMPANY', entityId: companyResult.companyId
+        });
         sendJson(response, 201, result);
         return;
       }
@@ -276,7 +354,9 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && url.pathname === '/api/requests') {
         requirePermission(principal, 'requests.write');
         const result = createRequest(database, principal, await readJson<RequestBody>(request));
-        audit(database, principal, 'REQUEST_CREATE', 'REQUEST', String((result as { id: string }).id), request);
+        const requestResult = result as { id: string; assignedUserId?: string | null; companyId?: string | null };
+        recordAudit(database, principal, 'CREATE', 'REQUEST', requestResult.id, auditContext(request, result, undefined, requestResult.companyId));
+        notifyInternal(database, { type: 'NEW_REQUEST', title: 'Nova solicitacao DEMO', body: `Solicitacao ${requestResult.id} criada.`, entityType: 'REQUEST', entityId: requestResult.id }, requestResult.assignedUserId);
         sendJson(response, 201, result);
         return;
       }
@@ -284,7 +364,9 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && requestStatusMatch?.[1]) {
         requirePermission(principal, 'requests.write');
         const result = transitionRequest(database, principal, decodeURIComponent(requestStatusMatch[1]), await readJson<RequestStatusBody>(request));
-        audit(database, principal, 'REQUEST_STATUS', 'REQUEST', String((result as { id: string }).id), request);
+        const requestResult = result as { id: string; assignedUserId?: string | null; fromStatus?: string; toStatus?: string };
+        recordAudit(database, principal, 'UPDATE', 'REQUEST', requestResult.id, auditContext(request, result, { status: requestResult.fromStatus }));
+        notifyInternal(database, { type: 'REQUEST_ASSIGNED', title: 'Solicitacao DEMO atribuida', body: `Solicitacao ${requestResult.id}: ${requestResult.toStatus ?? 'atualizada'}.`, entityType: 'REQUEST', entityId: requestResult.id }, requestResult.assignedUserId);
         sendJson(response, 200, result);
         return;
       }
@@ -296,14 +378,18 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && url.pathname === '/api/conversations') {
         requirePermission(principal, 'messages.write');
         const result = createConversation(database, principal, await readJson<ConversationBody>(request));
-        audit(database, principal, 'CONVERSATION_CREATE', 'CONVERSATION', String((result as { id: string }).id), request);
+        recordAudit(database, principal, 'CREATE', 'CONVERSATION', String((result as { id: string }).id), auditContext(request, result, undefined, (result as { companyId?: string | null }).companyId));
         sendJson(response, 201, result);
         return;
       }
       if (method === 'POST' && url.pathname === '/api/messages') {
         requirePermission(principal, 'messages.write');
         const result = createMessage(database, principal, await readJson<MessageBody>(request));
-        audit(database, principal, 'MESSAGE_CREATE', 'MESSAGE', String((result as { id: string }).id), request);
+        const messageResult = result as { id: string; conversationId: string };
+        const messageCompanyId = companyFor(database, 'CONVERSATION', messageResult.conversationId);
+        recordAudit(database, principal, 'MESSAGE_SENT', 'MESSAGE', messageResult.id, auditContext(request, { id: messageResult.id, conversationId: messageResult.conversationId }, undefined, messageCompanyId));
+        if (messageCompanyId) notifyCompany(database, messageCompanyId, { type: 'NEW_MESSAGE', title: 'Nova mensagem DEMO', body: 'Ha uma nova mensagem interna na plataforma.', entityType: 'CONVERSATION', entityId: messageResult.conversationId });
+        else notifyInternal(database, { type: 'NEW_MESSAGE', title: 'Nova mensagem DEMO', body: 'Ha uma nova mensagem interna na plataforma.', entityType: 'CONVERSATION', entityId: messageResult.conversationId });
         sendJson(response, 201, result);
         return;
       }
@@ -315,7 +401,8 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && url.pathname === '/api/quotes') {
         requirePermission(principal, 'quotes.write');
         const result = createQuote(database, principal, await readJson<QuoteBody>(request));
-        audit(database, principal, 'QUOTE_CREATE', 'QUOTE', String((result as { id: string }).id), request);
+        const quoteResult = result as { id: string; companyId?: string | null };
+        recordAudit(database, principal, 'CREATE', 'QUOTE', quoteResult.id, auditContext(request, result, undefined, quoteResult.companyId));
         sendJson(response, 201, result);
         return;
       }
@@ -323,7 +410,12 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && quoteStatusMatch?.[1]) {
         requirePermission(principal, 'quotes.write');
         const result = transitionQuote(database, principal, decodeURIComponent(quoteStatusMatch[1]), await readJson<CommerceStatusBody>(request));
-        audit(database, principal, 'QUOTE_STATUS', 'QUOTE', String((result as { id: string }).id), request);
+        const quoteResult = result as { id: string; fromStatus?: string; toStatus?: string };
+        const quoteCompanyId = companyFor(database, 'QUOTE', quoteResult.id);
+        const quoteAction: Record<string, string> = { SENT: 'QUOTE_SENT', VIEWED: 'QUOTE_VIEWED', ACCEPTED: 'QUOTE_ACCEPTED', REJECTED: 'QUOTE_REJECTED' };
+        const action = quoteAction[quoteResult.toStatus ?? ''] ?? 'UPDATE';
+        recordAudit(database, principal, action, 'QUOTE', quoteResult.id, auditContext(request, result, { status: quoteResult.fromStatus }, quoteCompanyId));
+        if (quoteCompanyId) notifyCompany(database, quoteCompanyId, { type: action, title: `Cotacao DEMO: ${quoteResult.toStatus ?? 'atualizada'}`, body: `A cotacao ${quoteResult.id} foi atualizada.`, entityType: 'QUOTE', entityId: quoteResult.id });
         sendJson(response, 200, result);
         return;
       }
@@ -331,7 +423,10 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && quoteConvertMatch?.[1]) {
         requirePermission(principal, 'orders.write');
         const result = convertQuoteToOrder(database, principal, decodeURIComponent(quoteConvertMatch[1]), await readJson<ConvertQuoteBody>(request));
-        audit(database, principal, 'QUOTE_CONVERT', 'ORDER', String((result as { id: string }).id), request);
+        const orderResult = result as { id: string; companyId?: string | null; quoteId?: string };
+        recordAudit(database, principal, 'QUOTE_CONVERTED', 'QUOTE', orderResult.quoteId ?? decodeURIComponent(quoteConvertMatch[1]), auditContext(request, result, undefined, orderResult.companyId));
+        recordAudit(database, principal, 'ORDER_CREATED', 'ORDER', orderResult.id, auditContext(request, result, undefined, orderResult.companyId));
+        if (orderResult.companyId) notifyCompany(database, orderResult.companyId, { type: 'ORDER_CREATED', title: 'Pedido DEMO criado', body: `O pedido ${orderResult.id} foi criado.`, entityType: 'ORDER', entityId: orderResult.id });
         sendJson(response, 201, result);
         return;
       }
@@ -344,14 +439,20 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && orderStatusMatch?.[1]) {
         requirePermission(principal, 'orders.write');
         const result = transitionOrder(database, principal, decodeURIComponent(orderStatusMatch[1]), await readJson<CommerceStatusBody>(request));
-        audit(database, principal, 'ORDER_STATUS', 'ORDER', String((result as { id: string }).id), request);
+        const orderResult = result as { id: string; fromStatus?: string; toStatus?: string };
+        const orderCompanyId = companyFor(database, 'ORDER', orderResult.id);
+        recordAudit(database, principal, 'ORDER_STATUS_CHANGE', 'ORDER', orderResult.id, auditContext(request, result, { status: orderResult.fromStatus }, orderCompanyId));
+        if (orderCompanyId) notifyCompany(database, orderCompanyId, { type: 'ORDER_UPDATED', title: `Pedido DEMO: ${orderResult.toStatus ?? 'atualizado'}`, body: `O pedido ${orderResult.id} foi atualizado.`, entityType: 'ORDER', entityId: orderResult.id });
         sendJson(response, 200, result);
         return;
       }
       if (method === 'POST' && url.pathname === '/api/reservations') {
         requirePermission(principal, 'inventory.write');
         const result = createReservation(database, principal, await readJson<ReservationBody>(request));
-        audit(database, principal, 'RESERVATION_CREATE', 'RESERVATION', String((result as { id: string }).id), request);
+        const reservationResult = result as { id: string; orderId?: string };
+        const reservationCompanyId = reservationResult.orderId ? companyFor(database, 'ORDER', reservationResult.orderId) : null;
+        recordAudit(database, principal, 'RESERVATION', 'RESERVATION', reservationResult.id, auditContext(request, result, undefined, reservationCompanyId));
+        if (reservationCompanyId) notifyCompany(database, reservationCompanyId, { type: 'RESERVATION_CREATED', title: 'Reserva DEMO criada', body: `Reserva ${reservationResult.id} criada.`, entityType: 'RESERVATION', entityId: reservationResult.id });
         sendJson(response, 201, result);
         return;
       }
@@ -359,14 +460,20 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && reservationReleaseMatch?.[1]) {
         requirePermission(principal, 'inventory.write');
         const result = releaseReservation(database, principal, decodeURIComponent(reservationReleaseMatch[1]));
-        audit(database, principal, 'RESERVATION_RELEASE', 'RESERVATION', String((result as { id: string }).id), request);
+        const reservationResult = result as { id: string; orderId?: string };
+        const reservationCompanyId = reservationResult.orderId ? companyFor(database, 'ORDER', reservationResult.orderId) : null;
+        recordAudit(database, principal, 'RELEASE', 'RESERVATION', reservationResult.id, auditContext(request, result, undefined, reservationCompanyId));
+        if (reservationCompanyId) notifyCompany(database, reservationCompanyId, { type: 'RESERVATION_RELEASED', title: 'Reserva DEMO liberada', body: `Reserva ${reservationResult.id} liberada.`, entityType: 'RESERVATION', entityId: reservationResult.id });
         sendJson(response, 200, result);
         return;
       }
       if (method === 'POST' && url.pathname === '/api/shipments') {
         requirePermission(principal, 'orders.write');
         const result = updateShipment(database, principal, await readJson<ShipmentBody>(request));
-        audit(database, principal, 'SHIPMENT_UPDATE', 'ORDER', String((result as { orderId: string }).orderId), request);
+        const shipmentResult = result as { id?: string; orderId: string; status?: string };
+        const shipmentCompanyId = companyFor(database, 'ORDER', shipmentResult.orderId);
+        recordAudit(database, principal, 'SHIPMENT_STATUS_CHANGE', 'SHIPMENT', shipmentResult.id ?? shipmentResult.orderId, auditContext(request, result, undefined, shipmentCompanyId));
+        if (shipmentCompanyId) notifyCompany(database, shipmentCompanyId, { type: 'SHIPMENT_UPDATED', title: 'Remessa DEMO atualizada', body: `A remessa do pedido ${shipmentResult.orderId} foi atualizada.`, entityType: 'ORDER', entityId: shipmentResult.orderId });
         sendJson(response, 200, result);
         return;
       }
@@ -381,11 +488,11 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, error instanceof Error && error.message === 'PAYLOAD_TOO_LARGE' ? 413 : 400, { error: 'Solicitacao invalida.' });
         return;
       }
-      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE','INVALID_QUOTE','INVALID_QUOTE_STATUS','INVALID_ORDER','INVALID_ORDER_STATUS','INVALID_RESERVATION','INVALID_SHIPMENT','INVALID_SHIPMENT_STATUS'].includes(error.message)) {
+      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE','INVALID_QUOTE','INVALID_QUOTE_STATUS','INVALID_ORDER','INVALID_ORDER_STATUS','INVALID_RESERVATION','INVALID_SHIPMENT','INVALID_SHIPMENT_STATUS','INVALID_SETTING'].includes(error.message)) {
         sendJson(response, 400, { error: 'Dados da operacao DEMO invalidos.', code: error.message });
         return;
       }
-      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND','REQUEST_NOT_FOUND','CONVERSATION_NOT_FOUND','QUOTE_NOT_FOUND','ORDER_NOT_FOUND','RESERVATION_NOT_FOUND'].includes(error.message)) {
+      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND','REQUEST_NOT_FOUND','CONVERSATION_NOT_FOUND','QUOTE_NOT_FOUND','ORDER_NOT_FOUND','RESERVATION_NOT_FOUND','NOTIFICATION_NOT_FOUND','SETTING_NOT_FOUND'].includes(error.message)) {
         sendJson(response, 404, { error: 'Registro DEMO nao encontrado.' });
         return;
       }
