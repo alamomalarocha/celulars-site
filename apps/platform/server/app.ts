@@ -6,6 +6,7 @@ import { AuthService, AuthenticationError } from './auth.js';
 import { clearSessionCookie, parseCookies, sessionCookie, sessionCookieName } from './cookies.js';
 import { dashboardData, notificationData } from './dashboard.js';
 import { readJson, sendEmpty, sendJson } from './http.js';
+import { catalogData, createPriceRevision, inventoryData, priceData, priceListData, recordInventoryMovement } from './operations.js';
 import { RateLimiter } from './rate-limit.js';
 import { requirePermission } from './rbac.js';
 import { applySecurityHeaders, validUnsafeOrigin } from './security.js';
@@ -15,6 +16,19 @@ import type { Principal } from './types.js';
 interface LoginBody {
   readonly email?: string;
   readonly password?: string;
+}
+
+interface PriceRevisionBody {
+  readonly priceListId?: string;
+  readonly variantId?: string;
+  readonly amountCents?: number;
+}
+
+interface InventoryMovementBody {
+  readonly inventoryItemId?: string;
+  readonly movementType?: string;
+  readonly quantity?: number;
+  readonly notes?: string;
 }
 
 export interface PlatformApplication {
@@ -129,9 +143,36 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       }
       if (method === 'GET' && url.pathname === '/api/catalog/products') {
         requirePermission(principal, 'catalog.read');
-        const products = database.prepare(`SELECT id,canonical_key,model_name,year,product_type,demo_active
-          FROM products ORDER BY year DESC, model_name`).all();
-        sendJson(response, 200, { products });
+        sendJson(response, 200, catalogData(database));
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/price-lists') {
+        requirePermission(principal, 'prices.read');
+        sendJson(response, 200, priceListData(database, principal));
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/prices') {
+        requirePermission(principal, 'prices.read');
+        sendJson(response, 200, priceData(database, principal, url.searchParams.get('priceListId'), url.searchParams.get('search') ?? ''));
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/prices/revisions') {
+        requirePermission(principal, 'prices.write');
+        const result = createPriceRevision(database, principal, await readJson<PriceRevisionBody>(request));
+        audit(database, principal, 'PRICE_REVISION', 'PRICE', String((result as { id: string }).id), request);
+        sendJson(response, 201, result);
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/inventory') {
+        requirePermission(principal, 'inventory.read');
+        sendJson(response, 200, inventoryData(database, url.searchParams.get('search') ?? '', url.searchParams.get('low') === '1'));
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/inventory/movements') {
+        requirePermission(principal, 'inventory.write');
+        const result = recordInventoryMovement(database, principal, await readJson<InventoryMovementBody>(request));
+        audit(database, principal, 'INVENTORY_MOVEMENT', 'INVENTORY_ITEM', String((result as { inventoryItemId: string }).inventoryItemId), request);
+        sendJson(response, 201, result);
         return;
       }
 
@@ -143,6 +184,14 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       }
       if (error instanceof SyntaxError || (error instanceof Error && ['EMPTY_BODY', 'PAYLOAD_TOO_LARGE'].includes(error.message))) {
         sendJson(response, error instanceof Error && error.message === 'PAYLOAD_TOO_LARGE' ? 413 : 400, { error: 'Solicitacao invalida.' });
+        return;
+      }
+      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT'].includes(error.message)) {
+        sendJson(response, 400, { error: 'Dados da operacao DEMO invalidos.' });
+        return;
+      }
+      if (error instanceof Error && error.message === 'INSUFFICIENT_INVENTORY') {
+        sendJson(response, 409, { error: 'Saldo de estoque insuficiente para esta operacao DEMO.' });
         return;
       }
       if (error instanceof Error && error.message.startsWith('FORBIDDEN:')) {

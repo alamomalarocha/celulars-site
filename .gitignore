@@ -10,6 +10,7 @@ apps/platform/build/
 apps/platform/data/*.sqlite
 apps/platform/data/*.sqlite-*
 apps/platform/data/*.json
+apps/platform/data/*.log
 apps/platform/.env
 apps/platform/test-results/
 apps/platform/playwright-report/

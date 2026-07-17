@@ -80,6 +80,8 @@ test('server auth enforces cookie sessions, origin, CSRF and RBAC', async () => 
     assert.equal(forbidden.status, 403);
     const catalog = await fetch(`${baseUrl}/api/catalog/products`, { headers: { Cookie: wholesaler.cookie } });
     assert.equal(catalog.status, 200);
+    const forbiddenInventory = await fetch(`${baseUrl}/api/inventory`, { headers: { Cookie: wholesaler.cookie } });
+    assert.equal(forbiddenInventory.status, 403);
     const wholesaleDashboard = await fetch(`${baseUrl}/api/dashboard`, { headers: { Cookie: wholesaler.cookie } });
     assert.equal(wholesaleDashboard.status, 200);
     const wholesaleDashboardPayload = await wholesaleDashboard.json() as { profile: string; metrics: { products: number; quotes: number; orders: number } };
