@@ -82,6 +82,17 @@ test('server auth enforces cookie sessions, origin, CSRF and RBAC', async () => 
     assert.equal(catalog.status, 200);
     const forbiddenInventory = await fetch(`${baseUrl}/api/inventory`, { headers: { Cookie: wholesaler.cookie } });
     assert.equal(forbiddenInventory.status, 403);
+    const forbiddenCustomers = await fetch(`${baseUrl}/api/customers`, { headers: { Cookie: wholesaler.cookie } });
+    assert.equal(forbiddenCustomers.status, 403);
+    const ownCompany = await fetch(`${baseUrl}/api/companies`, { headers: { Cookie: wholesaler.cookie } });
+    assert.equal(ownCompany.status, 200);
+    const ownCompanyPayload = await ownCompany.json() as { companies: readonly { id: string }[] };
+    assert.deepEqual(ownCompanyPayload.companies.map((row) => row.id), ['company-demo-1']);
+    const forbiddenApproval = await fetch(`${baseUrl}/api/companies/company-demo-1/approval`, {
+      method: 'POST', headers: { Cookie: wholesaler.cookie, Origin: config.allowedOrigin, 'X-CSRF-Token': wholesaler.csrf, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'SUSPENDED', notes: 'Tentativa sem permissao DEMO.' })
+    });
+    assert.equal(forbiddenApproval.status, 403);
     const wholesaleDashboard = await fetch(`${baseUrl}/api/dashboard`, { headers: { Cookie: wholesaler.cookie } });
     assert.equal(wholesaleDashboard.status, 200);
     const wholesaleDashboardPayload = await wholesaleDashboard.json() as { profile: string; metrics: { products: number; quotes: number; orders: number } };

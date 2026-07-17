@@ -4,6 +4,7 @@ import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
 import { AuthService, AuthenticationError } from './auth.js';
 import { clearSessionCookie, parseCookies, sessionCookie, sessionCookieName } from './cookies.js';
+import { companyData, createCustomer, customerData, transitionCompanyApproval, updateCustomer } from './crm.js';
 import { dashboardData, notificationData } from './dashboard.js';
 import { readJson, sendEmpty, sendJson } from './http.js';
 import { catalogData, createPriceRevision, inventoryData, priceData, priceListData, recordInventoryMovement } from './operations.js';
@@ -28,6 +29,22 @@ interface InventoryMovementBody {
   readonly inventoryItemId?: string;
   readonly movementType?: string;
   readonly quantity?: number;
+  readonly notes?: string;
+}
+
+interface CustomerBody {
+  readonly name?: string;
+  readonly email?: string;
+  readonly country?: string;
+  readonly language?: string;
+  readonly source?: string;
+  readonly status?: string;
+  readonly notes?: string;
+  readonly companyId?: string | null;
+}
+
+interface CompanyApprovalBody {
+  readonly status?: string;
   readonly notes?: string;
 }
 
@@ -175,6 +192,39 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, 201, result);
         return;
       }
+      if (method === 'GET' && url.pathname === '/api/customers') {
+        requirePermission(principal, 'customers.read');
+        sendJson(response, 200, customerData(database, url.searchParams.get('search') ?? ''));
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/customers') {
+        requirePermission(principal, 'customers.write');
+        const result = createCustomer(database, principal, await readJson<CustomerBody>(request));
+        audit(database, principal, 'CUSTOMER_CREATE', 'CUSTOMER', String((result as { id: string }).id), request);
+        sendJson(response, 201, result);
+        return;
+      }
+      const customerMatch = url.pathname.match(/^\/api\/customers\/([^/]+)$/);
+      if (method === 'PATCH' && customerMatch?.[1]) {
+        requirePermission(principal, 'customers.write');
+        const result = updateCustomer(database, principal, decodeURIComponent(customerMatch[1]), await readJson<CustomerBody>(request));
+        audit(database, principal, 'CUSTOMER_UPDATE', 'CUSTOMER', String((result as { id: string }).id), request);
+        sendJson(response, 200, result);
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/companies') {
+        requirePermission(principal, 'companies.read');
+        sendJson(response, 200, companyData(database, principal));
+        return;
+      }
+      const approvalMatch = url.pathname.match(/^\/api\/companies\/([^/]+)\/approval$/);
+      if (method === 'POST' && approvalMatch?.[1]) {
+        requirePermission(principal, 'companies.approve');
+        const result = transitionCompanyApproval(database, principal, decodeURIComponent(approvalMatch[1]), await readJson<CompanyApprovalBody>(request));
+        audit(database, principal, 'COMPANY_APPROVAL', 'COMPANY', String((result as { companyId: string }).companyId), request);
+        sendJson(response, 201, result);
+        return;
+      }
 
       sendJson(response, 404, { error: 'Rota nao encontrada.' });
     } catch (error) {
@@ -186,8 +236,16 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, error instanceof Error && error.message === 'PAYLOAD_TOO_LARGE' ? 413 : 400, { error: 'Solicitacao invalida.' });
         return;
       }
-      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT'].includes(error.message)) {
+      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL'].includes(error.message)) {
         sendJson(response, 400, { error: 'Dados da operacao DEMO invalidos.' });
+        return;
+      }
+      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND'].includes(error.message)) {
+        sendJson(response, 404, { error: 'Registro DEMO nao encontrado.' });
+        return;
+      }
+      if (error instanceof Error && error.message === 'CUSTOMER_EXISTS') {
+        sendJson(response, 409, { error: 'Ja existe um cliente DEMO com este e-mail.' });
         return;
       }
       if (error instanceof Error && error.message === 'INSUFFICIENT_INVENTORY') {
