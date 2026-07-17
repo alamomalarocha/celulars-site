@@ -5,3 +5,11 @@ data/inventory-private.json
 data/inventory-private.csv
 data/inventory-*.csv
 data/fixtures/
+node_modules/
+apps/platform/build/
+apps/platform/data/*.sqlite
+apps/platform/data/*.sqlite-*
+apps/platform/data/*.json
+apps/platform/.env
+apps/platform/test-results/
+apps/platform/playwright-report/

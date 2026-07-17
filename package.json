@@ -11,9 +11,23 @@
     "catalog:test": "node scripts/test-catalog-manager.mjs",
     "catalog:csv-test": "node scripts/test-catalog-csv.mjs",
     "inventory:test": "node scripts/test-inventory-manager.mjs",
-    "inventory:color-test": "node scripts/test-inventory-color.mjs"
+    "inventory:color-test": "node scripts/test-inventory-color.mjs",
+    "platform:dev": "node --enable-source-maps apps/platform/build/server/main.js",
+    "platform:migrate": "node --enable-source-maps apps/platform/build/database/migrate.js",
+    "platform:seed": "node --enable-source-maps apps/platform/build/database/seed.js",
+    "platform:reset": "node --enable-source-maps apps/platform/build/database/reset.js",
+    "platform:test": "node --test --test-concurrency=1 apps/platform/build/tests/*.test.js",
+    "platform:e2e": "node --test --test-concurrency=1 apps/platform/build/tests-e2e/*.test.js",
+    "platform:build": "tsc -p apps/platform/tsconfig.json",
+    "platform:lint": "node scripts/platform-lint.mjs",
+    "platform:typecheck": "tsc -p apps/platform/tsconfig.json --noEmit",
+    "platform:check": "npm run platform:lint && npm run platform:typecheck && npm run platform:build && npm run platform:test && npm run platform:e2e"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.3"
   }
 }
