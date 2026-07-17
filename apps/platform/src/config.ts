@@ -18,6 +18,10 @@ export interface PlatformConfig {
   readonly platformRoot: string;
   readonly repositoryRoot: string;
   readonly sessionSecret: string;
+  readonly sessionTtlMinutes: number;
+  readonly sessionRotationMinutes: number;
+  readonly allowedOrigin: string;
+  readonly secureCookies: boolean;
 }
 
 export function loadConfig(overrides: Partial<PlatformConfig> = {}): PlatformConfig {
@@ -40,6 +44,10 @@ export function loadConfig(overrides: Partial<PlatformConfig> = {}): PlatformCon
     platformRoot,
     repositoryRoot,
     sessionSecret,
+    sessionTtlMinutes: integerEnvironment('PLATFORM_SESSION_TTL_MINUTES', 480),
+    sessionRotationMinutes: integerEnvironment('PLATFORM_SESSION_ROTATION_MINUTES', 30),
+    allowedOrigin: process.env.PLATFORM_ALLOWED_ORIGIN ?? `http://${process.env.PLATFORM_HOST ?? '127.0.0.1'}:${integerEnvironment('PLATFORM_PORT', 4178)}`,
+    secureCookies: (process.env.PLATFORM_SECURE_COOKIES ?? '0') === '1',
     ...overrides
   };
 }
@@ -51,4 +59,3 @@ export function assertDemoDatabasePath(config: PlatformConfig): void {
     throw new Error(`Caminho de banco DEMO inseguro: ${config.databasePath}`);
   }
 }
-
