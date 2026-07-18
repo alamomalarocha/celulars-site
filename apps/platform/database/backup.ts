@@ -1,61 +1,18 @@
 import { createHash } from 'node:crypto';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { assertDemoDatabasePath, loadConfig, type PlatformConfig } from '../src/config.js';
 import { openDatabase } from './db.js';
-
-export interface BackupManifest {
-  readonly environment: string;
-  readonly createdAt: string;
-  readonly databaseFile: string;
-  readonly sha256: string;
-  readonly bytes: number;
-  readonly productionBackup: false;
-}
-
-function sha256(file: string): string { return createHash('sha256').update(readFileSync(file)).digest('hex'); }
-
-export function createDemoBackup(config: PlatformConfig = loadConfig(), now = new Date()): { directory: string; manifest: BackupManifest } {
-  assertDemoDatabasePath(config);
-  if (!existsSync(config.databasePath)) throw new Error('Banco DEMO inexistente para backup.');
-  const database = openDatabase(config);
-  try { database.exec('PRAGMA wal_checkpoint(TRUNCATE)'); } finally { database.close(); }
-  const stamp = now.toISOString().replaceAll(':', '-').replaceAll('.', '-');
-  const directory = path.join(config.platformRoot, 'data', 'backups', stamp);
-  mkdirSync(directory, { recursive: true });
-  const databaseFile = path.join(directory, 'platform-demo.sqlite');
-  copyFileSync(config.databasePath, databaseFile);
-  const manifest: BackupManifest = {
-    environment: config.environment,
-    createdAt: now.toISOString(),
-    databaseFile: path.basename(databaseFile),
-    sha256: sha256(databaseFile),
-    bytes: readFileSync(databaseFile).byteLength,
-    productionBackup: false
-  };
-  writeFileSync(path.join(directory, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, { encoding: 'utf8', flag: 'wx' });
-  return { directory, manifest };
-}
-
-export function testDemoRestore(directory: string, config: PlatformConfig = loadConfig()): { ok: boolean; sha256: string } {
-  assertDemoDatabasePath(config);
-  const manifest = JSON.parse(readFileSync(path.join(directory, 'manifest.json'), 'utf8')) as BackupManifest;
-  const source = path.join(directory, manifest.databaseFile);
-  if (sha256(source) !== manifest.sha256) throw new Error('Checksum do backup DEMO invalido.');
-  const restorePath = path.join(config.platformRoot, 'data', `restore-test-${process.pid}.sqlite`);
-  copyFileSync(source, restorePath);
-  try {
-    const database = new DatabaseSync(restorePath, { readOnly: true });
-    try {
-      const integrity = String(database.prepare('PRAGMA integrity_check').get()?.integrity_check ?? 'unknown');
-      return { ok: integrity === 'ok', sha256: sha256(restorePath) };
-    } finally { database.close(); }
-  } finally { if (existsSync(restorePath)) rmSync(restorePath); }
-}
-
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const backup = createDemoBackup();
-  console.log(JSON.stringify({ directory: backup.directory, manifest: backup.manifest, restoreTest: testDemoRestore(backup.directory) }, null, 2));
-}
+export interface BackupArtifact{readonly path:string;readonly sha256:string;readonly bytes:number;readonly kind:'DATABASE'|'DOCUMENT'|'METADATA'}
+export interface BackupManifest{readonly version:2;readonly environment:string;readonly createdAt:string;readonly databaseFile:string;readonly sha256:string;readonly bytes:number;readonly productionBackup:false;readonly artifacts:readonly BackupArtifact[];readonly encrypted:false;readonly remoteReplication:'DISABLED_DEMO'}
+function sha256(file:string):string{return createHash('sha256').update(readFileSync(file)).digest('hex');}
+function artifact(root:string,file:string,kind:BackupArtifact['kind']):BackupArtifact{return{path:path.relative(root,file).replaceAll('\\','/'),sha256:sha256(file),bytes:statSync(file).size,kind};}
+function files(root:string):string[]{if(!existsSync(root))return[];return readdirSync(root,{withFileTypes:true}).flatMap(entry=>{const candidate=path.join(root,entry.name);return entry.isDirectory()?files(candidate):[candidate];});}
+function backupRoot(config:PlatformConfig):string{return path.join(config.platformRoot,'data','backups');}
+export function createDemoBackup(config:PlatformConfig=loadConfig(),now=new Date()):{directory:string;manifest:BackupManifest}{assertDemoDatabasePath(config);if(!existsSync(config.databasePath))throw new Error('Banco DEMO inexistente para backup.');const database=openDatabase(config);try{database.exec('PRAGMA wal_checkpoint(TRUNCATE)');}finally{database.close();}const stamp=now.toISOString().replaceAll(':','-').replaceAll('.','-');const directory=path.join(backupRoot(config),stamp);mkdirSync(directory,{recursive:true});const databaseFile=path.join(directory,'platform-demo.sqlite');copyFileSync(config.databasePath,databaseFile);const metadataFile=path.join(directory,'metadata.json');writeFileSync(metadataFile,`${JSON.stringify({environment:config.environment,databaseDriver:config.databaseDriver,storageMode:config.storageMode,features:config.features,createdAt:now.toISOString()},null,2)}\n`,{encoding:'utf8',flag:'wx'});const documentTarget=path.join(directory,'documents');if(existsSync(config.storagePath))cpSync(config.storagePath,documentTarget,{recursive:true,errorOnExist:true});const artifacts:BackupArtifact[]=[artifact(directory,databaseFile,'DATABASE'),artifact(directory,metadataFile,'METADATA'),...files(documentTarget).map(file=>artifact(directory,file,'DOCUMENT'))];const databaseArtifact=artifacts[0];if(!databaseArtifact)throw new Error('BACKUP_DATABASE_MISSING');const manifest:BackupManifest={version:2,environment:config.environment,createdAt:now.toISOString(),databaseFile:path.basename(databaseFile),sha256:databaseArtifact.sha256,bytes:databaseArtifact.bytes,productionBackup:false,artifacts,encrypted:false,remoteReplication:'DISABLED_DEMO'};writeFileSync(path.join(directory,'manifest.json'),`${JSON.stringify(manifest,null,2)}\n`,{encoding:'utf8',flag:'wx'});return{directory,manifest};}
+export function listDemoBackups(config:PlatformConfig=loadConfig()):{directory:string;createdAt:string;artifacts:number;bytes:number}[]{assertDemoDatabasePath(config);const root=backupRoot(config);if(!existsSync(root))return[];return readdirSync(root,{withFileTypes:true}).filter(item=>item.isDirectory()&&existsSync(path.join(root,item.name,'manifest.json'))).map(item=>{const directory=path.join(root,item.name);const manifest=JSON.parse(readFileSync(path.join(directory,'manifest.json'),'utf8')) as BackupManifest;return{directory,createdAt:manifest.createdAt,artifacts:manifest.artifacts.length,bytes:manifest.artifacts.reduce((total,item)=>total+item.bytes,0)};}).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));}
+export function applyDemoBackupRetention(keep:number,config:PlatformConfig=loadConfig()):string[]{assertDemoDatabasePath(config);if(!Number.isInteger(keep)||keep<1)throw new Error('INVALID_BACKUP_RETENTION');const expired=listDemoBackups(config).slice(keep);for(const item of expired)rmSync(item.directory,{recursive:true,force:true});return expired.map(item=>item.directory);}
+export function testDemoRestore(directory:string,config:PlatformConfig=loadConfig()):{ok:boolean;sha256:string;artifactsVerified:number}{assertDemoDatabasePath(config);const manifest=JSON.parse(readFileSync(path.join(directory,'manifest.json'),'utf8')) as BackupManifest;for(const item of manifest.artifacts){const candidate=path.resolve(directory,item.path);const relative=path.relative(path.resolve(directory),candidate);if(relative.startsWith('..')||path.isAbsolute(relative)||!existsSync(candidate)||sha256(candidate)!==item.sha256||statSync(candidate).size!==item.bytes)throw new Error('Checksum do backup DEMO invalido.');}const source=path.join(directory,manifest.databaseFile);const restorePath=path.join(config.platformRoot,'data',`restore-test-${process.pid}.sqlite`);copyFileSync(source,restorePath);try{const database=new DatabaseSync(restorePath,{readOnly:true});try{const integrity=String(database.prepare('PRAGMA integrity_check').get()?.integrity_check??'unknown');return{ok:integrity==='ok',sha256:sha256(restorePath),artifactsVerified:manifest.artifacts.length};}finally{database.close();}}finally{if(existsSync(restorePath))rmSync(restorePath);}}
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){const backup=createDemoBackup();console.log(JSON.stringify({directory:backup.directory,manifest:backup.manifest,restoreTest:testDemoRestore(backup.directory)},null,2));}
