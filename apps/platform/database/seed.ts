@@ -234,10 +234,11 @@ export function seedDatabase(
       VALUES ('template-demo-1','Resposta inicial DEMO','Esta e uma resposta interna de demonstracao.',1,?,?)`).run(FIXED_NOW, FIXED_NOW);
     database.prepare(`INSERT INTO delivery_templates (id,channel,code,subject_template,body_template,active,created_at) VALUES
       ('delivery-email-invite','EMAIL','INVITE','Convite CELULARS DEMO','Olá {{name}}. Convite DEMO: {{link}}',1,?),
+      ('delivery-email-verify','EMAIL','VERIFY_EMAIL','Verificação de e-mail CELULARS DEMO','Confirme seu e-mail no ambiente DEMO: {{link}}',1,?),
       ('delivery-email-reset','EMAIL','PASSWORD_RESET','Redefinição CELULARS DEMO','Redefinição DEMO: {{link}}',1,?),
       ('delivery-email-message','EMAIL','NEW_MESSAGE','Nova mensagem CELULARS DEMO','Mensagem DEMO: {{message}}',1,?),
       ('delivery-whatsapp-order','WHATSAPP','ORDER',NULL,'Pedido DEMO {{order}} atualizado.',1,?)`)
-      .run(FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW);
+      .run(FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW);
 
     for (let index = 1; index <= 10; index += 1) {
       const quoteId = id('quote', index);

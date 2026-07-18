@@ -254,7 +254,12 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, 200, { reset: true });
         return;
       }
-      const cookies = parseCookies(request.headers.cookie);
+      if (method === 'POST' && url.pathname === '/api/auth/email-verification/confirm') {
+        const body = await readJson<{ token?: string }>(request);
+        const userId = accounts.verifyEmail(body.token ?? '');
+        sendJson(response, 200, { verified: true, userId });
+        return;
+      }      const cookies = parseCookies(request.headers.cookie);
       const principal = auth.authenticate(cookies[sessionCookieName(config)]);
       if (!principal) {
         sendJson(response, 401, { error: 'Sessao ausente ou expirada.' });
@@ -283,7 +288,14 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'GET' && url.pathname === '/api/account/sessions') {
         sendJson(response, 200, { sessions: accounts.sessions(principal.userId) }); return;
       }
-      if (method === 'POST' && url.pathname === '/api/account/sessions/revoke-others') {
+      if (method === 'POST' && url.pathname === '/api/account/email-verification/request') {
+        const verification = accounts.createEmailVerification(principal.userId);
+        if (verification.token && verification.email) {
+          deliveries.queue(principal, { channel: 'EMAIL', templateCode: 'VERIFY_EMAIL', recipient: verification.email, variables: { link: config.publicUrl + '/verify-email?token=' + encodeURIComponent(verification.token) }, companyId: principal.companyId, correlationId: 'VERIFY_EMAIL' });
+        }
+        sendJson(response, 202, { accepted: true, alreadyVerified: !verification.token, ...(config.demo && verification.token ? { demoToken: verification.token } : {}) });
+        return;
+      }      if (method === 'POST' && url.pathname === '/api/account/sessions/revoke-others') {
         sendJson(response, 200, { revoked: accounts.revokeOtherSessions(principal.userId, principal.sessionId) }); return;
       }
       if (method === 'GET' && url.pathname === '/api/account/mfa') { sendJson(response, 200, accounts.mfaStatus(principal.userId)); return; }
