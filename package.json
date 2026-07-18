@@ -24,7 +24,12 @@
     "platform:doctor": "npm run platform:build && node --enable-source-maps apps/platform/build/src/doctor.js",
     "platform:backup": "npm run platform:build && node --enable-source-maps apps/platform/build/database/backup.js",
     "platform:restore:test": "npm run platform:build && node --test --test-name-pattern=backup apps/platform/build/tests/persistence.test.js",
-    "platform:check": "npm run platform:lint && npm run platform:typecheck && npm run platform:build && npm run platform:test && npm run platform:e2e"
+    "platform:check": "npm run platform:lint && npm run platform:typecheck && npm run platform:build && npm run platform:test && npm run platform:e2e",
+    "platform:deploy:check": "node scripts/platform-deploy-check.mjs",
+    "platform:build:staging": "npm run platform:build && node scripts/platform-build-target.mjs STAGING",
+    "platform:build:production": "npm run platform:build && node scripts/platform-build-target.mjs PRODUCTION",
+    "platform:activation:check": "npm run platform:build && node apps/platform/build/src/activation-cli.js",
+    "platform:bootstrap-admin": "npm run platform:build && node apps/platform/build/src/bootstrap-admin.js"
   },
   "engines": {
     "node": ">=24"
