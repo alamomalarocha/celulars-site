@@ -15,7 +15,7 @@ const permissionCodes = [
 ] as const;
 
 const mutableTables = [
-  'legal_holds', 'privacy_requests', 'retention_policies', 'data_import_batches', 'job_attempts', 'job_queue', 'inventory_movement_details', 'return_history', 'return_items', 'return_requests', 'inbox_history', 'inbox_cases', 'inbound_webhooks', 'delivery_outbox', 'delivery_templates', 'documents',   'mfa_recovery_codes', 'mfa_credentials', 'team_members', 'teams', 'user_consents', 'terms_versions', 'account_tokens', 'user_invitations',
+  'user_change_history', 'user_permission_overrides', 'legal_holds', 'privacy_requests', 'retention_policies', 'data_import_batches', 'job_attempts', 'job_queue', 'inventory_movement_details', 'return_history', 'return_items', 'return_requests', 'inbox_history', 'inbox_cases', 'inbound_webhooks', 'delivery_outbox', 'delivery_templates', 'documents',   'mfa_recovery_codes', 'mfa_credentials', 'team_members', 'teams', 'user_consents', 'terms_versions', 'account_tokens', 'user_invitations',
   'settings', 'notifications', 'audit_events', 'approvals', 'shipments', 'reservations', 'order_items', 'orders',
   'quote_items', 'quotes', 'messages', 'conversations', 'requests', 'leads', 'inventory_movements',
   'inventory_items', 'prices', 'product_variants', 'products', 'message_templates', 'customer_addresses',

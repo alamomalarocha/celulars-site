@@ -21,6 +21,7 @@ interface UserRow {
   readonly company_id: string | null;
   readonly failed_login_count: number;
   readonly locked_until: string | null;
+  readonly access_expires_at: string | null;
 }
 
 interface SessionRow {
@@ -33,6 +34,7 @@ interface SessionRow {
   readonly display_name: string;
   readonly company_id: string | null;
   readonly status: string;
+  readonly access_expires_at: string | null;
 }
 
 export interface LoginResult {
@@ -58,11 +60,9 @@ export class AuthService {
   private rolesAndPermissions(userId: string): { roles: string[]; permissions: string[] } {
     const roles = this.database.prepare(`SELECT r.code FROM roles r
       JOIN user_roles ur ON ur.role_id = r.id WHERE ur.user_id = ? ORDER BY r.code`).all(userId).map((row) => String(row.code));
-    const permissions = this.database.prepare(`SELECT DISTINCT p.code FROM permissions p
-      JOIN role_permissions rp ON rp.permission_id = p.id
-      JOIN user_roles ur ON ur.role_id = rp.role_id
-      WHERE ur.user_id = ? ORDER BY p.code`).all(userId).map((row) => String(row.code));
-    return { roles, permissions };
+    const permissions = new Set(this.database.prepare('SELECT DISTINCT p.code FROM permissions p JOIN role_permissions rp ON rp.permission_id=p.id JOIN user_roles ur ON ur.role_id=rp.role_id WHERE ur.user_id=? ORDER BY p.code').all(userId).map((row) => String(row.code)));
+    for (const row of this.database.prepare('SELECT p.code,o.effect FROM user_permission_overrides o JOIN permissions p ON p.id=o.permission_id WHERE o.user_id=?').all(userId)) { if (row.effect === 'DENY') permissions.delete(String(row.code)); else permissions.add(String(row.code)); }
+    return { roles, permissions: [...permissions].sort() };
   }
 
   private principal(row: SessionRow, rotatedToken?: string): Principal {
@@ -86,8 +86,9 @@ export class AuthService {
     const user = this.database.prepare('SELECT * FROM users WHERE email = ?').get(email) as UserRow | undefined;
     const locked = user?.locked_until ? Date.parse(user.locked_until) > now.getTime() : false;
     const passwordMatches = user ? verifyPassword(password, user.password_salt, user.password_hash) : false;
+    const accessExpired = user?.access_expires_at ? Date.parse(user.access_expires_at) <= now.getTime() : false;
 
-    if (!user || user.status !== 'ACTIVE' || locked || !passwordMatches) {
+    if (!user || user.status !== 'ACTIVE' || locked || accessExpired || !passwordMatches) {
       if (user) {
         const failures = user.failed_login_count + 1;
         const lockedUntil = failures >= 5 ? new Date(now.getTime() + 15 * 60 * 1000).toISOString() : user.locked_until;
@@ -113,16 +114,16 @@ export class AuthService {
     this.database.prepare('UPDATE users SET failed_login_count = 0, locked_until = NULL, last_login_at = ?, updated_at = ? WHERE id = ?')
       .run(now.toISOString(), now.toISOString(), user.id);
     const sessionRow = this.database.prepare(`SELECT s.id,s.user_id,s.csrf_secret,s.expires_at,s.rotated_at,
-      u.email,u.display_name,u.company_id,u.status FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.id=?`).get(sessionId) as unknown as SessionRow;
+      u.email,u.display_name,u.company_id,u.status,u.access_expires_at FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.id=?`).get(sessionId) as unknown as SessionRow;
     return { token, principal: this.principal(sessionRow) };
   }
 
   authenticate(token: string | undefined, now = new Date()): Principal | null {
     if (!token) return null;
     const row = this.database.prepare(`SELECT s.id,s.user_id,s.csrf_secret,s.expires_at,s.rotated_at,
-      u.email,u.display_name,u.company_id,u.status FROM sessions s JOIN users u ON u.id=s.user_id
+      u.email,u.display_name,u.company_id,u.status,u.access_expires_at FROM sessions s JOIN users u ON u.id=s.user_id
       WHERE s.token_hash=? AND s.revoked_at IS NULL`).get(this.tokenHash(token)) as SessionRow | undefined;
-    if (!row || row.status !== 'ACTIVE') return null;
+    if (!row || row.status !== 'ACTIVE' || (row.access_expires_at ? Date.parse(row.access_expires_at) <= now.getTime() : false)) return null;
     if (Date.parse(row.expires_at) <= now.getTime()) {
       this.database.prepare('UPDATE sessions SET revoked_at = ? WHERE id = ?').run(now.toISOString(), row.id);
       return null;

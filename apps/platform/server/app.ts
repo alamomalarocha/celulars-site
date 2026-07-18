@@ -3,6 +3,7 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
 import { AccountLifecycleService } from './accounts.js';
+import { UserAdministrationService } from './admin-users.js';
 import { AfterSalesService, operationTimeline } from './aftersales.js';
 import { AuthService, AuthenticationError } from './auth.js';
 import { clearSessionCookie, parseCookies, sessionCookie, sessionCookieName } from './cookies.js';
@@ -165,6 +166,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
   const storage = createStorage(config);
   const providers = integrationProviders(config);
   const accounts = new AccountLifecycleService(database, config);
+  const userAdmin = new UserAdministrationService(database);
   const identity = new IdentityGovernanceService(database);
   const documents = new DocumentService(database, config, storage);
   const deliveries = new DeliveryOutboxService(database, config, providers);
@@ -395,13 +397,11 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendEmpty(response);
         return;
       }
-      if (method === 'GET' && url.pathname === '/api/admin/users') {
-        requirePermission(principal, 'users.read');
-        const users = database.prepare(`SELECT id,email,display_name,status,company_id,last_login_at,created_at
-          FROM users ORDER BY display_name`).all();
-        sendJson(response, 200, { users });
-        return;
-      }
+      if (method === 'GET' && url.pathname === '/api/admin/users') { sendJson(response, 200, userAdmin.list(principal)); return; }
+      const adminUserMatch=url.pathname.match(/^\/api\/admin\/users\/([^/]+)$/);
+      if(method==='PATCH'&&adminUserMatch?.[1]){const userId=decodeURIComponent(adminUserMatch[1]);const result=userAdmin.update(principal,userId,await readJson<{displayName?:string;email?:string;status?:'ACTIVE'|'SUSPENDED';companyId?:string|null;accessExpiresAt?:string|null;roleIds?:string[];permissions?:{code:string;effect:'ALLOW'|'DENY'}[];confirmSelfCriticalChange?:boolean}>(request));recordAudit(database,principal,'USER_UPDATED','USER',userId,auditContext(request,result));sendJson(response,200,result);return;}
+      const adminUserHistory=url.pathname.match(/^\/api\/admin\/users\/([^/]+)\/history$/);
+      if(method==='GET'&&adminUserHistory?.[1]){sendJson(response,200,userAdmin.history(principal,decodeURIComponent(adminUserHistory[1])));return;}
       if (method === 'GET' && url.pathname === '/api/catalog/products') {
         requirePermission(principal, 'catalog.read');
         sendJson(response, 200, catalogData(database));
@@ -624,7 +624,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, error instanceof Error && error.message === 'PAYLOAD_TOO_LARGE' ? 413 : 400, { error: 'Solicitacao invalida.' });
         return;
       }
-      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE','INVALID_QUOTE','INVALID_QUOTE_STATUS','INVALID_ORDER','INVALID_ORDER_STATUS','INVALID_RESERVATION','INVALID_SHIPMENT','INVALID_SHIPMENT_STATUS','INVALID_SETTING','INVALID_INVITATION','INVALID_OR_EXPIRED_TOKEN','INVALID_PASSWORD_POLICY','INVALID_MFA_CODE','MFA_NOT_STARTED','INVALID_TEAM','INVALID_ACCESS_EXPIRY','INVALID_TERMS','INVALID_CONSENT','INVALID_DOCUMENT_TYPE','INVALID_DOCUMENT_SIZE','INVALID_DOCUMENT_EXPIRY','INVALID_DOCUMENT_ENTITY','INVALID_DELIVERY_RECIPIENT','DELIVERY_TEMPLATE_NOT_FOUND','INVALID_INBOX_CASE','INVALID_RETURN','INVALID_RETURN_ITEM','INVALID_RETURN_STATUS','INVALID_DATA_ENTITY','INVALID_IMPORT','IMPORT_VALIDATION_FAILED','IMPORT_CONFIRMATION_FAILED','INVALID_PRIVACY_REQUEST'].includes(error.message)) {
+      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE','INVALID_QUOTE','INVALID_QUOTE_STATUS','INVALID_ORDER','INVALID_ORDER_STATUS','INVALID_RESERVATION','INVALID_SHIPMENT','INVALID_SHIPMENT_STATUS','INVALID_SETTING','INVALID_INVITATION','INVALID_OR_EXPIRED_TOKEN','INVALID_PASSWORD_POLICY','INVALID_MFA_CODE','MFA_NOT_STARTED','INVALID_TEAM','INVALID_ACCESS_EXPIRY','INVALID_TERMS','INVALID_CONSENT','INVALID_DOCUMENT_TYPE','INVALID_DOCUMENT_SIZE','INVALID_DOCUMENT_EXPIRY','INVALID_DOCUMENT_ENTITY','INVALID_DELIVERY_RECIPIENT','DELIVERY_TEMPLATE_NOT_FOUND','INVALID_INBOX_CASE','INVALID_RETURN','INVALID_RETURN_ITEM','INVALID_RETURN_STATUS','INVALID_DATA_ENTITY','INVALID_IMPORT','IMPORT_VALIDATION_FAILED','IMPORT_CONFIRMATION_FAILED','INVALID_PRIVACY_REQUEST','INVALID_USER','INVALID_USER_ROLES','INVALID_PERMISSION','LAST_ADMIN_REQUIRED','SELF_CRITICAL_CONFIRMATION_REQUIRED'].includes(error.message)) {
         sendJson(response, 400, { error: 'Dados da operacao DEMO invalidos.', code: error.message });
         return;
       }
