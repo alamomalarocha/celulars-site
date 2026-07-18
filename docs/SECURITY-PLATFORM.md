@@ -13,7 +13,9 @@ A plataforma so inicia com `CELULARS_PLATFORM_DEMO=1`. O banco aceito fica sob `
 - sessao opaca aleatoria, armazenada no banco somente como hash SHA-256 combinado com segredo local;
 - cookie `HttpOnly`, `SameSite=Strict` e `Secure` quando `PLATFORM_SECURE_COOKIES=1`;
 - expiracao padrao de oito horas, logout por revogacao e rotacao padrao a cada trinta minutos;
-- nenhum token de autenticacao e armazenado em `localStorage`.
+- nenhum token de autenticacao e armazenado em `localStorage`;
+- MFA TOTP opcional com QR local, segredo cifrado, tolerancia de uma janela e codigos de recuperacao de uso unico;
+- politica por perfil configuravel, desativacao controlada e reset administrativo auditado.
 
 ## Protecao de requisicoes
 
@@ -65,4 +67,4 @@ Senhas, hashes, salts, cookies, tokens CSRF, IDs completos de sessao, segredos, 
 
 ## Risco residual
 
-Os limitadores sao locais em memoria e o SQLite nao e uma arquitetura distribuida. O ambiente nao possui MFA, provedor de identidade, cofre de segredos, WAF dedicado ou observabilidade de producao. Por isso deve permanecer local ate a ativacao formal.
+Os limitadores sao locais em memoria e o SQLite nao e uma arquitetura distribuida. O ambiente possui MFA TOTP local e observabilidade DEMO, mas nao possui provedor de identidade externo, cofre de segredos, WAF dedicado ou observabilidade gerenciada de producao. Por isso deve permanecer local ate a ativacao formal.

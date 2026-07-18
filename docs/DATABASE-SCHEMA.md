@@ -21,6 +21,14 @@ O saldo de estoque e calculado pelas movimentacoes. O banco usa foreign keys, co
 | --- | --- |
 | `001_initial.sql` | schema operacional completo, indices e constraints |
 | `002_governance.sql` | escopo e indices adicionais para auditoria e notificacoes |
+| `003_identity.sql` | ciclo de contas, equipes, termos, consentimentos e MFA |
+| `004_documents.sql` | documentos privados e metadados de storage |
+| `005_integrations.sql` | outbox, templates e webhooks |
+| `006_inbox.sql` | caixa unificada, SLA e historico |
+| `007_aftersales.sql` | devolucoes e pos-venda |
+| `008_operations.sql` | jobs, inventario detalhado e operacoes |
+| `009_data_governance.sql` | importacao, privacidade e retencao |
+| `010_user_management.sql` | permissoes customizadas e historico de usuarios |
 
 A tabela `schema_migrations` impede reaplicacao. Novas mudancas devem ser adicionadas em arquivo posterior, nunca alterando uma migration ja homologada.
 

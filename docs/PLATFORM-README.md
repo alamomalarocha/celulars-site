@@ -44,6 +44,11 @@ O arquivo `apps/platform/data/demo-credentials.json` e ignorado pelo Git e nunca
 | `npm run platform:test` | executa testes unitarios e integrados |
 | `npm run platform:e2e` | executa testes E2E de seguranca |
 | `npm run platform:check` | executa lint, tipos, build e todos os testes |
+| `npm run platform:doctor` | diagnostica ambiente sem exibir segredos |
+| `npm run platform:backup` | cria e verifica backup DEMO de banco, documentos e metadados |
+| `npm run platform:deploy:check` | valida artefatos sem publicar |
+| `npm run platform:activation:check` | informa READY/NOT READY sem ativar |
+| `npm run platform:bootstrap-admin` | fluxo controlado do primeiro admin; somente producao |
 
 ## Modulos
 
@@ -52,7 +57,9 @@ O arquivo `apps/platform/data/demo-credentials.json` e ignorado pelo Git e nunca
 - empresas, clientes e solicitacoes;
 - conversas e mensagens internas;
 - cotacoes, pedidos, reservas e logistica;
-- usuarios e permissoes;
+- usuarios, equipes, permissoes customizadas, sessoes e MFA TOTP;
+- documentos privados, outbox simulada, caixa unificada e pos-venda;
+- jobs, observabilidade, backup, importacao e privacidade;
 - auditoria, notificacoes, configuracoes e relatorios.
 
 Todas as telas e exportacoes de relatorio identificam o ambiente como demonstracao e usam somente dados ficticios.
@@ -73,7 +80,7 @@ Consulte [DEMO-ACCESS.md](DEMO-ACCESS.md) e [RBAC.md](RBAC.md).
 
 ## Seguranca
 
-A aplicacao usa senha com `scrypt`, sessao server-side, cookie HttpOnly, CSRF, validacao de origem, queries parametrizadas, rate limiting, headers defensivos e RBAC no servidor. Ainda assim, este pacote e DEMO local e nao deve ser exposto na internet.
+A aplicacao usa senha com `scrypt`, sessao server-side, cookie HttpOnly, CSRF, MFA TOTP opcional, validacao de origem, queries parametrizadas, rate limiting, headers defensivos, RBAC e permissoes customizadas no servidor. Ainda assim, este pacote e DEMO local e nao deve ser exposto na internet.
 
 Consulte [SECURITY-PLATFORM.md](SECURITY-PLATFORM.md).
 
