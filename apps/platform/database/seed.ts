@@ -15,11 +15,11 @@ const permissionCodes = [
 ] as const;
 
 const mutableTables = [
-  'notifications', 'audit_events', 'approvals', 'shipments', 'reservations', 'order_items', 'orders',
+  'settings', 'notifications', 'audit_events', 'approvals', 'shipments', 'reservations', 'order_items', 'orders',
   'quote_items', 'quotes', 'messages', 'conversations', 'requests', 'leads', 'inventory_movements',
   'inventory_items', 'prices', 'product_variants', 'products', 'message_templates', 'customer_addresses',
   'customers', 'company_documents', 'sessions', 'user_roles', 'users', 'role_permissions', 'permissions',
-  'roles', 'companies', 'price_lists', 'settings'
+  'roles', 'companies', 'price_lists'
 ] as const;
 
 type CatalogCapacity = { readonly usd: number };
