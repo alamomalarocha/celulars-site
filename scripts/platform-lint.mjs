@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const root = path.resolve('apps/platform');
 const allowedExtensions = new Set(['.ts', '.js', '.sql', '.css', '.html', '.md', '.json']);
-const ignored = new Set(['build', 'data', 'node_modules', 'test-results', 'playwright-report']);
+const ignored = new Set(['build', 'data', 'node_modules', 'vendor', 'test-results', 'playwright-report']);
 const errors = [];
 
 async function visit(directory) {
