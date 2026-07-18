@@ -20,7 +20,7 @@ test('persistence health and backup restore remain isolated and verified', () =>
   try { migrateDatabase(database); seedDatabase(database, config, 'Backup-Demo-Test-Only!'); } finally { database.close(); }
   const health = persistenceAdapter(config).health();
   assert.equal(health.ok, true);
-  assert.equal(health.migrations, 2);
+  assert.equal(health.migrations, 3);
   const backup = createDemoBackup(config, new Date('2026-07-18T16:00:00.000Z'));
   try {
     assert.equal(backup.manifest.productionBackup, false);
