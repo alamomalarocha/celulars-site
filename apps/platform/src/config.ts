@@ -77,6 +77,7 @@ export interface PlatformConfig {
   readonly storagePath: string;
   readonly emailMode: ProviderMode;
   readonly whatsappMode: ProviderMode;
+  readonly mfaRequiredRoles: readonly string[];
   readonly logPath: string;
   readonly features: PlatformFeatureFlags;
 }
@@ -139,6 +140,7 @@ export function loadConfig(overrides: Partial<PlatformConfig> = {}, source: Node
     storagePath: path.resolve(repositoryRoot, source.PLATFORM_STORAGE_PATH ?? `apps/platform/data/storage-${environment.toLowerCase()}`),
     emailMode,
     whatsappMode,
+    mfaRequiredRoles: (source.PLATFORM_MFA_REQUIRED_ROLES ?? '').split(',').map((value) => value.trim().toUpperCase()).filter(Boolean),
     logPath: path.resolve(repositoryRoot, source.PLATFORM_LOG_PATH ?? `apps/platform/data/logs-${environment.toLowerCase()}`),
     features,
     ...overrides

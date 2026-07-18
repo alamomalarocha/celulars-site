@@ -52,6 +52,7 @@ import type { Principal } from './types.js';
 interface LoginBody {
   readonly email?: string;
   readonly password?: string;
+  readonly mfaCode?: string;
 }
 
 interface PriceRevisionBody {
@@ -224,7 +225,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         const result = auth.login(email, password, {
           ipAddress: request.socket.remoteAddress ?? 'unknown',
           userAgent: request.headers['user-agent'] ?? 'unknown'
-        });
+        }, body.mfaCode ?? '');
         loginLimiter.reset(key);
         response.setHeader('Set-Cookie', sessionCookie(result.token, config));
         recordAudit(database, result.principal, 'LOGIN', 'SESSION', result.principal.sessionId, auditContext(request));
@@ -282,6 +283,10 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && url.pathname === '/api/account/sessions/revoke-others') {
         sendJson(response, 200, { revoked: accounts.revokeOtherSessions(principal.userId, principal.sessionId) }); return;
       }
+      if (method === 'GET' && url.pathname === '/api/account/mfa') { sendJson(response, 200, accounts.mfaStatus(principal.userId)); return; }
+      if (method === 'DELETE' && url.pathname === '/api/account/mfa') { const body=await readJson<{code?:string}>(request); const revoked=accounts.disableMfa(principal.userId,body.code??'',principal.sessionId); recordAudit(database,principal,'MFA_DISABLED','USER',principal.userId,auditContext(request,{revokedSessions:revoked})); sendJson(response,200,{enabled:false,revokedSessions:revoked}); return; }
+      const adminMfaReset=url.pathname.match(/^\/api\/admin\/users\/([^/]+)\/mfa\/reset$/);
+      if(method==='POST'&&adminMfaReset?.[1]){requirePermission(principal,'users.write');const userId=decodeURIComponent(adminMfaReset[1]);const revoked=accounts.adminResetMfa(principal,userId);recordAudit(database,principal,'MFA_ADMIN_RESET','USER',userId,auditContext(request,{revokedSessions:revoked}));sendJson(response,200,{reset:true,revokedSessions:revoked});return;}
       if (method === 'POST' && url.pathname === '/api/account/mfa/start') {
         if (!config.features.mfa && !config.demo) throw new Error('MFA_DISABLED');
         sendJson(response, 201, accounts.startMfa(principal.userId)); return;
@@ -607,7 +612,8 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       sendJson(response, 404, { error: 'Rota nao encontrada.' });
     } catch (error) {
       if (error instanceof AuthenticationError) {
-        sendJson(response, 401, { error: 'Credenciais invalidas ou acesso temporariamente indisponivel.' });
+        const code=['MFA_REQUIRED','MFA_ENROLLMENT_REQUIRED'].includes(error.message)?error.message:undefined;
+        sendJson(response, 401, { error: code==='MFA_REQUIRED'?'Informe o segundo fator ou codigo de recuperacao.':code==='MFA_ENROLLMENT_REQUIRED'?'Cadastro MFA obrigatorio para este perfil.':'Credenciais invalidas ou acesso temporariamente indisponivel.', ...(code?{code}:{}) });
         return;
       }
       if (error instanceof Error && error.message === 'UNSUPPORTED_MEDIA_TYPE') {

@@ -1,8 +1,9 @@
-import { createCipheriv, createDecipheriv, createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createCipheriv, createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
 import { hashPassword } from './password.js';
 import type { Principal } from './types.js';
+import { decryptedSecret, mfaEnabled, totpCode, verifyMfa } from './mfa.js';
 
 const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
 const RESET_TTL_MS = 30 * 60 * 1000;
@@ -16,28 +17,11 @@ function base32(buffer: Buffer): string {
   for (const byte of buffer) { value = (value << 8) | byte; bits += 8; while (bits >= 5) { output += alphabet[(value >>> (bits - 5)) & 31]; bits -= 5; } }
   if (bits > 0) output += alphabet[(value << (5 - bits)) & 31]; return output;
 }
-function decodeBase32(input: string): Buffer {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; let bits = 0; let value = 0; const output: number[] = [];
-  for (const char of input.replaceAll('=', '').toUpperCase()) { const index = alphabet.indexOf(char); if (index < 0) throw new Error('INVALID_TOTP_SECRET'); value = (value << 5) | index; bits += 5; if (bits >= 8) { output.push((value >>> (bits - 8)) & 255); bits -= 8; } }
-  return Buffer.from(output);
-}
 function cryptKey(config: PlatformConfig): Buffer { return createHash('sha256').update(`mfa:${config.sessionSecret}`).digest(); }
 function encrypt(config: PlatformConfig, value: string): string {
   const iv = randomBytes(12); const cipher = createCipheriv('aes-256-gcm', cryptKey(config), iv); const encrypted = Buffer.concat([cipher.update(value, 'utf8'), cipher.final()]);
   return `${iv.toString('base64url')}.${cipher.getAuthTag().toString('base64url')}.${encrypted.toString('base64url')}`;
 }
-function decrypt(config: PlatformConfig, value: string): string {
-  const [iv, tag, encrypted] = value.split('.'); if (!iv || !tag || !encrypted) throw new Error('INVALID_MFA_SECRET');
-  const decipher = createDecipheriv('aes-256-gcm', cryptKey(config), Buffer.from(iv, 'base64url')); decipher.setAuthTag(Buffer.from(tag, 'base64url'));
-  return Buffer.concat([decipher.update(Buffer.from(encrypted, 'base64url')), decipher.final()]).toString('utf8');
-}
-function totp(secret: string, now = new Date()): string {
-  const counter = Math.floor(now.getTime() / 30_000); const bytes = Buffer.alloc(8); bytes.writeBigUInt64BE(BigInt(counter));
-  const mac = createHmac('sha1', decodeBase32(secret)).update(bytes).digest(); const offset = (mac[19] ?? 0) & 15;
-  const code = (((mac[offset] ?? 0) & 127) << 24) | ((mac[offset + 1] ?? 0) << 16) | ((mac[offset + 2] ?? 0) << 8) | (mac[offset + 3] ?? 0);
-  return String(code % 1_000_000).padStart(6, '0');
-}
-
 export class AccountLifecycleService {
   constructor(private readonly database: PlatformDatabase, private readonly config: PlatformConfig) {}
   invite(actor: Principal, input: { email: string; displayName: string; roleId: string; companyId?: string | null }, now = new Date()): { invitationId: string; token: string } {
@@ -70,6 +54,9 @@ export class AccountLifecycleService {
   sessions(userId:string):unknown[]{ return this.database.prepare('SELECT id,ip_address,user_agent,expires_at,created_at,rotated_at FROM sessions WHERE user_id=? AND revoked_at IS NULL ORDER BY created_at DESC').all(userId); }
   revokeOtherSessions(userId:string,currentSessionId:string,now=new Date()):number { return Number(this.database.prepare('UPDATE sessions SET revoked_at=? WHERE user_id=? AND id<>? AND revoked_at IS NULL').run(now.toISOString(),userId,currentSessionId).changes); }
   startMfa(userId:string,now=new Date()):{secret:string;provisioningUri:string;recoveryCodes:string[]}{ const secret=base32(randomBytes(20)); const codes=Array.from({length:8},()=>randomBytes(5).toString('hex').toUpperCase()); this.database.prepare('INSERT OR REPLACE INTO mfa_credentials (user_id,secret_ciphertext,enabled,created_at,updated_at) VALUES (?,?,0,?,?)').run(userId,encrypt(this.config,secret),now.toISOString(),now.toISOString()); this.database.prepare('DELETE FROM mfa_recovery_codes WHERE user_id=?').run(userId); for(const code of codes)this.database.prepare('INSERT INTO mfa_recovery_codes (id,user_id,code_hash,created_at) VALUES (?,?,?,?)').run(randomUUID(),userId,digest(this.config,code),now.toISOString()); const email=String(this.database.prepare('SELECT email FROM users WHERE id=?').get(userId)?.email ?? userId); return {secret,provisioningUri:`otpauth://totp/CELULARS:${encodeURIComponent(email)}?secret=${secret}&issuer=CELULARS`,recoveryCodes:codes}; }
-  confirmMfa(userId:string,code:string,now=new Date()):void { const row=this.database.prepare('SELECT secret_ciphertext FROM mfa_credentials WHERE user_id=?').get(userId) as {secret_ciphertext:string}|undefined; if(!row)throw new Error('MFA_NOT_STARTED'); const expected=totp(decrypt(this.config,row.secret_ciphertext),now); const a=Buffer.from(expected),b=Buffer.from(code); if(a.length!==b.length||!timingSafeEqual(a,b))throw new Error('INVALID_MFA_CODE'); this.database.prepare('UPDATE mfa_credentials SET enabled=1,verified_at=?,updated_at=? WHERE user_id=?').run(now.toISOString(),now.toISOString(),userId); }
-  currentTotpForDemo(userId:string,now=new Date()):string { if(!this.config.demo)throw new Error('DEMO_ONLY'); const row=this.database.prepare('SELECT secret_ciphertext FROM mfa_credentials WHERE user_id=?').get(userId) as {secret_ciphertext:string}; return totp(decrypt(this.config,row.secret_ciphertext),now); }
+  confirmMfa(userId:string,code:string,now=new Date()):void { const secret=decryptedSecret(this.database,this.config,userId); const normalized=code.trim(); if(![-1,0,1].some((step)=>{const a=Buffer.from(totpCode(secret,now,step)),b=Buffer.from(normalized);return a.length===b.length&&timingSafeEqual(a,b);}))throw new Error('INVALID_MFA_CODE'); this.database.prepare('UPDATE mfa_credentials SET enabled=1,verified_at=?,updated_at=? WHERE user_id=?').run(now.toISOString(),now.toISOString(),userId); }
+  mfaStatus(userId:string):object { return {enabled:mfaEnabled(this.database,userId),recoveryCodesRemaining:Number(this.database.prepare('SELECT COUNT(*) AS count FROM mfa_recovery_codes WHERE user_id=? AND used_at IS NULL').get(userId)?.count??0)}; }
+  disableMfa(userId:string,code:string,currentSessionId:string,now=new Date()):number { verifyMfa(this.database,this.config,userId,code,now); this.database.prepare('DELETE FROM mfa_recovery_codes WHERE user_id=?').run(userId); this.database.prepare('DELETE FROM mfa_credentials WHERE user_id=?').run(userId); return Number(this.database.prepare('UPDATE sessions SET revoked_at=? WHERE user_id=? AND id<>? AND revoked_at IS NULL').run(now.toISOString(),userId,currentSessionId).changes); }
+  adminResetMfa(actor:Principal,userId:string,now=new Date()):number { if(!actor.permissions.includes('users.write'))throw new Error('FORBIDDEN:users.write'); if(!this.database.prepare('SELECT id FROM users WHERE id=?').get(userId))throw new Error('USER_NOT_FOUND'); this.database.prepare('DELETE FROM mfa_recovery_codes WHERE user_id=?').run(userId); this.database.prepare('DELETE FROM mfa_credentials WHERE user_id=?').run(userId); return Number(this.database.prepare('UPDATE sessions SET revoked_at=? WHERE user_id=? AND revoked_at IS NULL').run(now.toISOString(),userId).changes); }
+  currentTotpForDemo(userId:string,now=new Date()):string { if(!this.config.demo)throw new Error('DEMO_ONLY'); return totpCode(decryptedSecret(this.database,this.config,userId),now); }
 }

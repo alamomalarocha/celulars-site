@@ -3,6 +3,7 @@ import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
 import { verifyPassword } from './password.js';
 import type { Principal } from './types.js';
+import { mfaEnabled, verifyMfa } from './mfa.js';
 
 interface LoginContext {
   readonly ipAddress: string;
@@ -79,7 +80,7 @@ export class AuthService {
     };
   }
 
-  login(emailInput: string, password: string, context: LoginContext): LoginResult {
+  login(emailInput: string, password: string, context: LoginContext, mfaCode = ''): LoginResult {
     const email = emailInput.trim().toLowerCase();
     const now = context.now ?? new Date();
     const user = this.database.prepare('SELECT * FROM users WHERE email = ?').get(email) as UserRow | undefined;
@@ -95,6 +96,12 @@ export class AuthService {
       }
       throw new AuthenticationError('Credenciais invalidas ou acesso temporariamente indisponivel.');
     }
+
+    const roles = this.rolesAndPermissions(user.id).roles;
+    const enrolled = mfaEnabled(this.database, user.id);
+    const required = enrolled || roles.some((role) => this.config.mfaRequiredRoles.includes(role));
+    if (required && !enrolled) throw new AuthenticationError('MFA_ENROLLMENT_REQUIRED');
+    if (required) { try { verifyMfa(this.database, this.config, user.id, mfaCode, now); } catch { throw new AuthenticationError('MFA_REQUIRED'); } }
 
     const token = randomBytes(32).toString('base64url');
     const sessionId = randomUUID();
