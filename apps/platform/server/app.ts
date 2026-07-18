@@ -244,6 +244,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if (method === 'POST' && url.pathname === '/api/auth/password-reset/request') {
         const body = await readJson<{ email?: string }>(request);
         const reset = accounts.createPasswordReset(body.email ?? '');
+        if(reset.token){deliveries.queue(null,{channel:'EMAIL',templateCode:'PASSWORD_RESET',recipient:(body.email??'').trim().toLowerCase(),variables:{link:config.publicUrl+'/reset?token='+encodeURIComponent(reset.token)},correlationId:'PASSWORD_RESET'});}
         sendJson(response, 202, { accepted: true, ...(config.demo && reset.token ? { demoToken: reset.token } : {}) });
         return;
       }
@@ -299,7 +300,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       }
       if (method === 'POST' && url.pathname === '/api/admin/invitations') {
         requirePermission(principal, 'users.write'); const body = await readJson<{ email:string;displayName:string;roleId:string;companyId?:string|null }>(request);
-        const invitation = accounts.invite(principal, body); sendJson(response, 201, { ...invitation, delivery: 'DEMO_PREVIEW_ONLY' }); return;
+        const invitation = accounts.invite(principal, body); const delivery=deliveries.queue(principal,{channel:'EMAIL',templateCode:'INVITE',recipient:body.email,variables:{name:body.displayName,link:config.publicUrl+'/invite?token='+encodeURIComponent(invitation.token)},companyId:body.companyId??null,correlationId:invitation.invitationId}); sendJson(response, 201, { ...invitation, delivery }); return;
       }
       if (method === 'GET' && url.pathname === '/api/teams') { sendJson(response, 200, identity.teams(principal)); return; }
       if (method === 'POST' && url.pathname === '/api/teams') { sendJson(response, 201, identity.createTeam(principal, await readJson<{name:string;companyId?:string|null}>(request))); return; }
