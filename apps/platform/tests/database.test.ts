@@ -50,7 +50,7 @@ test('migration and seed create a complete isolated DEMO database', () => {
   const database = openDatabase(config);
 
   try {
-    assert.deepEqual(migrateDatabase(database), ['001_initial.sql', '002_governance.sql', '003_identity.sql', '004_documents.sql', '005_integrations.sql']);
+    assert.deepEqual(migrateDatabase(database), ['001_initial.sql', '002_governance.sql', '003_identity.sql', '004_documents.sql', '005_integrations.sql', '006_inbox.sql']);
     assert.deepEqual(migrateDatabase(database), []);
     const summary = seedDatabase(database, config, 'Local-Demo-Test-Only!');
     assert.deepEqual(summary, {

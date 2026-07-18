@@ -15,7 +15,7 @@ const permissionCodes = [
 ] as const;
 
 const mutableTables = [
-  'inbound_webhooks', 'delivery_outbox', 'delivery_templates', 'documents',   'mfa_recovery_codes', 'mfa_credentials', 'team_members', 'teams', 'user_consents', 'terms_versions', 'account_tokens', 'user_invitations',
+  'inbox_history', 'inbox_cases', 'inbound_webhooks', 'delivery_outbox', 'delivery_templates', 'documents',   'mfa_recovery_codes', 'mfa_credentials', 'team_members', 'teams', 'user_consents', 'terms_versions', 'account_tokens', 'user_invitations',
   'settings', 'notifications', 'audit_events', 'approvals', 'shipments', 'reservations', 'order_items', 'orders',
   'quote_items', 'quotes', 'messages', 'conversations', 'requests', 'leads', 'inventory_movements',
   'inventory_items', 'prices', 'product_variants', 'products', 'message_templates', 'customer_addresses',
