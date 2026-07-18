@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
@@ -17,6 +18,9 @@ import {
 import { conversationData, createConversation, createMessage, createRequest, requestData, transitionRequest } from './communications.js';
 import { companyData, createCustomer, customerData, transitionCompanyApproval, updateCustomer } from './crm.js';
 import { dashboardData } from './dashboard.js';
+import { createStorage } from './documents.js';
+import { integrationProviders } from './integrations.js';
+import { observeRequest, operationalHealth } from './observability.js';
 import {
   auditData,
   markAllNotificationsRead,
@@ -151,6 +155,8 @@ function sensitiveWrite(pathname: string): boolean {
 
 export function createPlatformApplication(database: PlatformDatabase, config: PlatformConfig): PlatformApplication {
   const auth = new AuthService(database, config);
+  const storage = createStorage(config);
+  const providers = integrationProviders(config);
   const loginLimiter = new RateLimiter(5, 15 * 60 * 1000);
   const writeLimiter = new RateLimiter(120, 60 * 1000);
   const sensitiveLimiter = new RateLimiter(30, 60 * 1000);
@@ -161,6 +167,10 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
     const method = request.method ?? 'GET';
     const url = new URL(request.url ?? '/', config.allowedOrigin);
     const unsafe = !['GET', 'HEAD', 'OPTIONS'].includes(method);
+    const requestId = headerValue(request.headers['x-request-id'])?.slice(0, 100) || randomUUID();
+    const requestStartedAt = Date.now();
+    response.setHeader('X-Request-Id', requestId);
+    response.once('finish', () => observeRequest(response.statusCode, Date.now() - requestStartedAt, url.pathname));
 
     try {
       if (method === 'GET' && serveStatic(url.pathname, response, config)) return;
@@ -170,8 +180,13 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         return;
       }
 
-      if (method === 'GET' && url.pathname === '/api/health') {
-        sendJson(response, 200, { status: 'ok', environment: config.environment, database: config.databaseDriver });
+      if (method === 'GET' && url.pathname === '/api/live') {
+        sendJson(response, 200, { status: 'alive', environment: config.environment, requestId });
+        return;
+      }
+      if (method === 'GET' && (url.pathname === '/api/ready' || url.pathname === '/api/health')) {
+        const health = operationalHealth(database, config, storage, providers) as { ready: boolean };
+        sendJson(response, health.ready ? 200 : 503, { status: health.ready ? 'ready' : 'not_ready', environment: config.environment, requestId });
         return;
       }
 
@@ -248,6 +263,11 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
           role: url.searchParams.get('role'), action: url.searchParams.get('action'),
           entityType: url.searchParams.get('entityType'), companyId: url.searchParams.get('companyId')
         }));
+        return;
+      }
+      if (method === 'GET' && url.pathname === '/api/admin/diagnostics') {
+        requirePermission(principal, 'settings.read');
+        sendJson(response, 200, operationalHealth(database, config, storage, providers));
         return;
       }
       if (method === 'GET' && url.pathname === '/api/settings') {
