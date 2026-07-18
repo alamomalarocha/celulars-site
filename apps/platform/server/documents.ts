@@ -45,7 +45,7 @@ export class DemoAntivirusHook implements AntivirusHook { scan(): 'CLEAN' { retu
 
 export class DocumentService {
   constructor(private readonly database:PlatformDatabase,private readonly config:PlatformConfig,private readonly storage:StorageProvider,private readonly antivirus:AntivirusHook=new DemoAntivirusHook()){}
-  upload(actor:Principal,input:{companyId?:string|null;entityType:string;entityId?:string|null;name:string;mimeType:string;content:Buffer;expiresAt?:string|null},now=new Date()):object{
+  list(actor:Principal,now=new Date()):object{const companyId=actor.roles.includes('WHOLESALE')?actor.companyId:null;const rows=this.database.prepare(`SELECT id,company_id,entity_type,entity_id,original_name,mime_type,size_bytes,checksum_sha256,scan_status,expires_at,created_at FROM documents WHERE deleted_at IS NULL AND (expires_at IS NULL OR expires_at>?) AND (? IS NULL OR company_id=?) ORDER BY created_at DESC LIMIT 200`).all(now.toISOString(),companyId,companyId);return{documents:rows,private:true,environment:'DEMO'};}  upload(actor:Principal,input:{companyId?:string|null;entityType:string;entityId?:string|null;name:string;mimeType:string;content:Buffer;expiresAt?:string|null},now=new Date()):object{
     if(!this.config.features.documents)throw new Error('DOCUMENTS_DISABLED');
     const extension=path.extname(input.name).toLowerCase();const expected=allowedTypes.get(input.mimeType);
     if(input.name.includes('/')||input.name.includes('\\')||!expected||forbiddenExtensions.has(extension)||extension!==expected)throw new Error('INVALID_DOCUMENT_TYPE');
