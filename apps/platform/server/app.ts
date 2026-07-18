@@ -2,10 +2,13 @@ import { randomUUID } from 'node:crypto';
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
 import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
+import { AccountLifecycleService } from './accounts.js';
+import { AfterSalesService, operationTimeline } from './aftersales.js';
 import { AuthService, AuthenticationError } from './auth.js';
 import { clearSessionCookie, parseCookies, sessionCookie, sessionCookieName } from './cookies.js';
 import {
   convertQuoteToOrder,
+  expireReservations,
   createQuote,
   createReservation,
   orderData,
@@ -18,9 +21,11 @@ import {
 import { conversationData, createConversation, createMessage, createRequest, requestData, transitionRequest } from './communications.js';
 import { companyData, createCustomer, customerData, transitionCompanyApproval, updateCustomer } from './crm.js';
 import { dashboardData } from './dashboard.js';
-import { createStorage } from './documents.js';
-import { integrationProviders } from './integrations.js';
-import { observeRequest, operationalHealth } from './observability.js';
+import { DocumentService, createStorage } from './documents.js';
+import { DeliveryOutboxService, integrationProviders } from './integrations.js';
+import { IdentityGovernanceService } from './identity.js';
+import { UnifiedInboxService } from './inbox.js';
+import { LocalJobQueue, observeRequest, operationalHealth } from './observability.js';
 import {
   auditData,
   markAllNotificationsRead,
@@ -35,6 +40,7 @@ import {
   settingsData,
   updateSetting
 } from './governance.js';
+import { DataTransferService, PrivacyService } from './data-governance.js';
 import { readJson, sendEmpty, sendJson } from './http.js';
 import { catalogData, createPriceRevision, inventoryData, priceData, priceListData, recordInventoryMovement } from './operations.js';
 import { RateLimiter } from './rate-limit.js';
@@ -157,6 +163,21 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
   const auth = new AuthService(database, config);
   const storage = createStorage(config);
   const providers = integrationProviders(config);
+  const accounts = new AccountLifecycleService(database, config);
+  const identity = new IdentityGovernanceService(database);
+  const documents = new DocumentService(database, config, storage);
+  const deliveries = new DeliveryOutboxService(database, config, providers);
+  const inbox = new UnifiedInboxService(database);
+  const afterSales = new AfterSalesService(database);
+  const transfers = new DataTransferService(database, config);
+  const privacy = new PrivacyService(database);
+  const jobs = new LocalJobQueue(database, {
+    EMAIL_DELIVERY: () => { deliveries.process(20); }, WHATSAPP_DELIVERY: () => { deliveries.process(20); },
+    EXPIRE_RESERVATIONS: () => { expireReservations(database); }, NOTIFICATIONS: () => { refreshOperationalNotifications(database); },
+    SESSION_CLEANUP: () => { database.prepare('DELETE FROM sessions WHERE expires_at<? OR revoked_at IS NOT NULL').run(new Date().toISOString()); },
+    REPORT: () => { reportsData(database, { sessionId: 'job', userId: 'user-demo-admin', email: 'job@demo.invalid', displayName: 'Job', companyId: null, roles: ['ADMIN'], permissions: ['reports.read'], csrfToken: 'job' }); },
+    DOCUMENT_PROCESSING: () => undefined, BACKUP: () => { throw new Error('BACKUP_JOB_REQUIRES_CLI_ADAPTER'); }
+  });
   const loginLimiter = new RateLimiter(5, 15 * 60 * 1000);
   const writeLimiter = new RateLimiter(120, 60 * 1000);
   const sensitiveLimiter = new RateLimiter(30, 60 * 1000);
@@ -211,6 +232,24 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         return;
       }
 
+      if (method === 'POST' && url.pathname === '/api/auth/invitations/accept') {
+        const body = await readJson<{ token?: string; password?: string }>(request);
+        const userId = accounts.acceptInvitation(body.token ?? '', body.password ?? '');
+        sendJson(response, 200, { accepted: true, userId });
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/auth/password-reset/request') {
+        const body = await readJson<{ email?: string }>(request);
+        const reset = accounts.createPasswordReset(body.email ?? '');
+        sendJson(response, 202, { accepted: true, ...(config.demo && reset.token ? { demoToken: reset.token } : {}) });
+        return;
+      }
+      if (method === 'POST' && url.pathname === '/api/auth/password-reset/confirm') {
+        const body = await readJson<{ token?: string; password?: string }>(request);
+        accounts.resetPassword(body.token ?? '', body.password ?? '');
+        sendJson(response, 200, { reset: true });
+        return;
+      }
       const cookies = parseCookies(request.headers.cookie);
       const principal = auth.authenticate(cookies[sessionCookieName(config)]);
       if (!principal) {
@@ -237,6 +276,51 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, 200, { user: publicPrincipal(principal), environment: config.environment });
         return;
       }
+      if (method === 'GET' && url.pathname === '/api/account/sessions') {
+        sendJson(response, 200, { sessions: accounts.sessions(principal.userId) }); return;
+      }
+      if (method === 'POST' && url.pathname === '/api/account/sessions/revoke-others') {
+        sendJson(response, 200, { revoked: accounts.revokeOtherSessions(principal.userId, principal.sessionId) }); return;
+      }
+      if (method === 'POST' && url.pathname === '/api/account/mfa/start') {
+        if (!config.features.mfa && !config.demo) throw new Error('MFA_DISABLED');
+        sendJson(response, 201, accounts.startMfa(principal.userId)); return;
+      }
+      if (method === 'POST' && url.pathname === '/api/account/mfa/confirm') {
+        const body = await readJson<{ code?: string }>(request); accounts.confirmMfa(principal.userId, body.code ?? '');
+        recordAudit(database, principal, 'MFA_ENABLED', 'USER', principal.userId, auditContext(request)); sendJson(response, 200, { enabled: true }); return;
+      }
+      if (method === 'POST' && url.pathname === '/api/admin/invitations') {
+        requirePermission(principal, 'users.write'); const body = await readJson<{ email:string;displayName:string;roleId:string;companyId?:string|null }>(request);
+        const invitation = accounts.invite(principal, body); sendJson(response, 201, { ...invitation, delivery: 'DEMO_PREVIEW_ONLY' }); return;
+      }
+      if (method === 'GET' && url.pathname === '/api/teams') { sendJson(response, 200, identity.teams(principal)); return; }
+      if (method === 'POST' && url.pathname === '/api/teams') { sendJson(response, 201, identity.createTeam(principal, await readJson<{name:string;companyId?:string|null}>(request))); return; }
+      const teamMemberMatch=url.pathname.match(/^\/api\/teams\/([^/]+)\/members$/);
+      if (method === 'POST' && teamMemberMatch?.[1]) { sendJson(response, 201, identity.addMember(principal, decodeURIComponent(teamMemberMatch[1]), await readJson<{userId:string;memberRole?:string;accessExpiresAt?:string|null}>(request))); return; }
+      if (method === 'POST' && url.pathname === '/api/admin/terms') { sendJson(response, 201, identity.publishTerms(principal, await readJson<{version:string;title:string;effectiveAt:string}>(request))); return; }
+      if (method === 'POST' && url.pathname === '/api/account/consents') { const body=await readJson<{termsVersionId:string;consentType:string;granted:boolean}>(request); sendJson(response, 201, identity.recordConsent(principal,{...body,ipAddress:request.socket.remoteAddress??'unknown',userAgent:headerValue(request.headers['user-agent'])??'unknown'})); return; }
+      if (method === 'POST' && url.pathname === '/api/documents') { const body=await readJson<{companyId?:string|null;entityType:string;entityId?:string|null;name:string;mimeType:string;contentBase64:string;expiresAt?:string|null}>(request,7*1024*1024); sendJson(response,201,documents.upload(principal,{...body,content:Buffer.from(body.contentBase64,'base64')})); return; }
+      const documentMatch=url.pathname.match(/^\/api\/documents\/([^/]+)$/);
+      if (method === 'GET' && documentMatch?.[1]) { const item=documents.download(principal,decodeURIComponent(documentMatch[1])); response.statusCode=200;response.setHeader('Content-Type',item.mimeType);response.setHeader('Content-Disposition',`attachment; filename*=UTF-8''${encodeURIComponent(item.name)}`);response.end(item.content);return; }
+      if (method === 'DELETE' && documentMatch?.[1]) { documents.remove(principal,decodeURIComponent(documentMatch[1]));sendEmpty(response);return; }
+      if (method === 'GET' && url.pathname === '/api/inbox') { sendJson(response,200,inbox.list(principal,{search:url.searchParams.get('search')??'',status:url.searchParams.get('status')??'',priority:url.searchParams.get('priority')??'',assignedUserId:url.searchParams.get('assignedUserId')??''}));return; }
+      const inboxMatch=url.pathname.match(/^\/api\/inbox\/([^/]+)$/);if(method==='PATCH'&&inboxMatch?.[1]){sendJson(response,200,inbox.update(principal,decodeURIComponent(inboxMatch[1]),await readJson<{status?:string;priority?:string;assignedUserId?:string|null;tags?:string[];slaDueAt?:string|null}>(request)));return;}
+      const inboxHistoryMatch=url.pathname.match(/^\/api\/inbox\/([^/]+)\/history$/);if(method==='GET'&&inboxHistoryMatch?.[1]){sendJson(response,200,inbox.history(principal,decodeURIComponent(inboxHistoryMatch[1])));return;}
+      if(method==='GET'&&url.pathname==='/api/deliveries'){requirePermission(principal,'messages.read');sendJson(response,200,{deliveries:database.prepare('SELECT id,channel,template_code,recipient,subject,status,attempts,last_error,created_at FROM delivery_outbox ORDER BY created_at DESC LIMIT 200').all(),banner:'DEMO — MENSAGEM NÃO ENVIADA EXTERNAMENTE'});return;}
+      if(method==='POST'&&url.pathname==='/api/deliveries'){requirePermission(principal,'messages.write');sendJson(response,201,deliveries.queue(principal,await readJson<{channel:'EMAIL'|'WHATSAPP';templateCode:string;recipient:string;variables:Record<string,string>;companyId?:string|null;conversationId?:string|null;correlationId?:string|null}>(request)));return;}
+      if(method==='POST'&&url.pathname==='/api/admin/deliveries/process'){requirePermission(principal,'settings.write');sendJson(response,200,{processed:deliveries.process()});return;}
+      if(method==='POST'&&url.pathname==='/api/returns'){requirePermission(principal,'orders.write');sendJson(response,201,afterSales.create(principal,await readJson<{orderId:string;reasonCode:string;notes:string;items:{orderItemId:string;quantity:number}[]}>(request)));return;}
+      const returnMatch=url.pathname.match(/^\/api\/returns\/([^/]+)$/);if(method==='PATCH'&&returnMatch?.[1]){requirePermission(principal,'orders.write');sendJson(response,200,afterSales.transition(principal,decodeURIComponent(returnMatch[1]),await readJson<{status:string;notes:string;resolution?:string;inspectionResult?:string}>(request)));return;}
+      const timelineMatch=url.pathname.match(/^\/api\/orders\/([^/]+)\/timeline$/);if(method==='GET'&&timelineMatch?.[1]){requirePermission(principal,'orders.read');sendJson(response,200,operationTimeline(database,principal,decodeURIComponent(timelineMatch[1])));return;}
+      if(method==='GET'&&url.pathname==='/api/admin/jobs'){requirePermission(principal,'settings.read');sendJson(response,200,jobs.list());return;}
+      if(method==='POST'&&url.pathname==='/api/admin/jobs/run-next'){requirePermission(principal,'settings.write');sendJson(response,200,{result:jobs.runNext()});return;}
+      if(method==='POST'&&url.pathname==='/api/admin/imports/preview'){requirePermission(principal,'settings.write');sendJson(response,201,transfers.preview(principal,await readJson<{entityType:string;sourceName:string;payload:string}>(request,3*1024*1024)));return;}
+      const importApply=url.pathname.match(/^\/api\/admin\/imports\/([^/]+)\/apply$/);if(method==='POST'&&importApply?.[1]){const body=await readJson<{confirmation:string}>(request);sendJson(response,200,transfers.apply(principal,decodeURIComponent(importApply[1]),body.confirmation));return;}
+      const importRollback=url.pathname.match(/^\/api\/admin\/imports\/([^/]+)\/rollback$/);if(method==='POST'&&importRollback?.[1]){sendJson(response,200,transfers.rollback(principal,decodeURIComponent(importRollback[1])));return;}
+      if(method==='GET'&&url.pathname==='/api/admin/export'){requirePermission(principal,'settings.read');const entity=url.searchParams.get('entity')??'';const format=url.searchParams.get('format')==='CSV'?'CSV':'JSON';const content=transfers.export(principal,entity,format);response.statusCode=200;response.setHeader('Content-Type',format==='CSV'?'text/csv; charset=utf-8':'application/json; charset=utf-8');response.end(content);return;}
+      if(method==='POST'&&url.pathname==='/api/privacy/requests'){const body=await readJson<{type:string;notes:string}>(request);sendJson(response,201,privacy.request(principal,body.type,body.notes));return;}
+      if(method==='GET'&&url.pathname==='/api/privacy/export'){sendJson(response,200,privacy.exportUser(principal,url.searchParams.get('userId')??principal.userId));return;}
       if (method === 'GET' && url.pathname === '/api/dashboard') {
         refreshOperationalNotifications(database);
         sendJson(response, 200, dashboardData(database, principal));
@@ -532,11 +616,11 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, error instanceof Error && error.message === 'PAYLOAD_TOO_LARGE' ? 413 : 400, { error: 'Solicitacao invalida.' });
         return;
       }
-      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE','INVALID_QUOTE','INVALID_QUOTE_STATUS','INVALID_ORDER','INVALID_ORDER_STATUS','INVALID_RESERVATION','INVALID_SHIPMENT','INVALID_SHIPMENT_STATUS','INVALID_SETTING'].includes(error.message)) {
+      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE','INVALID_QUOTE','INVALID_QUOTE_STATUS','INVALID_ORDER','INVALID_ORDER_STATUS','INVALID_RESERVATION','INVALID_SHIPMENT','INVALID_SHIPMENT_STATUS','INVALID_SETTING','INVALID_INVITATION','INVALID_OR_EXPIRED_TOKEN','INVALID_PASSWORD_POLICY','INVALID_MFA_CODE','MFA_NOT_STARTED','INVALID_TEAM','INVALID_ACCESS_EXPIRY','INVALID_TERMS','INVALID_CONSENT','INVALID_DOCUMENT_TYPE','INVALID_DOCUMENT_SIZE','INVALID_DOCUMENT_EXPIRY','INVALID_DOCUMENT_ENTITY','INVALID_DELIVERY_RECIPIENT','DELIVERY_TEMPLATE_NOT_FOUND','INVALID_INBOX_CASE','INVALID_RETURN','INVALID_RETURN_ITEM','INVALID_RETURN_STATUS','INVALID_DATA_ENTITY','INVALID_IMPORT','IMPORT_VALIDATION_FAILED','IMPORT_CONFIRMATION_FAILED','INVALID_PRIVACY_REQUEST'].includes(error.message)) {
         sendJson(response, 400, { error: 'Dados da operacao DEMO invalidos.', code: error.message });
         return;
       }
-      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND','REQUEST_NOT_FOUND','CONVERSATION_NOT_FOUND','QUOTE_NOT_FOUND','ORDER_NOT_FOUND','RESERVATION_NOT_FOUND','NOTIFICATION_NOT_FOUND','SETTING_NOT_FOUND'].includes(error.message)) {
+      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND','REQUEST_NOT_FOUND','CONVERSATION_NOT_FOUND','QUOTE_NOT_FOUND','ORDER_NOT_FOUND','RESERVATION_NOT_FOUND','NOTIFICATION_NOT_FOUND','SETTING_NOT_FOUND','DOCUMENT_NOT_FOUND','DELIVERY_NOT_FOUND','INBOX_NOT_FOUND','RETURN_NOT_FOUND','USER_NOT_FOUND'].includes(error.message)) {
         sendJson(response, 404, { error: 'Registro DEMO nao encontrado.' });
         return;
       }
