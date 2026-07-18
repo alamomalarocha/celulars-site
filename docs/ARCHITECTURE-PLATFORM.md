@@ -46,3 +46,30 @@ Camadas:
 
 Dados DEMO nunca sao migrados. Apenas schema, contratos e migrations seguem adiante. O banco local e recriado por seed e fica ignorado pelo Git.
 
+
+## Fluxo de requisicao
+
+1. `main.ts` carrega configuracao e abre o SQLite;
+2. migrations pendentes sao aplicadas;
+3. `app.ts` aplica headers, origem, rate limiting, sessao e CSRF;
+4. a rota exige permissao no servidor;
+5. modulos de dominio executam queries parametrizadas e transacoes;
+6. respostas JSON retornam sem dados sensiveis;
+7. o frontend renderiza com APIs DOM seguras.
+
+## Fronteiras de confianca
+
+- navegador local nunca e fonte de autorizacao;
+- cookie identifica uma sessao opaca armazenada no servidor;
+- `company_id` restringe registros atacadistas;
+- `data/catalog-public.json` e somente fonte de snapshot para o seed;
+- o SQLite DEMO nao e fonte do site publico;
+- integracoes externas permanecem fora da fronteira da DEMO.
+
+## Concorrencia e consistencia
+
+Operacoes de reserva, liberacao, pedido e movimentos usam transacoes `BEGIN IMMEDIATE`, constraints e IDs deterministas. A futura migracao deve preservar atomicidade, idempotencia e isolamento por empresa.
+
+## Deploy
+
+O build estatico do site ignora `apps/platform/`. A plataforma nao possui rota no Cloudflare Pages e deve retornar 404 em previews publicos. Uma futura implantacao exige runtime e protecao separados.

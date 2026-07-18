@@ -3,6 +3,8 @@
   const root=document.getElementById('platform-root');
   const state={user:null,csrf:'',dashboard:null,currentView:'dashboard',menuOpen:false,modules:{},moduleLoading:false,moduleError:'',moduleMessage:'',customerEdit:null};
 
+  function resetSessionState(){state.user=null;state.csrf='';state.dashboard=null;state.currentView='dashboard';state.menuOpen=false;state.modules={};state.moduleLoading=false;state.moduleError='';state.moduleMessage='';state.customerEdit=null}
+
   function element(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node}
   function button(label,className,onClick){const node=element('button',className,label);node.type='button';node.addEventListener('click',onClick);return node}
   function replace(node){if(!root)return;root.replaceChildren(node)}
@@ -16,7 +18,7 @@
     const form=element('form');const emailField=element('div','field');const emailLabel=element('label',null,'E-mail');emailLabel.htmlFor='login-email';const email=element('input');email.id='login-email';email.type='email';email.autocomplete='username';email.required=true;emailField.append(emailLabel,email);
     const passwordField=element('div','field');const passwordLabel=element('label',null,'Senha');passwordLabel.htmlFor='login-password';const password=element('input');password.id='login-password';password.type='password';password.autocomplete='current-password';password.required=true;password.minLength=8;passwordField.append(passwordLabel,password);
     const submit=element('button','primary-button','Entrar');submit.type='submit';const error=element('p','form-error',message);error.setAttribute('role','alert');form.append(emailField,passwordField,submit,error);
-    form.addEventListener('submit',async event=>{event.preventDefault();submit.disabled=true;error.textContent='';try{const payload=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:email.value,password:password.value})});state.user=payload.user;state.csrf=payload.user.csrfToken;await loadDashboard();renderShell()}catch(failure){error.textContent=failure.message}finally{submit.disabled=false}});
+    form.addEventListener('submit',async event=>{event.preventDefault();submit.disabled=true;error.textContent='';try{const payload=await api('/api/auth/login',{method:'POST',body:JSON.stringify({email:email.value,password:password.value})});resetSessionState();state.user=payload.user;state.csrf=payload.user.csrfToken;await loadDashboard();renderShell()}catch(failure){error.textContent=failure.message}finally{submit.disabled=false}});
     panel.append(form);content.append(panel);page.append(content);replace(page);email.focus();
   }
 
@@ -88,7 +90,7 @@
   async function loadDashboard(){state.dashboard=await api('/api/dashboard')}
   async function loadModule(key){state.moduleLoading=true;state.moduleError='';renderShell();try{if(key==='catalog')state.modules.catalog=await api('/api/catalog/products');if(key==='prices'){const [lists,prices]=await Promise.all([api('/api/price-lists'),api('/api/prices')]);state.modules.prices={...lists,...prices}}if(key==='inventory')state.modules.inventory=await api('/api/inventory');if(key==='customers')state.modules.customers=await api('/api/customers');if(['companies','company'].includes(key))state.modules[key]=await api('/api/companies');if(key==='requests')state.modules.requests=await api('/api/requests');if(key==='messages')state.modules.messages=await api('/api/conversations');if(key==='quotes')state.modules.quotes=await api('/api/quotes');if(key==='orders')state.modules.orders=await api('/api/orders');if(key==='notifications')state.modules.notifications=await api('/api/notifications');if(key==='audit')state.modules.audit=await api('/api/audit');if(key==='settings')state.modules.settings=await api('/api/settings');if(key==='reports')state.modules.reports=await api('/api/reports')}catch(failure){state.moduleError=failure.message}finally{state.moduleLoading=false;renderShell()}}
   async function openView(key){state.currentView=key;state.menuOpen=false;state.moduleMessage='';state.moduleError='';state.customerEdit=null;renderShell();if(['catalog','prices','inventory','customers','companies','company','requests','messages','quotes','orders','notifications','audit','settings','reports'].includes(key))await loadModule(key);document.getElementById('main-content')?.focus()}
-  async function logout(){try{await api('/api/auth/logout',{method:'POST'})}catch(failure){console.warn('Logout local:',failure.message)}state.user=null;state.csrf='';loginView()}
-  async function boot(){replace(element('div','loading','Carregando ambiente DEMO...'));try{const payload=await api('/api/auth/me');state.user=payload.user;state.csrf=payload.user.csrfToken;await loadDashboard();renderShell()}catch(failure){loginView(failure.status===401?'':'Não foi possível iniciar a plataforma.') }}
+  async function logout(){try{await api('/api/auth/logout',{method:'POST'})}catch(failure){console.warn('Logout local:',failure.message)}resetSessionState();loginView()}
+  async function boot(){replace(element('div','loading','Carregando ambiente DEMO...'));try{const payload=await api('/api/auth/me');resetSessionState();state.user=payload.user;state.csrf=payload.user.csrfToken;await loadDashboard();renderShell()}catch(failure){resetSessionState();loginView(failure.status===401?'':'Não foi possível iniciar a plataforma.') }}
   void boot();
 }());

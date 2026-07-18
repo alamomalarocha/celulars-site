@@ -26,3 +26,43 @@ Permissoes sao carregadas do banco pela sessao e verificadas na API. Ocultar con
 ## Ativacao futura
 
 Antes de qualquer preview compartilhado, gerar segredo aleatorio longo, ativar cookies seguros, configurar HTTPS e origem exata, escolher armazenamento de banco compativel com Cloudflare e substituir todas as credenciais DEMO.
+
+## Defesas adicionais
+
+- `Content-Type: application/json` obrigatorio em corpos JSON;
+- rate limiting geral para escritas e limites menores em mensagens e rotas sensiveis;
+- queries parametrizadas em todas as entradas;
+- restricao por `company_id` contra IDOR;
+- renderizacao frontend com `textContent`, sem `innerHTML` para dados;
+- limpeza completa do estado do cliente em login, logout e restauracao de sessao, evitando reaproveitamento visual de dados entre perfis;
+- `Cache-Control: no-store` para respostas da plataforma;
+- `X-Content-Type-Options: nosniff`;
+- `Referrer-Policy: no-referrer`;
+- `X-Frame-Options: DENY` e CSP `frame-ancestors 'none'`;
+- `Permissions-Policy` restritiva;
+- `X-Permitted-Cross-Domain-Policies: none`.
+
+## Eventos que nunca entram na auditoria
+
+Senhas, hashes, salts, cookies, tokens CSRF, IDs completos de sessao, segredos, documentos sensiveis e conteudo pessoal desnecessario. O sanitizador remove chaves sensiveis antes de persistir os valores anteriores e posteriores.
+
+## Modelo de ameacas resumido
+
+| Ameaca | Mitigacao DEMO |
+| --- | --- |
+| Enumeracao de usuario | erro generico e limite de login |
+| Fixacao/roubo de sessao | token aleatorio, hash server-side, rotacao, expiracao e logout |
+| CSRF | origem exata e token por sessao |
+| XSS armazenado | DOM seguro e CSP sem script inline |
+| SQL injection | statements parametrizados |
+| IDOR | permissao e escopo de empresa no servidor |
+| Abuso de escrita | limites por usuario, rota e janela |
+| Vazamento por cache/frame | no-store, CSP e bloqueio de frames |
+
+## Testes de seguranca
+
+`npm run platform:e2e` cobre login, cookies, headers, 401/403, CSRF ausente e cruzado, origem invalida, SQL injection, XSS inerte, isolamento entre empresas, RBAC e rate limiting.
+
+## Risco residual
+
+Os limitadores sao locais em memoria e o SQLite nao e uma arquitetura distribuida. O ambiente nao possui MFA, provedor de identidade, cofre de segredos, WAF dedicado ou observabilidade de producao. Por isso deve permanecer local ate a ativacao formal.
