@@ -14,3 +14,7 @@ apps/platform/data/*.log
 apps/platform/.env
 apps/platform/test-results/
 apps/platform/playwright-report/
+
+apps/platform/data/storage-*/
+apps/platform/data/logs-*/
+apps/platform/data/backups/

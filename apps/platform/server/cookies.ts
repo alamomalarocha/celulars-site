@@ -1,6 +1,8 @@
 import type { PlatformConfig } from '../src/config.js';
 
-export const sessionCookieName = 'celulars_platform_session';
+export function sessionCookieName(config: PlatformConfig): string {
+  return config.sessionCookieName;
+}
 
 export function parseCookies(header: string | undefined): Readonly<Record<string, string>> {
   const cookies: Record<string, string> = {};
@@ -16,10 +18,10 @@ export function parseCookies(header: string | undefined): Readonly<Record<string
 
 export function sessionCookie(token: string, config: PlatformConfig): string {
   const secure = config.secureCookies ? '; Secure' : '';
-  return `${sessionCookieName}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${config.sessionTtlMinutes * 60}${secure}`;
+  return `${sessionCookieName(config)}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${config.sessionTtlMinutes * 60}${secure}`;
 }
 
 export function clearSessionCookie(config: PlatformConfig): string {
   const secure = config.secureCookies ? '; Secure' : '';
-  return `${sessionCookieName}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${secure}`;
+  return `${sessionCookieName(config)}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${secure}`;
 }

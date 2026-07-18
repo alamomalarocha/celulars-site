@@ -17,7 +17,7 @@ export function startPlatform(): void {
   const application = createPlatformApplication(database, config);
   application.server.on('close', () => database.close());
   application.server.listen(config.port, config.host, () => {
-    console.log(`CELULARS Plataforma DEMO em ${config.allowedOrigin}`);
+    console.log(`CELULARS Plataforma ${config.environment} em ${config.allowedOrigin}`);
   });
 }
 

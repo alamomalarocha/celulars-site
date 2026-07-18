@@ -21,6 +21,7 @@
     "platform:build": "tsc -p apps/platform/tsconfig.json",
     "platform:lint": "node scripts/platform-lint.mjs",
     "platform:typecheck": "tsc -p apps/platform/tsconfig.json --noEmit",
+    "platform:doctor": "npm run platform:build && node --enable-source-maps apps/platform/build/src/doctor.js",
     "platform:check": "npm run platform:lint && npm run platform:typecheck && npm run platform:build && npm run platform:test && npm run platform:e2e"
   },
   "engines": {

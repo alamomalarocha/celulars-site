@@ -171,7 +171,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       }
 
       if (method === 'GET' && url.pathname === '/api/health') {
-        sendJson(response, 200, { status: 'ok', environment: 'DEMO', database: 'local' });
+        sendJson(response, 200, { status: 'ok', environment: config.environment, database: config.databaseDriver });
         return;
       }
 
@@ -192,12 +192,12 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         loginLimiter.reset(key);
         response.setHeader('Set-Cookie', sessionCookie(result.token, config));
         recordAudit(database, result.principal, 'LOGIN', 'SESSION', result.principal.sessionId, auditContext(request));
-        sendJson(response, 200, { user: publicPrincipal(result.principal), environment: 'DEMO' });
+        sendJson(response, 200, { user: publicPrincipal(result.principal), environment: config.environment });
         return;
       }
 
       const cookies = parseCookies(request.headers.cookie);
-      const principal = auth.authenticate(cookies[sessionCookieName]);
+      const principal = auth.authenticate(cookies[sessionCookieName(config)]);
       if (!principal) {
         sendJson(response, 401, { error: 'Sessao ausente ou expirada.' });
         return;
@@ -219,7 +219,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       }
 
       if (method === 'GET' && url.pathname === '/api/auth/me') {
-        sendJson(response, 200, { user: publicPrincipal(principal), environment: 'DEMO' });
+        sendJson(response, 200, { user: publicPrincipal(principal), environment: config.environment });
         return;
       }
       if (method === 'GET' && url.pathname === '/api/dashboard') {
