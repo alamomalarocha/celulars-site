@@ -1,0 +1,31 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, readdirSync, rmSync } from 'node:fs';
+import { homedir, tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { spawnSync } from 'node:child_process';
+
+const cache = join(homedir(), '.cache', 'codex-wrangler-npm', '_npx');
+const entry = readdirSync(cache, { recursive: true, withFileTypes: true }).find(item => item.isFile() && item.name === 'wrangler.js');
+if (!entry) throw new Error('WRANGLER_CACHE_NOT_FOUND');
+const outdir = mkdtempSync(join(tmpdir(), 'celulars-jwt-test-'));
+const bundle = spawnSync(process.execPath, [join(entry.parentPath, entry.name), 'deploy', '--dry-run', '--outdir', outdir], { cwd: fileURLToPath(new URL('..', import.meta.url)), encoding: 'utf8' });
+if (bundle.status !== 0) throw new Error(bundle.stderr || 'WORKER_BUNDLE_FAILED');
+const { verifyAccess } = await import(`${pathToFileURL(join(outdir, 'index.js')).href}?test=${Date.now()}`);
+const pair = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1,0,1]), hash: 'SHA-256' }, true, ['sign','verify']);
+const jwk = await crypto.subtle.exportKey('jwk', pair.publicKey); jwk.kid = 'jwt-test-key';
+const originalFetch = globalThis.fetch;
+globalThis.fetch = async () => new Response(JSON.stringify({ keys: [jwk] }), { status: 200, headers: { 'content-type': 'application/json' } });
+const env = { ACCESS_TEAM_DOMAIN: 'black-hall-e4fd.cloudflareaccess.com', ACCESS_AUDIENCE: 'aud-celulars-demo', ACCESS_ALLOWED_EMAIL: 'alamomalarocha@gmail.com' };
+const encode = value => Buffer.from(typeof value === 'string' ? value : JSON.stringify(value)).toString('base64url');
+async function token(overrides = {}, key = pair.privateKey) { const header=encode({alg:'RS256',kid:'jwt-test-key'}); const claims=encode({iss:'https://black-hall-e4fd.cloudflareaccess.com',aud:['aud-celulars-demo'],email:'alamomalarocha@gmail.com',exp:Math.floor(Date.now()/1000)+300,...overrides}); const signature=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key,new TextEncoder().encode(`${header}.${claims}`)); return `${header}.${claims}.${Buffer.from(signature).toString('base64url')}`; }
+const request = value => new Request('https://demo.celulars.com.br/', { headers: value ? { 'Cf-Access-Jwt-Assertion': value } : {} });
+test('accepts a correctly signed Access JWT', async () => assert.equal((await verifyAccess(request(await token()), env)).email, 'alamomalarocha@gmail.com'));
+test('rejects a missing Access JWT', async () => assert.rejects(verifyAccess(request(), env), /ACCESS_TOKEN_MISSING/));
+test('rejects wrong issuer', async () => assert.rejects(verifyAccess(request(await token({iss:'https://invalid.example'})), env), /ACCESS_CLAIMS_INVALID/));
+test('rejects wrong audience', async () => assert.rejects(verifyAccess(request(await token({aud:['wrong']})), env), /ACCESS_CLAIMS_INVALID/));
+test('rejects expired token', async () => assert.rejects(verifyAccess(request(await token({exp:1})), env), /ACCESS_TOKEN_EXPIRED/));
+test('rejects a different email', async () => assert.rejects(verifyAccess(request(await token({email:'other@example.com'})), env), /ACCESS_EMAIL_DENIED/));
+test('rejects an invalid signature', async () => { const other=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']); await assert.rejects(verifyAccess(request(await token({},other.privateKey)),env),/ACCESS_SIGNATURE_INVALID/); });
+test.after(() => { globalThis.fetch=originalFetch; rmSync(outdir,{recursive:true,force:true}); });
