@@ -59,8 +59,9 @@ O arquivo `apps/platform/data/demo-credentials.json` e ignorado pelo Git e nunca
 - cotacoes, pedidos, reservas e logistica;
 - usuarios, equipes, permissoes customizadas, sessoes e MFA TOTP;
 - documentos privados, outbox simulada, caixa unificada e pos-venda;
-- jobs, observabilidade, backup, importacao e privacidade;
-- auditoria, notificacoes, configuracoes e relatorios.
+- jobs auditados, observabilidade, backup opcionalmente criptografado, importacao/exportacao segura e privacidade;
+- auditoria, notificacoes, configuracoes, feature flags e relatorios;
+- administracao de usuarios, sessoes, equipes, retencao, solicitacoes de privacidade e legal holds.
 
 Todas as telas e exportacoes de relatorio identificam o ambiente como demonstracao e usam somente dados ficticios.
 

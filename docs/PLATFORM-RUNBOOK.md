@@ -74,6 +74,8 @@ npm run platform:activation:check
 
 O doctor deve retornar READY no ambiente DEMO. O deploy-check apenas valida a preparacao e nunca publica. O activation-check deve permanecer NOT READY ate banco, storage, dominio/TLS, segredos, providers, staging, politicas e aprovacoes reais serem provisionados. O backup DEMO inclui SQLite, documentos privados e metadados nao secretos com checksum por artefato.
 
+Para criptografar todos os artefatos do backup com AES-256-GCM, defina `PLATFORM_BACKUP_PASSPHRASE` antes de executar o comando. A restauracao de teste exige a mesma frase; frase ausente ou incorreta falha de forma fechada. O adaptador remoto permanece desabilitado ate um destino externo ser explicitamente provisionado.
+
 ## Solucao de problemas
 
 ### Banco sem usuarios
