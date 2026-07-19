@@ -29,7 +29,7 @@ type AccessClaims = { aud?: string | string[]; email?: string; exp?: number; iss
 
 const encoder = new TextEncoder();
 function production(env: Env): boolean { return env.PRODUCTION_MODE === 'true' && env.PLATFORM_DEMO === 'false'; }
-function environmentName(env: Env): string { return production(env) ? 'PRODUCTION' : env.PLATFORM_ENV; }
+function environmentName(env: Env): string { return production(env) ? 'PRODUCTION' : (env.PLATFORM_ENV || 'DEMO_ONLINE'); }
 function sessionCookie(env: Env): string { return production(env) ? 'celulars_platform_session' : 'celulars_demo_online_session'; }
 function providerState(enabled: string): string { return enabled === 'true' ? 'CONFIGURED' : 'OPTIONAL_NOT_CONFIGURED'; }
 let keyCache: { expires: number; keys: JsonWebKey[] } | undefined;
