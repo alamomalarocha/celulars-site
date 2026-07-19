@@ -14,6 +14,10 @@ abstract class PendingEmailAdapter implements DeliveryProvider { readonly channe
 export class SmtpEmailAdapter extends PendingEmailAdapter { constructor(){super('smtp');} }
 export class ResendEmailAdapter extends PendingEmailAdapter { constructor(){super('resend');} }
 export class SesEmailAdapter extends PendingEmailAdapter { constructor(){super('amazon-ses');} }
+export interface EmailLifecycleEvent { readonly eventId:string;readonly providerMessageId:string;readonly type:'DELIVERED'|'BOUNCE'|'COMPLAINT'|'UNSUBSCRIBE';readonly occurredAt:string }
+export interface EmailLifecycleProvider { receiveWebhook(rawBody:string,signature:string):EmailLifecycleEvent;unsubscribe(recipient:string,reason:string):object;health():{ready:boolean;mode:string} }
+export class MockEmailLifecycleProvider implements EmailLifecycleProvider {receiveWebhook(_rawBody:string,_signature:string):never{throw new Error('DEMO_EMAIL_WEBHOOK_NOT_RECEIVED_EXTERNALLY');}unsubscribe(recipient:string,reason:string):object{return{status:'SIMULATED',recipient,reason,banner:'DEMO — UNSUBSCRIBE NÃO ENVIADO EXTERNAMENTE'};}health(){return{ready:true,mode:'mock'};}}
+export class ExternalEmailLifecycleAdapter implements EmailLifecycleProvider {constructor(private readonly provider:'SMTP'|'RESEND'|'AMAZON_SES'){}receiveWebhook(_rawBody:string,_signature:string):never{throw new Error(`${this.provider}_WEBHOOK_NOT_CONFIGURED`);}unsubscribe(_recipient:string,_reason:string):never{throw new Error(`${this.provider}_UNSUBSCRIBE_NOT_CONFIGURED`);}health(){return{ready:false,mode:`${this.provider.toLowerCase()}-events-pending`};}}
 export class OfficialWhatsAppAdapter implements DeliveryProvider { readonly channel='WHATSAPP' as const;send():never{throw new Error('OFFICIAL_WHATSAPP_NOT_CONFIGURED');}health(){return{ready:false,mode:'official-api-pending'};} }
 
 function render(template:string,variables:Readonly<Record<string,string>>):string{return template.replace(/{{([a-zA-Z0-9_]+)}}/g,(_match,key:string)=>variables[key]??'');}
