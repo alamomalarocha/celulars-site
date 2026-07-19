@@ -132,18 +132,6 @@ async function verifyPassword(password: string, salt: string, stored: string, it
   return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
-async function verifyLoginPassword(password: string, salt: string, stored: string, requestId: string): Promise<boolean> {
-  const startedAt = Date.now();
-  const implementation = stored.startsWith('scrypt$v1$') ? 'node_crypto_scrypt_v1' : 'node_crypto_pbkdf2_legacy';
-  try {
-    const result = await verifyPassword(password, salt, stored);
-    console.log(JSON.stringify({ event: 'password_verify_runtime', implementation, runtime: 'cloudflare-worker', request_id: requestId, result: result ? 'success' : 'failure', duration_ms: Date.now() - startedAt }));
-    return result;
-  } catch (error) {
-    console.error(JSON.stringify({ event: 'password_verify_runtime', implementation, runtime: 'cloudflare-worker', request_id: requestId, result: 'error', duration_ms: Date.now() - startedAt, error_code: 'PASSWORD_VERIFY_FAILED' }));
-    throw new Error('LOGIN_UNAVAILABLE', { cause: error });
-  }
-}
 async function list<T>(env: Env, sql: string, ...args: unknown[]): Promise<T[]> { return (await env.DB.prepare(sql).bind(...args).all<T>()).results ?? []; }
 
 async function api(request: Request, env: Env, url: URL): Promise<Response> {
@@ -153,10 +141,9 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
     return json({ status: migration ? 'READY' : 'NOT_READY', database: Boolean(migration), latestMigration: migration?.version, providers: { email: 'MOCK', whatsapp: 'MOCK', payment: 'MOCK', shipment: 'MOCK', storage: 'MOCK' }, production: false }, migration ? 200 : 503);
   }
   if (url.pathname === '/api/auth/login' && request.method === 'POST') {
-    const requestId = request.headers.get('cf-ray') ?? crypto.randomUUID();
     const input = await body(request); const email = String(input.email ?? '').trim().toLowerCase(); const password = String(input.password ?? '');
     const row = await env.DB.prepare(`SELECT u.*,r.code role FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id WHERE lower(u.email)=? LIMIT 1`).bind(email).first<Record<string, string>>();
-    if (!row || row.status !== 'ACTIVE' || !await verifyLoginPassword(password, row.password_salt, row.password_hash, requestId)) return json({ error: 'INVALID_CREDENTIALS' }, 401);
+    if (!row || row.status !== 'ACTIVE' || !await verifyPassword(password, row.password_salt, row.password_hash)) return json({ error: 'INVALID_CREDENTIALS' }, 401);
     const token = crypto.randomUUID() + crypto.randomUUID(); const csrf = crypto.randomUUID(); const now = new Date(); const expiry = new Date(now.getTime() + 8 * 3600_000).toISOString();
     await env.DB.prepare('INSERT INTO sessions(id,user_id,token_hash,csrf_secret,expires_at,created_at,rotated_at) VALUES(?,?,?,?,?,?,?)').bind(crypto.randomUUID(), row.id, await digest(`${token}:${env.SESSION_SECRET}`), csrf, expiry, now.toISOString(), now.toISOString()).run();
     await env.DB.prepare('UPDATE users SET last_login_at=?,failed_login_count=0,updated_at=? WHERE id=?').bind(now.toISOString(), now.toISOString(), row.id).run();
@@ -201,7 +188,7 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
   return json({ error: 'NOT_FOUND', path: url.pathname }, 404);
 }
 
-export { api, verifyAccess, verifyLoginPassword, verifyPassword };
+export { api, verifyAccess, verifyPassword };
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {

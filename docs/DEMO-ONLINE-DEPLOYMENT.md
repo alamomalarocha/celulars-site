@@ -77,6 +77,12 @@ npx --yes wrangler@4.52.1 rollback --name celulars-platform-demo
 
 O rollback da migração de senha exige o export D1 privado criado imediatamente antes da mudança. Restaure somente no banco DEMO e em conjunto com uma versão do Worker que reconheça o formato restaurado. Nunca registre hash, salt ou senha no runbook.
 
+## Homologação da autenticação online
+
+Em 19 de julho de 2026, a homologação humana confirmou o fluxo Cloudflare Access → One-time PIN → login interno → dashboard nas quatro contas DEMO (`admin`, `funcionario1`, `atacadista1` e `atacadista2`). Login, logout, sessões, perfis e rejeição de senha incorreta funcionaram sem `LOGIN_UNAVAILABLE`, erro PBKDF2, stack trace ou detalhe técnico de criptografia. A senha PBKDF2 anterior foi invalidada pela migração e a credencial scrypt temporária permanece somente no arquivo local ignorado.
+
+O endpoint temporário `/api/diagnostics/scrypt-benchmark` e os logs diagnósticos de verificação de senha foram removidos após a homologação.
+
 Para desativar, remova primeiro o Custom Domain ou desative o Worker e preserve o D1. Excluir D1 exige confirmação separada e não faz parte do rollback.
 
 ## Custos e limitações
