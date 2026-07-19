@@ -34,7 +34,11 @@
     "platform:migrate:demo": "npx --yes wrangler@4.52.1 d1 migrations apply DB --remote",
     "platform:seed:demo": "npm run platform:build && node scripts/platform-demo-online-seed.mjs && npx --yes wrangler@4.52.1 d1 execute DB --remote --file apps/platform/data/demo-online-seed.sql",
     "platform:doctor:demo": "node scripts/platform-demo-online-doctor.mjs",
-    "platform:e2e:demo-online": "node --test scripts/platform-access-jwt.test.mjs scripts/platform-demo-online.e2e.test.mjs"
+    "platform:e2e:demo-online": "node --test scripts/platform-access-jwt.test.mjs scripts/platform-demo-online.e2e.test.mjs",
+    "platform:bootstrap:production": "node scripts/platform-production-bootstrap.mjs",
+    "platform:migrate:production": "npx --yes wrangler@4.52.1 d1 migrations apply DB --remote --config wrangler.production.jsonc",
+    "platform:deploy:production": "npx --yes wrangler@4.52.1 deploy --config wrangler.production.jsonc",
+    "platform:e2e:production-online": "node --test scripts/platform-access-jwt.test.mjs scripts/platform-production-online.e2e.test.mjs"
   },
   "engines": {
     "node": ">=24"
