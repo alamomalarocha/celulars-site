@@ -237,8 +237,14 @@ export function seedDatabase(
       ('delivery-email-verify','EMAIL','VERIFY_EMAIL','Verificação de e-mail CELULARS DEMO','Confirme seu e-mail no ambiente DEMO: {{link}}',1,?),
       ('delivery-email-reset','EMAIL','PASSWORD_RESET','Redefinição CELULARS DEMO','Redefinição DEMO: {{link}}',1,?),
       ('delivery-email-message','EMAIL','NEW_MESSAGE','Nova mensagem CELULARS DEMO','Mensagem DEMO: {{message}}',1,?),
+      ('delivery-email-quote','EMAIL','QUOTE','Cotação CELULARS DEMO','Cotação DEMO {{quote}} atualizada para {{status}}.',1,?),
+      ('delivery-email-order','EMAIL','ORDER','Pedido CELULARS DEMO','Pedido DEMO {{order}} atualizado para {{status}}.',1,?),
+      ('delivery-email-shipment','EMAIL','SHIPMENT','Remessa CELULARS DEMO','Remessa DEMO do pedido {{order}} atualizada para {{status}}.',1,?),
+      ('delivery-email-company-approved','EMAIL','COMPANY_APPROVED','Empresa aprovada na CELULARS DEMO','A empresa {{company}} foi aprovada no ambiente DEMO.',1,?),
+      ('delivery-email-company-rejected','EMAIL','COMPANY_REJECTED','Cadastro analisado na CELULARS DEMO','A empresa {{company}} foi rejeitada no ambiente DEMO.',1,?),
+      ('delivery-email-admin','EMAIL','ADMIN_NOTIFICATION','Notificação administrativa CELULARS DEMO','Evento administrativo DEMO: {{message}}',1,?),
       ('delivery-whatsapp-order','WHATSAPP','ORDER',NULL,'Pedido DEMO {{order}} atualizado.',1,?)`)
-      .run(FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW);
+      .run(FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW, FIXED_NOW);
 
     for (let index = 1; index <= 10; index += 1) {
       const quoteId = id('quote', index);

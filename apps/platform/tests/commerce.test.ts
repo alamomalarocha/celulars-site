@@ -298,6 +298,11 @@ test('invalid shipment transitions and shipping a cancelled order are blocked', 
   }
 });
 
+test('HTTP commercial transitions queue simulated email without external sending', async () => {
+  const setup=fixture('commerce-email-outbox-test');const {database,config,wholesale1}=setup;const application=createPlatformApplication(database,config);await new Promise<void>(resolve=>application.server.listen(0,'127.0.0.1',resolve));const address=application.server.address() as AddressInfo;const baseUrl=`http://127.0.0.1:${address.port}`;
+  try{const login=await fetch(`${baseUrl}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json',Origin:config.allowedOrigin},body:JSON.stringify({email:'admin@demo.invalid',password})});const cookie=(login.headers.get('set-cookie')??'').split(';')[0]??'';const payload=await login.json() as {user:{csrfToken:string}};const quote=createQuote(database,wholesale1,{variantId:'variant-demo-0001',quantity:1,notes:'Cotação DEMO para validar a outbox HTTP.'}) as {id:string};const response=await fetch(`${baseUrl}/api/quotes/${encodeURIComponent(quote.id)}/status`,{method:'POST',headers:{Cookie:cookie,Origin:config.allowedOrigin,'X-CSRF-Token':payload.user.csrfToken,'Content-Type':'application/json'},body:JSON.stringify({status:'SENT'})});assert.equal(response.status,200);const delivery=database.prepare("SELECT status,template_code,recipient FROM delivery_outbox WHERE correlation_id=?").get(`QUOTE:${quote.id}:SENT`);assert.equal(String(delivery?.status),'PENDING');assert.equal(String(delivery?.template_code),'QUOTE');assert.match(String(delivery?.recipient),/@/);assert.equal(Number(database.prepare("SELECT COUNT(*) total FROM delivery_outbox WHERE provider_message_id IS NOT NULL").get()?.total),0);}
+  finally{await new Promise<void>((resolve,reject)=>application.server.close(error=>error?reject(error):resolve()));setup.close();}
+});
 test('HTTP maps incomplete reservations to a stable conflict code', async () => {
   const setup = fixture('commerce-http-test');
   const { database, config } = setup;

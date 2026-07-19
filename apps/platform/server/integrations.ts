@@ -10,6 +10,10 @@ export interface DeliveryProvider { readonly channel:'EMAIL'|'WHATSAPP';send(mes
 export class MockEmailProvider implements DeliveryProvider { readonly channel='EMAIL' as const;send(message:DeliveryMessage):DeliveryResult{return{status:'SIMULATED',providerMessageId:`mock-email-${message.id}`,preview:`DEMO — E-MAIL NÃO ENVIADO EXTERNAMENTE\n${message.subject??''}\n${message.body}`};}health(){return{ready:true,mode:'mock'};} }
 export class MockWhatsAppProvider implements DeliveryProvider { readonly channel='WHATSAPP' as const;send(message:DeliveryMessage):DeliveryResult{return{status:'SIMULATED',providerMessageId:`mock-whatsapp-${message.id}`,preview:`DEMO — MENSAGEM NÃO ENVIADA EXTERNAMENTE\n${message.body}`};}health(){return{ready:true,mode:'mock'};} }
 export class ExternalEmailAdapter implements DeliveryProvider { readonly channel='EMAIL' as const;send():never{throw new Error('EXTERNAL_EMAIL_NOT_CONFIGURED');}health(){return{ready:false,mode:'external-pending'};} }
+abstract class PendingEmailAdapter implements DeliveryProvider { readonly channel='EMAIL' as const;constructor(private readonly providerName:string){}send(_message:DeliveryMessage):never{throw new Error(`${this.providerName.toUpperCase()}_EMAIL_NOT_CONFIGURED`);}health(){return{ready:false,mode:`${this.providerName}-pending`};}}
+export class SmtpEmailAdapter extends PendingEmailAdapter { constructor(){super('smtp');} }
+export class ResendEmailAdapter extends PendingEmailAdapter { constructor(){super('resend');} }
+export class SesEmailAdapter extends PendingEmailAdapter { constructor(){super('amazon-ses');} }
 export class OfficialWhatsAppAdapter implements DeliveryProvider { readonly channel='WHATSAPP' as const;send():never{throw new Error('OFFICIAL_WHATSAPP_NOT_CONFIGURED');}health(){return{ready:false,mode:'official-api-pending'};} }
 
 function render(template:string,variables:Readonly<Record<string,string>>):string{return template.replace(/{{([a-zA-Z0-9_]+)}}/g,(_match,key:string)=>variables[key]??'');}

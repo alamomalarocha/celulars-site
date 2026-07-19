@@ -4,7 +4,7 @@ import type { PlatformDatabase } from '../database/db.js';
 import type { PlatformConfig } from '../src/config.js';
 import { AccountLifecycleService } from './accounts.js';
 import { UserAdministrationService } from './admin-users.js';
-import { AfterSalesService, operationTimeline } from './aftersales.js';
+import { AfterSalesService, InventoryLedgerService, operationTimeline } from './aftersales.js';
 import { AuthService, AuthenticationError } from './auth.js';
 import { clearSessionCookie, parseCookies, sessionCookie, sessionCookieName } from './cookies.js';
 import {
@@ -69,6 +69,20 @@ interface InventoryMovementBody {
   readonly notes?: string;
 }
 
+interface LedgerMovementBody {
+  readonly inventoryItemId: string;
+  readonly destinationInventoryItemId?: string;
+  readonly operationKind: string;
+  readonly quantity: number;
+  readonly targetPhysicalQuantity?: number;
+  readonly documentReference?: string | null;
+  readonly reason: string;
+  readonly comment?: string;
+  readonly origin?: string | null;
+  readonly destination?: string | null;
+  readonly referenceType: string;
+  readonly referenceId?: string | null;
+}
 interface CustomerBody {
   readonly name?: string;
   readonly email?: string;
@@ -170,8 +184,12 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
   const identity = new IdentityGovernanceService(database);
   const documents = new DocumentService(database, config, storage);
   const deliveries = new DeliveryOutboxService(database, config, providers);
+const queueCompanyEmail = (companyId:string,templateCode:string,variables:Record<string,string>,correlationId:string):object|null => {
+    if(config.emailMode!=='mock')return null;const company=database.prepare('SELECT name,contact_email FROM companies WHERE id=?').get(companyId);if(!company?.contact_email)return null;return deliveries.queue(null,{channel:'EMAIL',templateCode,recipient:String(company.contact_email),variables:{company:String(company.name),...variables},companyId,correlationId});
+  };
   const inbox = new UnifiedInboxService(database);
   const afterSales = new AfterSalesService(database);
+  const inventoryLedger = new InventoryLedgerService(database);
   const transfers = new DataTransferService(database, config);
   const privacy = new PrivacyService(database);
   const jobs = new LocalJobQueue(database, {
@@ -343,6 +361,11 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
       if(method==='GET'&&url.pathname==='/api/admin/export'){requirePermission(principal,'settings.read');const entity=url.searchParams.get('entity')??'';const format=url.searchParams.get('format')==='CSV'?'CSV':'JSON';const content=transfers.export(principal,entity,format);response.statusCode=200;response.setHeader('Content-Type',format==='CSV'?'text/csv; charset=utf-8':'application/json; charset=utf-8');response.end(content);return;}
       if(method==='POST'&&url.pathname==='/api/privacy/requests'){const body=await readJson<{type:string;notes:string}>(request);sendJson(response,201,privacy.request(principal,body.type,body.notes));return;}
       if(method==='GET'&&url.pathname==='/api/privacy/export'){sendJson(response,200,privacy.exportUser(principal,url.searchParams.get('userId')??principal.userId));return;}
+      if(method==='GET'&&url.pathname==='/api/admin/privacy'){sendJson(response,200,privacy.list(principal));return;}
+      if(method==='PUT'&&url.pathname==='/api/admin/privacy/retention'){sendJson(response,200,privacy.upsertRetentionPolicy(principal,await readJson<{dataCategory:string;retentionDays:number;action:string;active?:boolean}>(request)));return;}
+      if(method==='POST'&&url.pathname==='/api/admin/privacy/legal-holds'){const body=await readJson<{userId:string;reason:string}>(request);sendJson(response,201,{id:privacy.placeLegalHold(principal,body.userId,body.reason)});return;}
+      const legalHoldMatch=url.pathname.match(/^\/api\/admin\/privacy\/legal-holds\/([^/]+)$/);if(method==='DELETE'&&legalHoldMatch?.[1]){privacy.releaseLegalHold(principal,decodeURIComponent(legalHoldMatch[1]));sendEmpty(response);return;}
+      const privacyRequestMatch=url.pathname.match(/^\/api\/admin\/privacy\/requests\/([^/]+)$/);if(method==='PATCH'&&privacyRequestMatch?.[1]){const body=await readJson<{status:string}>(request);sendJson(response,200,privacy.reviewRequest(principal,decodeURIComponent(privacyRequestMatch[1]),body.status));return;}
       if (method === 'GET' && url.pathname === '/api/dashboard') {
         refreshOperationalNotifications(database);
         sendJson(response, 200, dashboardData(database, principal));
@@ -449,7 +472,14 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, 201, result);
         return;
       }
-      if (method === 'GET' && url.pathname === '/api/customers') {
+      if (method === 'POST' && url.pathname === '/api/inventory/ledger-movements') {
+        requirePermission(principal, 'inventory.write');
+        const body = await readJson<LedgerMovementBody>(request);
+        const result = inventoryLedger.record(principal, body);
+        recordAudit(database, principal, 'INVENTORY_MOVEMENT', 'INVENTORY_ITEM', body.inventoryItemId, auditContext(request, result));
+        sendJson(response, 201, result);
+        return;
+      }      if (method === 'GET' && url.pathname === '/api/customers') {
         requirePermission(principal, 'customers.read');
         sendJson(response, 200, customerData(database, url.searchParams.get('search') ?? ''));
         return;
@@ -487,6 +517,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
           type: `COMPANY_${companyResult.toStatus}`, title: `Empresa DEMO: ${companyResult.toStatus}`,
           body: `O status da empresa foi atualizado para ${companyResult.toStatus}.`, entityType: 'COMPANY', entityId: companyResult.companyId
         });
+        if(['APPROVED','REJECTED'].includes(companyResult.toStatus))queueCompanyEmail(companyResult.companyId,companyResult.toStatus==='APPROVED'?'COMPANY_APPROVED':'COMPANY_REJECTED',{},`COMPANY:${companyResult.companyId}:${companyResult.toStatus}`);
         sendJson(response, 201, result);
         return;
       }
@@ -533,6 +564,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         const messageCompanyId = companyFor(database, 'CONVERSATION', messageResult.conversationId);
         recordAudit(database, principal, 'MESSAGE_SENT', 'MESSAGE', messageResult.id, auditContext(request, { id: messageResult.id, conversationId: messageResult.conversationId }, undefined, messageCompanyId));
         if (messageCompanyId) notifyCompany(database, messageCompanyId, { type: 'NEW_MESSAGE', title: 'Nova mensagem DEMO', body: 'Ha uma nova mensagem interna na plataforma.', entityType: 'CONVERSATION', entityId: messageResult.conversationId });
+        if(messageCompanyId)queueCompanyEmail(messageCompanyId,'NEW_MESSAGE',{message:'Nova mensagem disponível na plataforma DEMO.'},`MESSAGE:${messageResult.id}`);
         else notifyInternal(database, { type: 'NEW_MESSAGE', title: 'Nova mensagem DEMO', body: 'Ha uma nova mensagem interna na plataforma.', entityType: 'CONVERSATION', entityId: messageResult.conversationId });
         sendJson(response, 201, result);
         return;
@@ -560,6 +592,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         const action = quoteAction[quoteResult.toStatus ?? ''] ?? 'UPDATE';
         recordAudit(database, principal, action, 'QUOTE', quoteResult.id, auditContext(request, result, { status: quoteResult.fromStatus }, quoteCompanyId));
         if (quoteCompanyId) notifyCompany(database, quoteCompanyId, { type: action, title: `Cotacao DEMO: ${quoteResult.toStatus ?? 'atualizada'}`, body: `A cotacao ${quoteResult.id} foi atualizada.`, entityType: 'QUOTE', entityId: quoteResult.id });
+        if(quoteCompanyId)queueCompanyEmail(quoteCompanyId,'QUOTE',{quote:quoteResult.id,status:quoteResult.toStatus??'UPDATED'},`QUOTE:${quoteResult.id}:${quoteResult.toStatus??'UPDATED'}`);
         sendJson(response, 200, result);
         return;
       }
@@ -571,6 +604,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         recordAudit(database, principal, 'QUOTE_CONVERTED', 'QUOTE', orderResult.quoteId ?? decodeURIComponent(quoteConvertMatch[1]), auditContext(request, result, undefined, orderResult.companyId));
         recordAudit(database, principal, 'ORDER_CREATED', 'ORDER', orderResult.id, auditContext(request, result, undefined, orderResult.companyId));
         if (orderResult.companyId) notifyCompany(database, orderResult.companyId, { type: 'ORDER_CREATED', title: 'Pedido DEMO criado', body: `O pedido ${orderResult.id} foi criado.`, entityType: 'ORDER', entityId: orderResult.id });
+        if(orderResult.companyId)queueCompanyEmail(orderResult.companyId,'ORDER',{order:orderResult.id,status:'CREATED'},`ORDER:${orderResult.id}:CREATED`);
         sendJson(response, 201, result);
         return;
       }
@@ -587,6 +621,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         const orderCompanyId = companyFor(database, 'ORDER', orderResult.id);
         recordAudit(database, principal, 'ORDER_STATUS_CHANGE', 'ORDER', orderResult.id, auditContext(request, result, { status: orderResult.fromStatus }, orderCompanyId));
         if (orderCompanyId) notifyCompany(database, orderCompanyId, { type: 'ORDER_UPDATED', title: `Pedido DEMO: ${orderResult.toStatus ?? 'atualizado'}`, body: `O pedido ${orderResult.id} foi atualizado.`, entityType: 'ORDER', entityId: orderResult.id });
+        if(orderCompanyId)queueCompanyEmail(orderCompanyId,'ORDER',{order:orderResult.id,status:orderResult.toStatus??'UPDATED'},`ORDER:${orderResult.id}:${orderResult.toStatus??'UPDATED'}`);
         sendJson(response, 200, result);
         return;
       }
@@ -618,6 +653,7 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         const shipmentCompanyId = companyFor(database, 'ORDER', shipmentResult.orderId);
         recordAudit(database, principal, 'SHIPMENT_STATUS_CHANGE', 'SHIPMENT', shipmentResult.id ?? shipmentResult.orderId, auditContext(request, result, undefined, shipmentCompanyId));
         if (shipmentCompanyId) notifyCompany(database, shipmentCompanyId, { type: 'SHIPMENT_UPDATED', title: 'Remessa DEMO atualizada', body: `A remessa do pedido ${shipmentResult.orderId} foi atualizada.`, entityType: 'ORDER', entityId: shipmentResult.orderId });
+        if(shipmentCompanyId)queueCompanyEmail(shipmentCompanyId,'SHIPMENT',{order:shipmentResult.orderId,status:shipmentResult.status??'UPDATED'},`SHIPMENT:${shipmentResult.id??shipmentResult.orderId}:${shipmentResult.status??'UPDATED'}`);
         sendJson(response, 200, result);
         return;
       }
@@ -637,11 +673,11 @@ export function createPlatformApplication(database: PlatformDatabase, config: Pl
         sendJson(response, error instanceof Error && error.message === 'PAYLOAD_TOO_LARGE' ? 413 : 400, { error: 'Solicitacao invalida.' });
         return;
       }
-      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE','INVALID_QUOTE','INVALID_QUOTE_STATUS','INVALID_ORDER','INVALID_ORDER_STATUS','INVALID_RESERVATION','INVALID_SHIPMENT','INVALID_SHIPMENT_STATUS','INVALID_SETTING','INVALID_INVITATION','INVALID_OR_EXPIRED_TOKEN','INVALID_PASSWORD_POLICY','INVALID_MFA_CODE','MFA_NOT_STARTED','INVALID_TEAM','INVALID_ACCESS_EXPIRY','INVALID_TERMS','INVALID_CONSENT','INVALID_DOCUMENT_TYPE','INVALID_DOCUMENT_SIZE','INVALID_DOCUMENT_EXPIRY','INVALID_DOCUMENT_ENTITY','INVALID_DELIVERY_RECIPIENT','DELIVERY_TEMPLATE_NOT_FOUND','INVALID_INBOX_CASE','INVALID_RETURN','INVALID_RETURN_ITEM','INVALID_RETURN_STATUS','INVALID_DATA_ENTITY','INVALID_IMPORT','IMPORT_VALIDATION_FAILED','IMPORT_CONFIRMATION_FAILED','INVALID_PRIVACY_REQUEST','INVALID_USER','INVALID_USER_ROLES','INVALID_PERMISSION','LAST_ADMIN_REQUIRED','SELF_CRITICAL_CONFIRMATION_REQUIRED'].includes(error.message)) {
+      if (error instanceof Error && ['INVALID_PRICE_REVISION','INVALID_INVENTORY_MOVEMENT','INVALID_CUSTOMER','INVALID_COMPANY_APPROVAL','INVALID_REQUEST','INVALID_REQUEST_STATUS','INVALID_CONVERSATION','INVALID_MESSAGE','INVALID_QUOTE','INVALID_QUOTE_STATUS','INVALID_ORDER','INVALID_ORDER_STATUS','INVALID_RESERVATION','INVALID_SHIPMENT','INVALID_SHIPMENT_STATUS','INVALID_SETTING','INVALID_INVITATION','INVALID_OR_EXPIRED_TOKEN','INVALID_PASSWORD_POLICY','INVALID_MFA_CODE','MFA_NOT_STARTED','INVALID_TEAM','INVALID_ACCESS_EXPIRY','INVALID_TERMS','INVALID_CONSENT','INVALID_DOCUMENT_TYPE','INVALID_DOCUMENT_SIZE','INVALID_DOCUMENT_EXPIRY','INVALID_DOCUMENT_ENTITY','INVALID_DELIVERY_RECIPIENT','DELIVERY_TEMPLATE_NOT_FOUND','INVALID_INBOX_CASE','INVALID_RETURN','INVALID_RETURN_ITEM','INVALID_RETURN_STATUS','INVALID_DATA_ENTITY','INVALID_IMPORT','IMPORT_VALIDATION_FAILED','IMPORT_CONFIRMATION_FAILED','INVALID_PRIVACY_REQUEST','INVALID_RETENTION_POLICY','INVALID_PRIVACY_STATUS','INVALID_LEGAL_HOLD','INVALID_USER','INVALID_USER_ROLES','INVALID_PERMISSION','INVALID_LEDGER_MOVEMENT','INVALID_LEDGER_TRANSFER','LAST_ADMIN_REQUIRED','SELF_CRITICAL_CONFIRMATION_REQUIRED'].includes(error.message)) {
         sendJson(response, 400, { error: 'Dados da operacao DEMO invalidos.', code: error.message });
         return;
       }
-      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND','REQUEST_NOT_FOUND','CONVERSATION_NOT_FOUND','QUOTE_NOT_FOUND','ORDER_NOT_FOUND','RESERVATION_NOT_FOUND','NOTIFICATION_NOT_FOUND','SETTING_NOT_FOUND','DOCUMENT_NOT_FOUND','DELIVERY_NOT_FOUND','INBOX_NOT_FOUND','RETURN_NOT_FOUND','USER_NOT_FOUND'].includes(error.message)) {
+      if (error instanceof Error && ['CUSTOMER_NOT_FOUND','COMPANY_NOT_FOUND','REQUEST_NOT_FOUND','CONVERSATION_NOT_FOUND','QUOTE_NOT_FOUND','ORDER_NOT_FOUND','RESERVATION_NOT_FOUND','NOTIFICATION_NOT_FOUND','SETTING_NOT_FOUND','DOCUMENT_NOT_FOUND','DELIVERY_NOT_FOUND','INBOX_NOT_FOUND','RETURN_NOT_FOUND','PRIVACY_REQUEST_NOT_FOUND','LEGAL_HOLD_NOT_FOUND','USER_NOT_FOUND'].includes(error.message)) {
         sendJson(response, 404, { error: 'Registro DEMO nao encontrado.' });
         return;
       }
