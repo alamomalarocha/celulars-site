@@ -1,5 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const root = path.resolve('apps/platform');
 const allowedExtensions = new Set(['.ts', '.js', '.sql', '.css', '.html', '.md', '.json']);
@@ -24,6 +25,10 @@ async function visit(directory) {
     });
     if (/\beval\s*\(|new\s+Function\s*\(/.test(source)) errors.push(`${relative}: execucao dinamica proibida.`);
     if (/innerHTML\s*=/.test(source)) errors.push(`${relative}: innerHTML direto proibido.`);
+    if (path.extname(entry.name) === '.js') {
+      const syntax = spawnSync(process.execPath, ['--check', fullPath], { encoding: 'utf8' });
+      if (syntax.status !== 0) errors.push(`${relative}: sintaxe JavaScript invalida.`);
+    }
   }
 }
 
