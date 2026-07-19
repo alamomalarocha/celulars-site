@@ -13,10 +13,10 @@ test('frontend clears privileged module state across authentication boundaries',
 });
 
 test('advanced frontend modules remain wired without unsafe HTML rendering', () => {
-  for (const route of ['/api/account/sessions','/api/inbox','/api/documents','/api/returns','/api/admin/diagnostics','/api/admin/jobs']) {
+  for (const route of ['/api/account/sessions','/api/inbox','/api/documents','/api/returns','/api/admin/diagnostics','/api/admin/jobs','/api/admin/users','/api/admin/privacy','/api/admin/imports/preview']) {
     assert.ok(clientSource.includes(route), `missing frontend route ${route}`);
   }
-  for (const view of ['accountView','inboxView','documentsView','returnsView','advancedView']) {
+  for (const view of ['accountView','inboxView','documentsView','returnsView','usersView','advancedDataTools','privacyAdminView','advancedView']) {
     assert.match(clientSource, new RegExp(`function ${view}\\(`));
   }
   assert.doesNotMatch(clientSource, /innerHTML\s*=|insertAdjacentHTML|document\.write/);
