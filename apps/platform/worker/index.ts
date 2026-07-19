@@ -1,3 +1,5 @@
+import { pbkdf2, scrypt, timingSafeEqual } from 'node:crypto';
+
 interface D1Result<T = Record<string, unknown>> { results?: T[]; success: boolean }
 interface D1PreparedStatement { bind(...values: unknown[]): D1PreparedStatement; first<T = Record<string, unknown>>(): Promise<T | null>; all<T = Record<string, unknown>>(): Promise<D1Result<T>>; run(): Promise<D1Result> }
 interface D1Database { prepare(sql: string): D1PreparedStatement; batch(statements: D1PreparedStatement[]): Promise<D1Result[]> }
@@ -99,13 +101,49 @@ async function body(request: Request): Promise<Record<string, unknown>> {
   return await request.json() as Record<string, unknown>;
 }
 
-async function verifyPassword(password: string, salt: string, expected: string): Promise<boolean> {
-  const material = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
-  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: encoder.encode(salt), iterations: 210_000 }, material, 256);
-  const actual = [...new Uint8Array(bits)].map(v => v.toString(16).padStart(2, '0')).join('');
-  return actual === expected;
+const SCRYPT_COST = 16_384;
+const SCRYPT_BLOCK_SIZE = 8;
+const SCRYPT_PARALLELIZATION = 1;
+const SCRYPT_KEY_LENGTH = 32;
+const SCRYPT_PARAMETERS = `N=${SCRYPT_COST},r=${SCRYPT_BLOCK_SIZE},p=${SCRYPT_PARALLELIZATION},l=${SCRYPT_KEY_LENGTH}`;
+
+function validPasswordSalt(value: string): boolean { return /^[A-Za-z0-9_-]{22,128}$/.test(value); }
+
+async function scryptKey(password: string, salt: string, cost = SCRYPT_COST): Promise<Uint8Array> {
+  return await new Promise<Uint8Array>((resolve, reject) => {
+    scrypt(password, salt, SCRYPT_KEY_LENGTH, { N: cost, r: SCRYPT_BLOCK_SIZE, p: SCRYPT_PARALLELIZATION, maxmem: 64 * 1024 * 1024 }, (error, derived) => error ? reject(error) : resolve(derived));
+  });
 }
 
+async function verifyPassword(password: string, salt: string, stored: string, iterations = 210_000): Promise<boolean> {
+  if (stored.startsWith('scrypt$')) {
+    const parts = stored.split('$');
+    if (parts.length !== 5 || parts[0] !== 'scrypt' || parts[1] !== 'v1' || parts[2] !== SCRYPT_PARAMETERS || parts[3] !== salt || !validPasswordSalt(salt) || !/^[a-f0-9]{64}$/i.test(parts[4] ?? '')) return false;
+    const actual = await scryptKey(password, salt);
+    const expected = Buffer.from(parts[4], 'hex');
+    return actual.length === expected.length && timingSafeEqual(actual, expected);
+  }
+  if (!Number.isInteger(iterations) || iterations < 1 || iterations > 1_000_000) return false;
+  if (!/^[A-Za-z0-9_-]{16,128}$/.test(salt) || !/^[a-f0-9]{64}$/i.test(stored)) return false;
+  const actual = await new Promise<Uint8Array>((resolve, reject) => {
+    pbkdf2(password, salt, iterations, 32, 'sha256', (error, derived) => error ? reject(error) : resolve(derived));
+  });
+  const expected = Buffer.from(stored, 'hex');
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
+}
+
+async function verifyLoginPassword(password: string, salt: string, stored: string, requestId: string): Promise<boolean> {
+  const startedAt = Date.now();
+  const implementation = stored.startsWith('scrypt$v1$') ? 'node_crypto_scrypt_v1' : 'node_crypto_pbkdf2_legacy';
+  try {
+    const result = await verifyPassword(password, salt, stored);
+    console.log(JSON.stringify({ event: 'password_verify_runtime', implementation, runtime: 'cloudflare-worker', request_id: requestId, result: result ? 'success' : 'failure', duration_ms: Date.now() - startedAt }));
+    return result;
+  } catch (error) {
+    console.error(JSON.stringify({ event: 'password_verify_runtime', implementation, runtime: 'cloudflare-worker', request_id: requestId, result: 'error', duration_ms: Date.now() - startedAt, error_code: 'PASSWORD_VERIFY_FAILED' }));
+    throw new Error('LOGIN_UNAVAILABLE', { cause: error });
+  }
+}
 async function list<T>(env: Env, sql: string, ...args: unknown[]): Promise<T[]> { return (await env.DB.prepare(sql).bind(...args).all<T>()).results ?? []; }
 
 async function api(request: Request, env: Env, url: URL): Promise<Response> {
@@ -115,9 +153,10 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
     return json({ status: migration ? 'READY' : 'NOT_READY', database: Boolean(migration), latestMigration: migration?.version, providers: { email: 'MOCK', whatsapp: 'MOCK', payment: 'MOCK', shipment: 'MOCK', storage: 'MOCK' }, production: false }, migration ? 200 : 503);
   }
   if (url.pathname === '/api/auth/login' && request.method === 'POST') {
+    const requestId = request.headers.get('cf-ray') ?? crypto.randomUUID();
     const input = await body(request); const email = String(input.email ?? '').trim().toLowerCase(); const password = String(input.password ?? '');
     const row = await env.DB.prepare(`SELECT u.*,r.code role FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id WHERE lower(u.email)=? LIMIT 1`).bind(email).first<Record<string, string>>();
-    if (!row || row.status !== 'ACTIVE' || !await verifyPassword(password, row.password_salt, row.password_hash)) return json({ error: 'INVALID_CREDENTIALS' }, 401);
+    if (!row || row.status !== 'ACTIVE' || !await verifyLoginPassword(password, row.password_salt, row.password_hash, requestId)) return json({ error: 'INVALID_CREDENTIALS' }, 401);
     const token = crypto.randomUUID() + crypto.randomUUID(); const csrf = crypto.randomUUID(); const now = new Date(); const expiry = new Date(now.getTime() + 8 * 3600_000).toISOString();
     await env.DB.prepare('INSERT INTO sessions(id,user_id,token_hash,csrf_secret,expires_at,created_at,rotated_at) VALUES(?,?,?,?,?,?,?)').bind(crypto.randomUUID(), row.id, await digest(`${token}:${env.SESSION_SECRET}`), csrf, expiry, now.toISOString(), now.toISOString()).run();
     await env.DB.prepare('UPDATE users SET last_login_at=?,failed_login_count=0,updated_at=? WHERE id=?').bind(now.toISOString(), now.toISOString(), row.id).run();
@@ -162,7 +201,7 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
   return json({ error: 'NOT_FOUND', path: url.pathname }, 404);
 }
 
-export { verifyAccess };
+export { api, verifyAccess, verifyLoginPassword, verifyPassword };
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -175,7 +214,8 @@ export default {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'INTERNAL_ERROR';
       const status = message.startsWith('CSRF') ? 403 : message.endsWith('_REQUIRED') ? 400 : 500;
-      return json({ error: message }, status);
+      if (url.pathname === '/api/auth/login' && status === 500) return json({ error: 'LOGIN_UNAVAILABLE', message: 'Não foi possível concluir o login. Tente novamente.' }, 500);
+      return json({ error: status === 500 ? 'INTERNAL_ERROR' : message }, status);
     }
   }
 };

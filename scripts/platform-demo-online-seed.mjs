@@ -1,4 +1,4 @@
-import { pbkdf2Sync, randomBytes } from 'node:crypto';
+import { randomBytes, scryptSync } from 'node:crypto';
 import { existsSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
@@ -29,7 +29,8 @@ migrateDatabase(database);
 const summary = seedDatabase(database, config, password);
 for (const row of database.prepare('SELECT id,email FROM users ORDER BY id').all()) {
   const salt = randomBytes(18).toString('base64url');
-  const hash = pbkdf2Sync(password, salt, 210_000, 32, 'sha256').toString('hex');
+  const derived = scryptSync(password, salt, 32, { N: 16_384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 });
+  const hash = 'scrypt$v1$N=16384,r=8,p=1,l=32$' + salt + '$' + derived.toString('hex');
   database.prepare('UPDATE users SET password_hash=?,password_salt=? WHERE id=?').run(hash, salt, row.id);
 }
 function sqlValue(value) {

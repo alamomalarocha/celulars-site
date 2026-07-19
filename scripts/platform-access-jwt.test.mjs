@@ -5,6 +5,7 @@ import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { pbkdf2Sync, scryptSync } from 'node:crypto';
 
 const cache = join(homedir(), '.cache', 'codex-wrangler-npm', '_npx');
 const entry = readdirSync(cache, { recursive: true, withFileTypes: true }).find(item => item.isFile() && item.name === 'wrangler.js');
@@ -12,7 +13,8 @@ if (!entry) throw new Error('WRANGLER_CACHE_NOT_FOUND');
 const outdir = mkdtempSync(join(tmpdir(), 'celulars-jwt-test-'));
 const bundle = spawnSync(process.execPath, [join(entry.parentPath, entry.name), 'deploy', '--dry-run', '--outdir', outdir], { cwd: fileURLToPath(new URL('..', import.meta.url)), encoding: 'utf8' });
 if (bundle.status !== 0) throw new Error(bundle.stderr || 'WORKER_BUNDLE_FAILED');
-const { verifyAccess } = await import(`${pathToFileURL(join(outdir, 'index.js')).href}?test=${Date.now()}`);
+globalThis.Cloudflare = { compatibilityFlags: { enable_nodejs_process_v2: false } };
+const { api, verifyAccess, verifyPassword } = await import(`${pathToFileURL(join(outdir, 'index.js')).href}?test=${Date.now()}`);
 const pair = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1,0,1]), hash: 'SHA-256' }, true, ['sign','verify']);
 const jwk = await crypto.subtle.exportKey('jwk', pair.publicKey); jwk.kid = 'jwt-test-key';
 const originalFetch = globalThis.fetch;
@@ -21,6 +23,63 @@ const env = { ACCESS_TEAM_DOMAIN: 'black-hall-e4fd.cloudflareaccess.com', ACCESS
 const encode = value => Buffer.from(typeof value === 'string' ? value : JSON.stringify(value)).toString('base64url');
 async function token(overrides = {}, key = pair.privateKey) { const header=encode({alg:'RS256',kid:'jwt-test-key'}); const claims=encode({iss:'https://black-hall-e4fd.cloudflareaccess.com',aud:['aud-celulars-demo'],email:'alamomalarocha@gmail.com',exp:Math.floor(Date.now()/1000)+300,...overrides}); const signature=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key,new TextEncoder().encode(`${header}.${claims}`)); return `${header}.${claims}.${Buffer.from(signature).toString('base64url')}`; }
 const request = value => new Request('https://demo.celulars.com.br/', { headers: value ? { 'Cf-Access-Jwt-Assertion': value } : {} });
+const passwordFixture = 'Fixture-Password-Only!';
+const saltFixture = 'YWJjZGVmZ2hpamtsbW5vcA';
+const legacyHashFixture = pbkdf2Sync(passwordFixture, saltFixture, 210_000, 32, 'sha256').toString('hex');
+const scryptDerivedFixture = scryptSync(passwordFixture, saltFixture, 32, { N: 16_384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 });
+const hashFixture = 'scrypt$v1$N=16384,r=8,p=1,l=32$' + saltFixture + '$' + scryptDerivedFixture.toString('hex');
+test('verifies versioned scrypt v1', async () => assert.equal(await verifyPassword(passwordFixture, saltFixture, hashFixture), true));
+test('retains legacy PBKDF2 verification for rollback only', async () => assert.equal(await verifyPassword(passwordFixture, saltFixture, legacyHashFixture), true));
+test('rejects an incorrect scrypt password', async () => assert.equal(await verifyPassword('wrong-password', saltFixture, hashFixture), false));
+test('rejects malformed and unsupported password records', async () => {
+  assert.equal(await verifyPassword(passwordFixture, 'bad salt!', hashFixture), false);
+  assert.equal(await verifyPassword(passwordFixture, saltFixture, '00'), false);
+  assert.equal(await verifyPassword(passwordFixture, saltFixture, 'argon2$' + saltFixture + '$' + '00'.repeat(32)), false);
+  assert.equal(await verifyPassword(passwordFixture, saltFixture, 'scrypt=16384,r=8,p=1,l=32$' + saltFixture + '$' + '00'.repeat(32)), false);
+  assert.equal(await verifyPassword(passwordFixture, saltFixture, 'scrypt=1048576,r=8,p=1,l=32$' + saltFixture + '$' + '00'.repeat(32)), false);
+  assert.equal(await verifyPassword(passwordFixture, 'bad salt!', hashFixture), false);
+  assert.equal(await verifyPassword(passwordFixture, saltFixture, legacyHashFixture, 0), false);
+  assert.equal(await verifyPassword(passwordFixture, saltFixture, legacyHashFixture, -1), false);
+  assert.equal(await verifyPassword(passwordFixture, saltFixture, legacyHashFixture, 1_000_001), false);
+});
+
+class LoginD1Statement {
+  constructor(db, sql) { this.db = db; this.sql = sql; this.values = []; }
+  bind(...values) { this.values = values; return this; }
+  async first() {
+    if (this.sql.includes('FROM users u JOIN user_roles')) return this.values[0] === 'admin@demo.invalid' ? this.db.user : null;
+    return null;
+  }
+  async all() { return { success: true, results: [] }; }
+  async run() {
+    if (this.sql.startsWith('INSERT INTO sessions')) this.db.session = this.values;
+    if (this.sql.startsWith('UPDATE users SET last_login_at')) this.db.updated = true;
+    return { success: true, results: [] };
+  }
+}
+class LoginD1 {
+  constructor(user) { this.user = user; this.session = null; this.updated = false; }
+  prepare(sql) { return new LoginD1Statement(this, sql); }
+}
+function loginEnv(db) { return { DB: db, SESSION_SECRET: 'session-secret-for-handler-test' }; }
+
+test('real login handler verifies scrypt v1, creates session and cookie', async () => {
+  const db = new LoginD1({ id: 'usr-admin', email: 'admin@demo.invalid', display_name: 'Administrador DEMO', company_id: '', role: 'ADMIN', status: 'ACTIVE', password_salt: saltFixture, password_hash: hashFixture });
+  const response = await api(new Request('https://demo.celulars.com.br/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json', 'cf-ray': 'handler-test' }, body: JSON.stringify({ email: 'admin@demo.invalid', password: passwordFixture }) }), loginEnv(db), new URL('https://demo.celulars.com.br/api/auth/login'));
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get('set-cookie') ?? '', /^celulars_demo_online_session=/);
+  assert.equal(db.session?.[1], 'usr-admin');
+  assert.equal(db.updated, true);
+  assert.equal((await response.json()).user.roles[0], 'ADMIN');
+});
+
+test('real login handler rejects wrong password without creating session', async () => {
+  const db = new LoginD1({ id: 'usr-admin', email: 'admin@demo.invalid', display_name: 'Administrador DEMO', company_id: '', role: 'ADMIN', status: 'ACTIVE', password_salt: saltFixture, password_hash: hashFixture });
+  const response = await api(new Request('https://demo.celulars.com.br/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: 'admin@demo.invalid', password: 'wrong-password' }) }), loginEnv(db), new URL('https://demo.celulars.com.br/api/auth/login'));
+  assert.equal(response.status, 401);
+  assert.deepEqual(await response.json(), { error: 'INVALID_CREDENTIALS' });
+  assert.equal(db.session, null);
+});
 test('accepts a correctly signed Access JWT', async () => assert.equal((await verifyAccess(request(await token()), env)).email, 'alamomalarocha@gmail.com'));
 test('rejects a missing Access JWT', async () => assert.rejects(verifyAccess(request(), env), /ACCESS_TOKEN_MISSING/));
 test('rejects wrong issuer', async () => assert.rejects(verifyAccess(request(await token({iss:'https://invalid.example'})), env), /ACCESS_CLAIMS_INVALID/));

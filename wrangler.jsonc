@@ -3,6 +3,7 @@
   "name": "celulars-platform-demo",
   "main": "apps/platform/worker/index.ts",
   "compatibility_date": "2026-07-18",
+  "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
   "preview_urls": false,
   "observability": { "enabled": true },

@@ -38,7 +38,7 @@ Valores nunca devem entrar no Git, PR, documentação, HTML ou logs. Nomes confi
 - `ENCRYPTION_KEY`
 - `DEMO_SEED_SECRET`
 
-Credenciais temporárias ficam apenas em `apps/platform/data/demo-online-credentials.json`, ignorado pelo Git. O D1 armazena somente hashes PBKDF2-SHA256 com salt individual.
+Credenciais temporárias ficam apenas em `apps/platform/data/demo-online-credentials.json`, ignorado pelo Git. O D1 armazena hashes versionados `scrypt$v1$N=16384,r=8,p=1,l=32`, com salt aleatório individual de 18 bytes e chave de 32 bytes. Esses parâmetros foram validados no Worker implantado com senha correta e incorreta. O verificador preserva leitura do PBKDF2 legado somente para rollback; contas online migradas não executam novamente esse caminho.
 
 ## Operação
 
@@ -74,6 +74,8 @@ Deploy de código não apaga D1. Antes de um redeploy, registre o Version ID. Pa
 npx --yes wrangler@4.52.1 deployments list --name celulars-platform-demo
 npx --yes wrangler@4.52.1 rollback --name celulars-platform-demo
 ```
+
+O rollback da migração de senha exige o export D1 privado criado imediatamente antes da mudança. Restaure somente no banco DEMO e em conjunto com uma versão do Worker que reconheça o formato restaurado. Nunca registre hash, salt ou senha no runbook.
 
 Para desativar, remova primeiro o Custom Domain ou desative o Worker e preserve o D1. Excluir D1 exige confirmação separada e não faz parte do rollback.
 
