@@ -76,6 +76,9 @@ class LoginD1Statement {
     if (this.sql.startsWith("SELECT id FROM inventory_movements WHERE movement_type='RETURN'")) return this.db.returnMovementExists ? { id: 'return-existing' } : null;
     if (this.sql.startsWith('SELECT id,approval_status,price_list_id FROM companies')) return this.db.quoteCompany?.id === this.values[0] ? this.db.quoteCompany : null;
     if (this.sql.startsWith('SELECT id FROM product_variants')) return this.db.validVariant === this.values[0] ? { id: this.values[0] } : null;
+    if (this.sql.startsWith("SELECT id,currency FROM price_lists")) return this.db.priceList?.id === this.values[0] ? this.db.priceList : null;
+    if (this.sql.startsWith('SELECT id,amount_cents,currency,valid_from FROM prices')) return this.db.currentPrice;
+    if (this.sql.startsWith('SELECT i.id,COALESCE(SUM(m.physical_delta)')) return this.db.inventoryBalanceRecord?.id === this.values[0] ? this.db.inventoryBalanceRecord : null;
     if (this.sql.startsWith('SELECT amount_cents FROM prices')) return this.db.listedPrice == null ? null : { amount_cents: this.db.listedPrice };
     if (this.sql.startsWith('SELECT id,company_id,status FROM quotes')) return this.db.quoteRecord?.id === this.values[0] ? this.db.quoteRecord : null;
     if (this.sql.startsWith('SELECT id,company_id,customer_id FROM quotes')) return this.db.acceptedQuote?.id === this.values[0] ? this.db.acceptedQuote : null;
@@ -117,6 +120,8 @@ class LoginD1Statement {
     if (this.sql.startsWith('INSERT INTO quotes')) this.db.insertedQuote = this.values;
     if (this.sql.startsWith('INSERT INTO quote_items')) this.db.insertedQuoteItem = this.values;
     if (this.sql.startsWith('UPDATE quotes SET status=?')) this.db.updatedQuoteStatus = this.values;
+    if (this.sql.startsWith('UPDATE prices SET valid_until')) this.db.closedPrice = this.values;
+    if (this.sql.startsWith('INSERT INTO prices')) this.db.insertedPrice = this.values;
     if (this.sql.includes("UPDATE quotes SET status='CONVERTED'")) this.db.convertedQuote = this.values;
     if (this.sql.startsWith('INSERT INTO orders')) this.db.insertedOrder = this.values;
     if (this.sql.startsWith('INSERT INTO order_items')) this.db.insertedOrderItems.push(this.values);
@@ -362,4 +367,13 @@ test('account session controls revoke only other sessions and logout revokes the
 test('admin cannot revoke the current account sessions through user administration', async () => {
   const db=new LoginD1(null);db.principal={id:'usr-admin',email:'admin@demo.invalid',display_name:'Admin',company_id:null,role:'ADMIN',csrfToken:'csrf-admin',session_id:'session-current'};const env=loginEnv(db),url=new URL('https://demo.celulars.com.br/api/admin/users/usr-admin/sessions'),headers={cookie:'celulars_demo_online_session=session-token','x-csrf-token':'csrf-admin'};
   const response=await api(new Request(url,{method:'DELETE',headers}),env,url);assert.equal(response.status,409);assert.deepEqual(await response.json(),{error:'SELF_SESSION_REVOCATION_FORBIDDEN'});
+});
+test('DEMO price revisions close the previous value, append history and reject wholesale writes', async () => {
+  const db=new LoginD1(null);db.principal={id:'usr-admin',email:'admin@demo.invalid',display_name:'Admin',company_id:null,role:'ADMIN',csrfToken:'csrf-price',session_id:'s'};db.priceList={id:'list-demo',currency:'USD'};db.validVariant='variant-demo';db.currentPrice={id:'price-old',amount_cents:1000,currency:'USD',valid_from:'2026-01-01'};const env=loginEnv(db),url=new URL('https://demo.celulars.com.br/api/prices/revisions'),headers={cookie:'celulars_demo_online_session=x','x-csrf-token':'csrf-price','content-type':'application/json'},request=()=>new Request(url,{method:'POST',headers,body:JSON.stringify({priceListId:'list-demo',variantId:'variant-demo',amountCents:1250})});
+  const response=await api(request(),env,url);assert.equal(response.status,201);assert.equal(db.closedPrice?.[2],'price-old');assert.deepEqual(db.insertedPrice?.slice(1,5),['list-demo','variant-demo',1250,'USD']);assert.equal(db.audit?.[2],'PRICE_CHANGE');db.principal={...db.principal,role:'WHOLESALE'};assert.equal((await api(request(),env,url)).status,403);
+});
+
+test('DEMO inventory movements preserve the immutable ledger and reject negative availability', async () => {
+  const db=new LoginD1(null);db.principal={id:'usr-admin',email:'admin@demo.invalid',display_name:'Admin',company_id:null,role:'ADMIN',csrfToken:'csrf-stock',session_id:'s'};db.inventoryBalanceRecord={id:'inventory-demo',physical:5,reserved:2};const env=loginEnv(db),url=new URL('https://demo.celulars.com.br/api/inventory/movements'),headers={cookie:'celulars_demo_online_session=x','x-csrf-token':'csrf-stock','content-type':'application/json'},request=quantity=>new Request(url,{method:'POST',headers,body:JSON.stringify({inventoryItemId:'inventory-demo',movementType:'ADJUSTMENT_OUT',quantity,notes:'Ajuste ficticio DEMO'})});
+  const response=await api(request(2),env,url);assert.equal(response.status,201);assert.deepEqual((await response.json()).balance,{physical:3,reserved:2,available:1});assert.equal(db.inventoryMovements.at(-1)?.values[2],'ADJUSTMENT_OUT');assert.equal((await api(request(4),env,url)).status,409);
 });
