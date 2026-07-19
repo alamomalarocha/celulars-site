@@ -1,33 +1,35 @@
-# Roadmap do futuro painel CELULARS
+# Roadmap historico do painel CELULARS
 
-Este documento descreve direção técnica. Nenhum painel, login ou backend é implementado nesta etapa.
+Este documento registrava a direcao tecnica antes da implementacao. O estado executavel atual prevalece sobre as previsoes abaixo.
 
-## Módulos previstos
+## Estado alcançado no ambiente DEMO
 
-- produtos e modelos;
-- cores e capacidades;
-- preços de aparelhos novos;
-- preços CPO;
-- estoque e disponibilidade;
-- clientes comerciais;
-- funcionários e administradores;
-- permissões por função;
-- mensagens e solicitações;
-- auditoria;
-- histórico de alterações.
+A plataforma interna foi implementada em `apps/platform/` e esta online em `demo.celulars.com.br`, isolada do site publico, protegida por Cloudflare Access e login interno. O Worker `celulars-platform-demo` usa o D1 `celulars-platform-demo-db`, dados exclusivamente ficticios e providers externos MOCK.
 
-## Regras de segurança
+Foram concluidos:
 
-- Não criar login somente em JavaScript.
-- Não armazenar senha, token ou segredo no frontend.
-- Usar backend e autenticação reais.
-- Separar dados públicos de dados restritos.
-- Proteger preços de atacado, custos, margens, fornecedores, IMEI, serial e dados de clientes.
-- Registrar autoria, data e conteúdo das alterações administrativas.
-- Aplicar autorização no servidor, não apenas ocultação visual.
+- catalogo, precos e inventario DEMO com razao imutavel;
+- CRM, empresas, solicitacoes, conversas, cotacoes, pedidos e pos-venda;
+- Administrador, Funcionario e Atacadista com escopo empresarial;
+- sessoes server-side, CSRF, RBAC, MFA TOTP e lockout;
+- auditoria, notificacoes, configuracoes, relatorios e privacidade;
+- testes unitarios, integracao, API, seguranca e E2E;
+- deploy continuo somente do Worker DEMO, sem merge do PR #7.
 
-## Integração futura
+## Limites preservados
 
-`data/catalog-public.json` é a fonte canônica pública atual. Um painel futuro deverá atualizar dados por um fluxo autenticado e validado, gerar a representação pública e preservar o contrato de dados verificado por `scripts/validate-site.mjs`.
+A plataforma DEMO nao atualiza nem publica automaticamente `data/catalog-public.json`. Permanecem separados e intactos:
 
-Antes de qualquer implementação, definir provedor de autenticação, armazenamento, modelo de permissões, trilha de auditoria, estratégia de backup e processo de publicação.
+- site publico e Cloudflare Pages;
+- PTAX/Cotacao CELULARS;
+- catalogo canonico e precos reais;
+- inventario privado real;
+- `dist/`, DNS publico e producao.
+
+Documentos privados online permanecem fail-closed porque nenhum storage externo foi provisionado. E-mail, WhatsApp, pagamentos, transportadora, imports e recursos pagos permanecem desativados.
+
+## Proximas decisoes externas, fora do DEMO
+
+Uma ativacao real ainda depende de aprovacao separada, revisao juridica e de seguranca, provisionamento de storage/cofre/backup/telemetria e escolha dos provedores oficiais. Essas decisoes nao autorizam merge nem producao.
+
+Consulte `docs/DEMO-ONLINE-DEPLOYMENT.md`, `docs/PLATFORM-README.md` e o PR #7 para o estado tecnico atual.

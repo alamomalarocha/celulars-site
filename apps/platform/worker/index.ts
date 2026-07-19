@@ -217,8 +217,8 @@ async function reservationComplete(env:Env,orderId:string):Promise<boolean> {
 async function api(request: Request, env: Env, url: URL): Promise<Response> {
   if (url.pathname === '/health' && request.method === 'GET') return json({ status: 'UP', environment: env.PLATFORM_ENV, demo: true, banner: DEMO_BANNER });
   if (url.pathname === '/ready' && request.method === 'GET') {
-    const migration = await env.DB.prepare('SELECT version FROM schema_migrations ORDER BY version DESC LIMIT 1').first<{ version: string }>();
-    return json({ status: migration ? 'READY' : 'NOT_READY', database: Boolean(migration), latestMigration: migration?.version, providers: { email: 'MOCK', whatsapp: 'MOCK', payment: 'MOCK', shipment: 'MOCK', storage: 'MOCK' }, production: false }, migration ? 200 : 503);
+    const migration=await env.DB.prepare('SELECT id,name FROM d1_migrations ORDER BY id DESC LIMIT 1').first<{id:number;name:string}>();
+    return json({status:migration&&Number(migration.id)>=10?'READY':'NOT_READY',database:Boolean(migration),latestMigration:migration?.name,providers:{email:'MOCK',whatsapp:'MOCK',payment:'MOCK',shipment:'MOCK',storage:'MOCK'},production:false},migration&&Number(migration.id)>=10?200:503);
   }
   if (url.pathname === '/api/auth/login' && request.method === 'POST') {
     const input = await body(request); const email = String(input.email ?? '').trim().toLowerCase(); const password = String(input.password ?? '');

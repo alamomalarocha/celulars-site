@@ -1,6 +1,6 @@
 # Plataforma CELULARS DEMO
 
-Aplicacao interna local para homologar operacoes da CELULARS com dados exclusivamente ficticios. A plataforma fica em `apps/platform/`, nao e publicada pelo build estatico e nao entra em `dist/`.
+Aplicacao interna para homologar operacoes da CELULARS com dados exclusivamente ficticios. A plataforma fica em `apps/platform/`, nao e publicada pelo build estatico e nao entra em `dist/`. Alem do modo local, existe um Worker DEMO isolado em `demo.celulars.com.br`, protegido por Cloudflare Access e documentado em `DEMO-ONLINE-DEPLOYMENT.md`.
 
 ## Requisitos
 
@@ -81,7 +81,7 @@ Consulte [DEMO-ACCESS.md](DEMO-ACCESS.md) e [RBAC.md](RBAC.md).
 
 ## Seguranca
 
-A aplicacao usa senha com `scrypt`, sessao server-side, cookie HttpOnly, CSRF, MFA TOTP opcional, validacao de origem, queries parametrizadas, rate limiting, headers defensivos, RBAC e permissoes customizadas no servidor. Ainda assim, este pacote e DEMO local e nao deve ser exposto na internet.
+A aplicacao usa senha com `scrypt`, sessao server-side, cookie HttpOnly, CSRF, MFA TOTP opcional, validacao de origem, queries parametrizadas, rate limiting, headers defensivos, RBAC e permissoes customizadas no servidor. O servidor local deve permanecer em `127.0.0.1`. A unica exposicao online autorizada e o Worker DEMO isolado, com Cloudflare Access, JWT validado no Worker, `workers.dev` e previews desabilitados e providers externos em modo MOCK.
 
 Consulte [SECURITY-PLATFORM.md](SECURITY-PLATFORM.md).
 

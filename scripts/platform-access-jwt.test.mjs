@@ -47,6 +47,7 @@ class LoginD1Statement {
   constructor(db, sql) { this.db = db; this.sql = sql; this.values = []; }
   bind(...values) { this.values = values; return this; }
   async first() {
+    if (this.sql.startsWith('SELECT id,name FROM d1_migrations')) return this.db.migration ?? null;
     if (this.sql.includes('FROM sessions s JOIN users')) return this.db.principal ?? null;
     if (this.sql.startsWith('SELECT u.id FROM users u JOIN user_roles')) return this.db.validEmployee === this.values[0] ? { id: this.values[0] } : null;
     if (this.sql.includes('FROM users u JOIN user_roles')) return this.values[0] === 'admin@demo.invalid' ? this.db.user : null;
@@ -398,4 +399,7 @@ test('wholesale reports bind every commercial aggregate to the signed-in company
 test('online login locks after five failures and records safe session metadata', async () => {
   const user={id:'usr-admin',email:'admin@demo.invalid',display_name:'Admin',company_id:'',role:'ADMIN',status:'ACTIVE',password_salt:saltFixture,password_hash:hashFixture,failed_login_count:0,locked_until:null,access_expires_at:null};const db=new LoginD1(user),env=loginEnv(db),url=new URL('https://demo.celulars.com.br/api/auth/login'),request=password=>new Request(url,{method:'POST',headers:{'content-type':'application/json','cf-connecting-ip':'203.0.113.10','user-agent':'CELULARS test agent'},body:JSON.stringify({email:'admin@demo.invalid',password})});
   for(let index=0;index<5;index+=1)assert.equal((await api(request('wrong-password'),env,url)).status,401);assert.equal(db.user.failed_login_count,5);assert.ok(Date.parse(db.user.locked_until)>Date.now());assert.equal((await api(request(passwordFixture),env,url)).status,401);db.user.locked_until=new Date(Date.now()-1000).toISOString();db.user.failed_login_count=0;assert.equal((await api(request(passwordFixture),env,url)).status,200);assert.equal(db.session?.[4],'203.0.113.10');assert.equal(db.session?.[5],'CELULARS test agent');
+});
+test('readiness follows Wrangler d1_migrations and requires migration 010', async () => {
+  const db=new LoginD1(null),env=loginEnv(db),url=new URL('https://demo.celulars.com.br/ready');db.migration={id:10,name:'010_user_management.sql'};let response=await api(new Request(url),env,url);assert.equal(response.status,200);assert.deepEqual(await response.json(),{status:'READY',database:true,latestMigration:'010_user_management.sql',providers:{email:'MOCK',whatsapp:'MOCK',payment:'MOCK',shipment:'MOCK',storage:'MOCK'},production:false});db.migration={id:9,name:'009_data_governance.sql'};response=await api(new Request(url),env,url);assert.equal(response.status,503);assert.equal((await response.json()).status,'NOT_READY');
 });
