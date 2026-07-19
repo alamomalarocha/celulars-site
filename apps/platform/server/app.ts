@@ -349,9 +349,9 @@ const queueCompanyEmail = (companyId:string,templateCode:string,variables:Record
       if(method==='GET'&&url.pathname==='/api/deliveries'){requirePermission(principal,'messages.read');sendJson(response,200,{deliveries:database.prepare('SELECT id,channel,template_code,recipient,subject,status,attempts,last_error,created_at FROM delivery_outbox ORDER BY created_at DESC LIMIT 200').all(),banner:'DEMO — MENSAGEM NÃO ENVIADA EXTERNAMENTE'});return;}
       if(method==='POST'&&url.pathname==='/api/deliveries'){requirePermission(principal,'messages.write');sendJson(response,201,deliveries.queue(principal,await readJson<{channel:'EMAIL'|'WHATSAPP';templateCode:string;recipient:string;variables:Record<string,string>;companyId?:string|null;conversationId?:string|null;correlationId?:string|null}>(request)));return;}
       if(method==='POST'&&url.pathname==='/api/admin/deliveries/process'){requirePermission(principal,'settings.write');sendJson(response,200,{processed:deliveries.process()});return;}
-      if(method==='GET'&&url.pathname==='/api/returns'){requirePermission(principal,'orders.read');sendJson(response,200,afterSales.list(principal));return;}
-      if(method==='POST'&&url.pathname==='/api/returns'){requirePermission(principal,'orders.read');sendJson(response,201,afterSales.create(principal,await readJson<{orderId:string;reasonCode:string;notes:string;items:{orderItemId:string;quantity:number}[]}>(request)));return;}
-      const returnMatch=url.pathname.match(/^\/api\/returns\/([^/]+)$/);if(method==='PATCH'&&returnMatch?.[1]){requirePermission(principal,'orders.write');sendJson(response,200,afterSales.transition(principal,decodeURIComponent(returnMatch[1]),await readJson<{status:string;notes:string;resolution?:string;inspectionResult?:string}>(request)));return;}
+      if(method==='GET'&&url.pathname==='/api/returns'){if(!config.features.returns)throw new Error('RETURNS_DISABLED');requirePermission(principal,'orders.read');sendJson(response,200,afterSales.list(principal));return;}
+      if(method==='POST'&&url.pathname==='/api/returns'){if(!config.features.returns)throw new Error('RETURNS_DISABLED');requirePermission(principal,'orders.read');sendJson(response,201,afterSales.create(principal,await readJson<{orderId:string;reasonCode:string;notes:string;items:{orderItemId:string;quantity:number}[]}>(request)));return;}
+      const returnMatch=url.pathname.match(/^\/api\/returns\/([^/]+)$/);if(method==='PATCH'&&returnMatch?.[1]){if(!config.features.returns)throw new Error('RETURNS_DISABLED');requirePermission(principal,'orders.write');sendJson(response,200,afterSales.transition(principal,decodeURIComponent(returnMatch[1]),await readJson<{status:string;notes:string;resolution?:string;inspectionResult?:string}>(request)));return;}
       const timelineMatch=url.pathname.match(/^\/api\/orders\/([^/]+)\/timeline$/);if(method==='GET'&&timelineMatch?.[1]){requirePermission(principal,'orders.read');sendJson(response,200,operationTimeline(database,principal,decodeURIComponent(timelineMatch[1])));return;}
       if(method==='GET'&&url.pathname==='/api/admin/jobs'){requirePermission(principal,'settings.read');sendJson(response,200,jobs.list());return;}
       if(method==='POST'&&url.pathname==='/api/admin/jobs/run-next'){requirePermission(principal,'settings.write');sendJson(response,200,{result:jobs.runNext()});return;}
@@ -413,11 +413,13 @@ const queueCompanyEmail = (companyId:string,templateCode:string,variables:Record
         return;
       }
       if (method === 'GET' && url.pathname === '/api/reports') {
+        if(!config.features.reports)throw new Error('REPORTS_DISABLED');
         requirePermission(principal, 'reports.read');
         sendJson(response, 200, reportsData(database, principal));
         return;
       }
       if (method === 'GET' && url.pathname === '/api/reports.csv') {
+        if(!config.features.reports)throw new Error('REPORTS_DISABLED');
         requirePermission(principal, 'reports.read');
         const csv = reportsCsv(database, principal);
         response.statusCode = 200;
@@ -684,6 +686,7 @@ const queueCompanyEmail = (companyId:string,templateCode:string,variables:Record
         sendJson(response, 404, { error: 'Registro DEMO nao encontrado.' });
         return;
       }
+      if(error instanceof Error&&['RETURNS_DISABLED','REPORTS_DISABLED','DOCUMENTS_DISABLED','IMPORTS_DISABLED','MFA_DISABLED'].includes(error.message)){sendJson(response,404,{error:'Modulo indisponivel neste ambiente.',code:error.message});return;}
       if (error instanceof Error && error.message === 'CUSTOMER_EXISTS') {
         sendJson(response, 409, { error: 'Ja existe um cliente DEMO com este e-mail.' });
         return;

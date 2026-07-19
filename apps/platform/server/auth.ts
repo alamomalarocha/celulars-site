@@ -65,6 +65,11 @@ export class AuthService {
     return { roles, permissions: [...permissions].sort() };
   }
 
+  private accessEnabled(roles:readonly string[]):boolean {
+    if(roles.includes('WHOLESALE')&&!this.config.features.wholesaleLogin)return false;
+    if(roles.includes('EMPLOYEE')&&!roles.includes('ADMIN')&&!this.config.features.employeeLogin)return false;
+    return true;
+  }
   private principal(row: SessionRow, rotatedToken?: string): Principal {
     const access = this.rolesAndPermissions(row.user_id);
     return {
@@ -99,6 +104,7 @@ export class AuthService {
     }
 
     const roles = this.rolesAndPermissions(user.id).roles;
+    if(!this.accessEnabled(roles))throw new AuthenticationError('Credenciais invalidas ou acesso temporariamente indisponivel.');
     const enrolled = mfaEnabled(this.database, user.id);
     const required = enrolled || roles.some((role) => this.config.mfaRequiredRoles.includes(role));
     if (required && !enrolled) throw new AuthenticationError('MFA_ENROLLMENT_REQUIRED');
@@ -128,6 +134,7 @@ export class AuthService {
       this.database.prepare('UPDATE sessions SET revoked_at = ? WHERE id = ?').run(now.toISOString(), row.id);
       return null;
     }
+    const roles=this.rolesAndPermissions(row.user_id).roles;if(!this.accessEnabled(roles)){this.database.prepare('UPDATE sessions SET revoked_at=? WHERE id=?').run(now.toISOString(),row.id);return null;}
     const shouldRotate = now.getTime() - Date.parse(row.rotated_at) >= this.config.sessionRotationMinutes * 60 * 1000;
     if (!shouldRotate) return this.principal(row);
     const rotatedToken = randomBytes(32).toString('base64url');

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
-import { applyDemoBackupRetention, createDemoBackup, listDemoBackups, testDemoRestore } from '../database/backup.js';
+import { applyDemoBackupRetention, createDemoBackup, ExternalRemoteBackupAdapter, listDemoBackups, testDemoRestore } from '../database/backup.js';
 import { openDatabase } from '../database/db.js';
 import { migrateDatabase } from '../database/migrate.js';
 import { persistenceAdapter } from '../database/persistence.js';
@@ -40,6 +40,7 @@ test('persistence health and backup restore remain isolated and verified', () =>
   }
 });
 
+test('encrypted DEMO backup restores only with the passphrase and remote adapter fails closed',()=>{const base=loadConfig();const databasePath=path.join(base.platformRoot,'data',`encrypted-backup-${process.pid}.sqlite`);const config=loadConfig({databasePath});remove(databasePath);const database=openDatabase(config);try{migrateDatabase(database);seedDatabase(database,config,'Encrypted-Backup-Test!');}finally{database.close();}const backup=createDemoBackup(config,new Date('2026-07-18T18:00:00.000Z'),{encryptionPassphrase:'demo-backup-passphrase-only'});try{assert.equal(backup.manifest.encrypted,true);assert.equal(backup.manifest.encryptionAlgorithm,'AES-256-GCM-SCRYPT');assert.throws(()=>testDemoRestore(backup.directory,config),/PASSPHRASE_REQUIRED/);assert.throws(()=>testDemoRestore(backup.directory,config,{encryptionPassphrase:'wrong-passphrase-value'}),/DECRYPTION_FAILED/);const restored=testDemoRestore(backup.directory,config,{encryptionPassphrase:'demo-backup-passphrase-only'});assert.equal(restored.ok,true);assert.equal(restored.encrypted,true);const remote=new ExternalRemoteBackupAdapter();assert.equal(remote.health().ready,false);assert.throws(()=>remote.replicate(backup.directory,backup.manifest),/NOT_PROVISIONED/);}finally{rmSync(backup.directory,{recursive:true,force:true});remove(databasePath);}});
 test('external persistence adapter fails closed before provisioning', () => {
   const config = loadConfig({}, {
     PLATFORM_ENVIRONMENT: 'STAGING', PLATFORM_SESSION_SECRET: 'staging-secret-with-at-least-32-characters',

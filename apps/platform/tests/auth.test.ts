@@ -175,3 +175,5 @@ test('session rotation invalidates old token and login failures lock an account'
     removeDatabase(databasePath);
   }
 });
+
+test('login feature flags disable wholesale and employee access while preserving admin',()=>{const base=loadConfig();const databasePath=path.join(base.platformRoot,'data',`auth-flags-${process.pid}.sqlite`);const config=loadConfig({databasePath,features:{...base.features,wholesaleLogin:false,employeeLogin:false}});removeDatabase(databasePath);const database=openDatabase(config);try{migrateDatabase(database);seedDatabase(database,config,demoPassword);const auth=new AuthService(database,config);const context={ipAddress:'127.0.0.1',userAgent:'feature-flag-test'};assert.throws(()=>auth.login('atacadista1@demo.invalid',demoPassword,context),AuthenticationError);assert.throws(()=>auth.login('funcionario1@demo.invalid',demoPassword,context),AuthenticationError);assert.equal(auth.login('admin@demo.invalid',demoPassword,context).principal.roles.includes('ADMIN'),true);}finally{database.close();removeDatabase(databasePath);}});
