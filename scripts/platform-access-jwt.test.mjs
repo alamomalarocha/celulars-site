@@ -47,18 +47,22 @@ class LoginD1Statement {
   constructor(db, sql) { this.db = db; this.sql = sql; this.values = []; }
   bind(...values) { this.values = values; return this; }
   async first() {
+    if (this.sql.includes('FROM sessions s JOIN users')) return this.db.principal ?? null;
     if (this.sql.includes('FROM users u JOIN user_roles')) return this.values[0] === 'admin@demo.invalid' ? this.db.user : null;
+    if (this.sql.startsWith('SELECT id FROM notifications')) return this.db.notification?.id === this.values[0] && this.db.principal?.id === this.values[1] ? { id: this.db.notification.id } : null;
     return null;
   }
   async all() { return { success: true, results: [] }; }
   async run() {
     if (this.sql.startsWith('INSERT INTO sessions')) this.db.session = this.values;
     if (this.sql.startsWith('UPDATE users SET last_login_at')) this.db.updated = true;
+    if (this.sql.startsWith('UPDATE notifications SET read_at=COALESCE')) this.db.markedNotification = this.values[1];
+    if (this.sql.startsWith('UPDATE notifications SET read_at=?')) this.db.markedAllFor = this.values[1];
     return { success: true, results: [] };
   }
 }
 class LoginD1 {
-  constructor(user) { this.user = user; this.session = null; this.updated = false; }
+  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; }
   prepare(sql) { return new LoginD1Statement(this, sql); }
 }
 function loginEnv(db) { return { DB: db, SESSION_SECRET: 'session-secret-for-handler-test' }; }
@@ -79,6 +83,32 @@ test('real login handler rejects wrong password without creating session', async
   assert.equal(response.status, 401);
   assert.deepEqual(await response.json(), { error: 'INVALID_CREDENTIALS' });
   assert.equal(db.session, null);
+});
+test('notification writes require CSRF and stay scoped to the signed-in user', async () => {
+  const db = new LoginD1(null);
+  db.principal = { id: 'usr-admin', email: 'admin@demo.invalid', display_name: 'Administrador DEMO', company_id: null, role: 'ADMIN', csrfToken: 'csrf-notifications' };
+  db.notification = { id: 'notification-owned' };
+  const env = loginEnv(db);
+  const ownedUrl = new URL('https://demo.celulars.com.br/api/notifications/notification-owned/read');
+  const headers = { cookie: 'celulars_demo_online_session=session-token', 'x-csrf-token': 'csrf-notifications' };
+  const response = await api(new Request(ownedUrl, { method: 'POST', headers }), env, ownedUrl);
+  assert.equal(response.status, 200);
+  assert.equal(db.markedNotification, 'notification-owned');
+  const foreignUrl = new URL('https://demo.celulars.com.br/api/notifications/notification-foreign/read');
+  const foreign = await api(new Request(foreignUrl, { method: 'POST', headers }), env, foreignUrl);
+  assert.equal(foreign.status, 404);
+  assert.equal(db.markedNotification, 'notification-owned');
+  await assert.rejects(api(new Request(ownedUrl, { method: 'POST', headers: { cookie: 'celulars_demo_online_session=session-token' } }), env, ownedUrl), /CSRF_INVALID/);
+});
+
+test('mark-all notifications updates only the signed-in user', async () => {
+  const db = new LoginD1(null);
+  db.principal = { id: 'usr-employee', email: 'funcionario1@demo.invalid', display_name: 'Funcionário DEMO', company_id: null, role: 'EMPLOYEE', csrfToken: 'csrf-all' };
+  const env = loginEnv(db);
+  const url = new URL('https://demo.celulars.com.br/api/notifications/read-all');
+  const response = await api(new Request(url, { method: 'POST', headers: { cookie: 'celulars_demo_online_session=session-token', 'x-csrf-token': 'csrf-all' } }), env, url);
+  assert.equal(response.status, 200);
+  assert.equal(db.markedAllFor, 'usr-employee');
 });
 test('accepts a correctly signed Access JWT', async () => assert.equal((await verifyAccess(request(await token()), env)).email, 'alamomalarocha@gmail.com'));
 test('rejects a missing Access JWT', async () => assert.rejects(verifyAccess(request(), env), /ACCESS_TOKEN_MISSING/));

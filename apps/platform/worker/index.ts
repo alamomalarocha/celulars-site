@@ -160,6 +160,18 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
     return json({ user: publicUser(user), metrics: { products: Number(productCount?.total ?? 0), unreadNotifications: Number((counts as { unreadNotifications?: number } | null)?.unreadNotifications ?? 0), openRequests: Number((counts as { requests?: number } | null)?.requests ?? 0), activeOrders: Number((counts as { orders?: number } | null)?.orders ?? 0) }, profile: user.role, recent: [], environment: 'DEMO_ONLINE', banner: DEMO_BANNER });
   }
   if (url.pathname === '/api/notifications' && request.method === 'GET') { const notifications=await list<Record<string,unknown>>(env,'SELECT * FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 100',user.id); return json({notifications,unread:notifications.filter(row=>!row.read_at).length}); }
+  const notificationRead = url.pathname.match(/^\/api\/notifications\/([^/]+)\/read$/);
+  if (notificationRead?.[1] && request.method === 'POST') {
+    const id = decodeURIComponent(notificationRead[1]);
+    const notification = await env.DB.prepare('SELECT id FROM notifications WHERE id=? AND user_id=? LIMIT 1').bind(id, user.id).first<{ id: string }>();
+    if (!notification) return json({ error: 'NOT_FOUND' }, 404);
+    await env.DB.prepare('UPDATE notifications SET read_at=COALESCE(read_at,?) WHERE id=? AND user_id=?').bind(new Date().toISOString(), id, user.id).run();
+    return json({ ok: true, id });
+  }
+  if (url.pathname === '/api/notifications/read-all' && request.method === 'POST') {
+    await env.DB.prepare('UPDATE notifications SET read_at=? WHERE user_id=? AND read_at IS NULL').bind(new Date().toISOString(), user.id).run();
+    return json({ ok: true });
+  }
   if (url.pathname === '/api/audit' && request.method === 'GET') return json({ events: user.role === 'ADMIN' ? await list(env, 'SELECT a.*,u.display_name actor_name FROM audit_events a LEFT JOIN users u ON u.id=a.actor_user_id ORDER BY a.created_at DESC LIMIT 200') : await list(env, 'SELECT a.*,u.display_name actor_name FROM audit_events a LEFT JOIN users u ON u.id=a.actor_user_id WHERE a.actor_user_id=? ORDER BY a.created_at DESC LIMIT 100',user.id), limited:user.role!=='ADMIN' });
   if (url.pathname === '/api/catalog/products' && request.method === 'GET') return json({ products: await list<Record<string, unknown>>(env, `SELECT p.id,p.model_name,p.year,p.product_type,COUNT(v.id) variant_count,json_group_array(DISTINCT v.capacity) capacities,json_group_array(DISTINCT v.color) colors FROM products p JOIN product_variants v ON v.product_id=p.id WHERE p.demo_active=1 AND v.active=1 GROUP BY p.id ORDER BY p.model_name`).then(rows => rows.map(item => ({ ...item, capacities: JSON.parse(String(item.capacities)), colors: JSON.parse(String(item.colors)) }))) });
   if (url.pathname === '/api/price-lists' && request.method === 'GET') return json({ lists: await list(env, `SELECT * FROM price_lists WHERE status='ACTIVE' ORDER BY name`) });
