@@ -50,6 +50,7 @@ class LoginD1Statement {
     if (this.sql.includes('FROM sessions s JOIN users')) return this.db.principal ?? null;
     if (this.sql.includes('FROM users u JOIN user_roles')) return this.values[0] === 'admin@demo.invalid' ? this.db.user : null;
     if (this.sql.startsWith('SELECT id FROM notifications')) return this.db.notification?.id === this.values[0] && this.db.principal?.id === this.values[1] ? { id: this.db.notification.id } : null;
+    if (this.sql.startsWith('SELECT setting_value FROM settings')) return this.db.setting?.key === this.values[0] ? { setting_value: this.db.setting.value } : null;
     return null;
   }
   async all() { return { success: true, results: [] }; }
@@ -58,12 +59,15 @@ class LoginD1Statement {
     if (this.sql.startsWith('UPDATE users SET last_login_at')) this.db.updated = true;
     if (this.sql.startsWith('UPDATE notifications SET read_at=COALESCE')) this.db.markedNotification = this.values[1];
     if (this.sql.startsWith('UPDATE notifications SET read_at=?')) this.db.markedAllFor = this.values[1];
+    if (this.sql.startsWith('UPDATE settings SET')) this.db.updatedSetting = this.values;
+    if (this.sql.startsWith('INSERT INTO audit_events')) this.db.audit = this.values;
     return { success: true, results: [] };
   }
 }
 class LoginD1 {
-  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; }
+  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; }
   prepare(sql) { return new LoginD1Statement(this, sql); }
+  async batch(statements) { return await Promise.all(statements.map(statement => statement.run())); }
 }
 function loginEnv(db) { return { DB: db, SESSION_SECRET: 'session-secret-for-handler-test' }; }
 
@@ -109,6 +113,23 @@ test('mark-all notifications updates only the signed-in user', async () => {
   const response = await api(new Request(url, { method: 'POST', headers: { cookie: 'celulars_demo_online_session=session-token', 'x-csrf-token': 'csrf-all' } }), env, url);
   assert.equal(response.status, 200);
   assert.equal(db.markedAllFor, 'usr-employee');
+});
+test('settings writes are validated, admin-only and audited atomically', async () => {
+  const db = new LoginD1(null);
+  db.principal = { id: 'usr-admin', email: 'admin@demo.invalid', display_name: 'Administrador DEMO', company_id: null, role: 'ADMIN', csrfToken: 'csrf-settings' };
+  db.setting = { key: 'reservation_minutes', value: '60' };
+  const env = loginEnv(db);
+  const url = new URL('https://demo.celulars.com.br/api/settings/reservation_minutes');
+  const request = value => new Request(url, { method: 'PATCH', headers: { cookie: 'celulars_demo_online_session=session-token', 'x-csrf-token': 'csrf-settings', 'content-type': 'application/json' }, body: JSON.stringify({ value }) });
+  const response = await api(request('90'), env, url);
+  assert.equal(response.status, 200);
+  assert.deepEqual(db.updatedSetting?.slice(0, 3), ['90', 'NUMBER', 'usr-admin']);
+  assert.equal(db.audit?.[2], 'SETTINGS_CHANGE');
+  const invalid = await api(request('-1'), env, url);
+  assert.equal(invalid.status, 400);
+  db.principal = { ...db.principal, id: 'usr-employee', role: 'EMPLOYEE' };
+  const forbidden = await api(request('120'), env, url);
+  assert.equal(forbidden.status, 403);
 });
 test('accepts a correctly signed Access JWT', async () => assert.equal((await verifyAccess(request(await token()), env)).email, 'alamomalarocha@gmail.com'));
 test('rejects a missing Access JWT', async () => assert.rejects(verifyAccess(request(), env), /ACCESS_TOKEN_MISSING/));

@@ -29,6 +29,23 @@ const encoder = new TextEncoder();
 const DEMO_BANNER = 'AMBIENTE DE DEMONSTRAÇÃO — DADOS FICTÍCIOS — SEM TRANSAÇÕES REAIS';
 let keyCache: { expires: number; keys: JsonWebKey[] } | undefined;
 
+type SettingDefinition = { type: 'STRING' | 'NUMBER' | 'BOOLEAN' | 'JSON'; label: string; validate(value: string): boolean };
+const settingDefinitions: Record<string, SettingDefinition> = {
+  operation_name: { type: 'STRING', label: 'Nome da plataforma', validate: value => value.length >= 3 && value.length <= 80 },
+  currency: { type: 'STRING', label: 'Moeda principal', validate: value => ['USD', 'BRL'].includes(value) },
+  brazil_cpo_shipping: { type: 'NUMBER', label: 'Envio CPO para o Brasil (USD)', validate: value => Number.isFinite(Number(value)) && Number(value) > 0 && Number(value) <= 100_000 },
+  brazil_new_shipping: { type: 'NUMBER', label: 'Envio Novo para o Brasil (USD)', validate: value => Number.isFinite(Number(value)) && Number(value) > 0 && Number(value) <= 100_000 },
+  reservation_minutes: { type: 'NUMBER', label: 'Duração da reserva (minutos)', validate: value => Number.isInteger(Number(value)) && Number(value) > 0 && Number(value) <= 100_000 },
+  low_stock_threshold: { type: 'NUMBER', label: 'Limite de estoque baixo', validate: value => Number.isInteger(Number(value)) && Number(value) >= 0 && Number(value) <= 100_000 },
+  default_language: { type: 'STRING', label: 'Idioma padrão', validate: value => /^[a-z]{2}-[A-Z]{2}$/.test(value) },
+  notification_templates: { type: 'JSON', label: 'Templates internos', validate: value => { try { const parsed = JSON.parse(value); return Boolean(parsed) && typeof parsed === 'object' && !Array.isArray(parsed); } catch { return false; } } },
+  default_order_status: { type: 'STRING', label: 'Status padrão do pedido', validate: value => value === 'DRAFT' },
+  quote_sequence_prefix: { type: 'STRING', label: 'Prefixo de cotação', validate: value => /^[A-Z0-9-]{2,20}$/.test(value) },
+  order_sequence_prefix: { type: 'STRING', label: 'Prefixo de pedido', validate: value => /^[A-Z0-9-]{2,20}$/.test(value) },
+  notifications_enabled: { type: 'BOOLEAN', label: 'Notificações internas', validate: value => ['true', 'false'].includes(value) },
+  demo_mode: { type: 'BOOLEAN', label: 'Modo DEMO', validate: value => value === 'true' }
+};
+
 function json(body: unknown, status = 200, headers: HeadersInit = {}): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...headers } });
 }
@@ -183,7 +200,28 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
   if (url.pathname === '/api/conversations' && request.method === 'GET') return json({ conversations: await list(env, 'SELECT * FROM conversations ORDER BY updated_at DESC'), messages: await list(env, 'SELECT * FROM messages ORDER BY created_at DESC'), allowInternalNotes: user.role !== 'WHOLESALE' });
   if (url.pathname === '/api/quotes' && request.method === 'GET') return json({ quotes: await list(env, 'SELECT q.*,c.name company_name FROM quotes q LEFT JOIN companies c ON c.id=q.company_id ORDER BY q.created_at DESC'), variants: await list(env, 'SELECT v.*,p.model_name,p.product_type FROM product_variants v JOIN products p ON p.id=v.product_id'), companies: await list(env, `SELECT * FROM companies WHERE approval_status='APPROVED'`), readOnlyInternalWorkflow: user.role === 'WHOLESALE' });
   if (url.pathname === '/api/orders' && request.method === 'GET') return json({ orders: await list(env, 'SELECT * FROM orders ORDER BY created_at DESC'), items: await list(env, 'SELECT * FROM order_items'), reservations: await list(env, 'SELECT * FROM reservations'), shipments: await list(env, 'SELECT * FROM shipments'), inventory: await list(env, 'SELECT * FROM inventory_items') });
-  if (url.pathname === '/api/settings' && request.method === 'GET') return json({ settings: user.role === 'ADMIN' ? await list(env, 'SELECT * FROM settings ORDER BY setting_key') : [] });
+  if (url.pathname === '/api/settings' && request.method === 'GET') {
+    if (user.role !== 'ADMIN') return json({ error: 'FORBIDDEN' }, 403);
+    const rows = await list<Record<string, unknown>>(env, 'SELECT setting_key,setting_value,value_type,updated_at FROM settings ORDER BY setting_key');
+    return json({ banner: DEMO_BANNER, environment: 'DEMO_ONLINE', settings: rows.filter(row => settingDefinitions[String(row.setting_key)]).map(row => ({ ...row, value_type: settingDefinitions[String(row.setting_key)].type, label: settingDefinitions[String(row.setting_key)].label, demo_only: true })) });
+  }
+  const settingRoute = url.pathname.match(/^\/api\/settings\/([^/]+)$/);
+  if (settingRoute?.[1] && request.method === 'PATCH') {
+    if (user.role !== 'ADMIN') return json({ error: 'FORBIDDEN' }, 403);
+    const key = decodeURIComponent(settingRoute[1]);
+    const definition = settingDefinitions[key];
+    const input = await body(request);
+    const value = typeof input.value === 'string' ? input.value.trim().slice(0, 10_000) : '';
+    if (!definition || !value || !definition.validate(value)) return json({ error: 'INVALID_SETTING' }, 400);
+    const existing = await env.DB.prepare('SELECT setting_value FROM settings WHERE setting_key=? LIMIT 1').bind(key).first<{ setting_value: string }>();
+    if (!existing) return json({ error: 'SETTING_NOT_FOUND' }, 404);
+    const now = new Date().toISOString();
+    await env.DB.batch([
+      env.DB.prepare('UPDATE settings SET setting_value=?,value_type=?,updated_by_user_id=?,updated_at=? WHERE setting_key=?').bind(value, definition.type, user.id, now, key),
+      env.DB.prepare('INSERT INTO audit_events(id,actor_user_id,action,entity_type,entity_id,before_json,after_json,ip_address,user_agent,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(), user.id, 'SETTINGS_CHANGE', 'SETTING', key, JSON.stringify({ value: existing.setting_value }), JSON.stringify({ value }), request.headers.get('cf-connecting-ip') ?? 'CLOUDFLARE', (request.headers.get('user-agent') ?? 'unknown').slice(0, 500), now)
+    ]);
+    return json({ key, value, valueType: definition.type, updatedAt: now });
+  }
   if (url.pathname === '/api/reports' && request.method === 'GET') { const quoteRows=await list<Record<string,unknown>>(env,'SELECT status,COUNT(*) count FROM quotes GROUP BY status'); const total=quoteRows.reduce((sum,row)=>sum+Number(row.count),0); const converted=quoteRows.find(row=>row.status==='CONVERTED'); return json({ banner:DEMO_BANNER,scope:user.role==='WHOLESALE'?'COMPANY':'INTERNAL',companyId:user.company_id,conversionRate:total?Number((Number(converted?.count??0)*100/total).toFixed(2)):0,requests:await list(env,'SELECT status,COUNT(*) count FROM requests GROUP BY status'),quotes:quoteRows,orders:await list(env,'SELECT status,COUNT(*) count FROM orders GROUP BY status'),messages:await list(env,'SELECT c.status,COUNT(m.id) count FROM conversations c LEFT JOIN messages m ON m.conversation_id=c.id GROUP BY c.status'),shipments:await list(env,'SELECT status,COUNT(*) count FROM shipments GROUP BY status'),companies:user.role==='WHOLESALE'?[]:await list(env,'SELECT approval_status status,COUNT(*) count FROM companies GROUP BY approval_status'),employeeActivity:[],inventory:[],reservations:await list(env,'SELECT status,COUNT(*) count FROM reservations GROUP BY status'),audits:await list(env,'SELECT action status,COUNT(*) count FROM audit_events GROUP BY action'),environment:'DEMO_ONLINE' }); }
   if (url.pathname === '/api/account/sessions' && request.method === 'GET') return json({ sessions: await list(env, 'SELECT id,ip_address,user_agent,created_at,expires_at FROM sessions WHERE user_id=? AND revoked_at IS NULL AND expires_at>? ORDER BY created_at DESC', user.id, new Date().toISOString()) });
   if (url.pathname === '/api/account/mfa' && request.method === 'GET') return json({ enabled: false, recoveryCodesRemaining: 0 });
