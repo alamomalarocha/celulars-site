@@ -97,6 +97,8 @@ class LoginD1Statement {
   async run() {
     if (this.sql.startsWith('INSERT INTO sessions')) this.db.session = this.values;
     if (this.sql.startsWith('UPDATE users SET last_login_at')) this.db.updated = true;
+    if (this.sql.startsWith('UPDATE sessions SET revoked_at=? WHERE user_id=? AND id<>?')) this.db.revokedOtherSessions = this.values;
+    if (this.sql.startsWith('UPDATE sessions SET revoked_at=? WHERE id=? AND user_id=?')) this.db.revokedCurrentSession = this.values;
     if (this.sql.startsWith('UPDATE notifications SET read_at=COALESCE')) this.db.markedNotification = this.values[1];
     if (this.sql.startsWith('UPDATE notifications SET read_at=?')) this.db.markedAllFor = this.values[1];
     if (this.sql.startsWith('UPDATE settings SET')) this.db.updatedSetting = this.values;
@@ -351,3 +353,13 @@ test('rejects expired token', async () => assert.rejects(verifyAccess(request(aw
 test('rejects a different email', async () => assert.rejects(verifyAccess(request(await token({email:'other@example.com'})), env), /ACCESS_EMAIL_DENIED/));
 test('rejects an invalid signature', async () => { const other=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']); await assert.rejects(verifyAccess(request(await token({},other.privateKey)),env),/ACCESS_SIGNATURE_INVALID/); });
 test.after(() => { globalThis.fetch=originalFetch; rmSync(outdir,{recursive:true,force:true}); });
+test('account session controls revoke only other sessions and logout revokes the current session', async () => {
+  const db = new LoginD1(null); db.principal={id:'usr-admin',email:'admin@demo.invalid',display_name:'Admin',company_id:null,role:'ADMIN',csrfToken:'csrf-session',session_id:'session-current'};const env=loginEnv(db),headers={cookie:'celulars_demo_online_session=session-token','x-csrf-token':'csrf-session'};
+  let url=new URL('https://demo.celulars.com.br/api/account/sessions/revoke-others');let response=await api(new Request(url,{method:'POST',headers}),env,url);assert.equal(response.status,200);assert.deepEqual(db.revokedOtherSessions?.slice(1),['usr-admin','session-current']);
+  url=new URL('https://demo.celulars.com.br/api/auth/logout');response=await api(new Request(url,{method:'POST',headers}),env,url);assert.equal(response.status,200);assert.deepEqual(db.revokedCurrentSession?.slice(1),['session-current','usr-admin']);assert.match(response.headers.get('set-cookie')??'',/Max-Age=0/);
+});
+
+test('admin cannot revoke the current account sessions through user administration', async () => {
+  const db=new LoginD1(null);db.principal={id:'usr-admin',email:'admin@demo.invalid',display_name:'Admin',company_id:null,role:'ADMIN',csrfToken:'csrf-admin',session_id:'session-current'};const env=loginEnv(db),url=new URL('https://demo.celulars.com.br/api/admin/users/usr-admin/sessions'),headers={cookie:'celulars_demo_online_session=session-token','x-csrf-token':'csrf-admin'};
+  const response=await api(new Request(url,{method:'DELETE',headers}),env,url);assert.equal(response.status,409);assert.deepEqual(await response.json(),{error:'SELF_SESSION_REVOCATION_FORBIDDEN'});
+});
