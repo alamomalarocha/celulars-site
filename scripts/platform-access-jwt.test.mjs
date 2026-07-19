@@ -103,6 +103,7 @@ class LoginD1Statement {
   async run() {
     if (this.sql.startsWith('INSERT INTO sessions')) this.db.session = this.values;
     if (this.sql.startsWith('UPDATE users SET last_login_at')) this.db.updated = true;
+    if (this.sql.startsWith('UPDATE users SET failed_login_count=?')) { this.db.user.failed_login_count=this.values[0];this.db.user.locked_until=this.values[1];this.db.failedLoginUpdate=this.values; }
     if (this.sql.startsWith('UPDATE sessions SET revoked_at=? WHERE user_id=? AND id<>?')) this.db.revokedOtherSessions = this.values;
     if (this.sql.startsWith('UPDATE sessions SET revoked_at=? WHERE id=? AND user_id=?')) this.db.revokedCurrentSession = this.values;
     if (this.sql.startsWith('UPDATE notifications SET read_at=COALESCE')) this.db.markedNotification = this.values[1];
@@ -393,4 +394,8 @@ test('delivery processing remains MOCK and never invokes an external provider', 
 });
 test('wholesale reports bind every commercial aggregate to the signed-in company', async () => {
   const db=new LoginD1(null);db.principal={id:'usr-wholesale',email:'atacadista@demo.invalid',display_name:'Atacadista',company_id:'company-wholesale',role:'WHOLESALE',csrfToken:'csrf-report',session_id:'s'};const env=loginEnv(db),headers={cookie:'celulars_demo_online_session=x'},url=new URL('https://demo.celulars.com.br/api/reports'),response=await api(new Request(url,{headers}),env,url),payload=await response.json();assert.equal(response.status,200);assert.equal(payload.scope,'COMPANY');assert.equal(payload.companyId,'company-wholesale');assert.equal('companies' in payload,false);const scoped=db.allCalls.filter(call=>call.sql.includes('(? IS NULL OR'));assert.ok(scoped.length>=5);for(const call of scoped)assert.deepEqual(call.values.slice(0,2),['company-wholesale','company-wholesale']);
+});
+test('online login locks after five failures and records safe session metadata', async () => {
+  const user={id:'usr-admin',email:'admin@demo.invalid',display_name:'Admin',company_id:'',role:'ADMIN',status:'ACTIVE',password_salt:saltFixture,password_hash:hashFixture,failed_login_count:0,locked_until:null,access_expires_at:null};const db=new LoginD1(user),env=loginEnv(db),url=new URL('https://demo.celulars.com.br/api/auth/login'),request=password=>new Request(url,{method:'POST',headers:{'content-type':'application/json','cf-connecting-ip':'203.0.113.10','user-agent':'CELULARS test agent'},body:JSON.stringify({email:'admin@demo.invalid',password})});
+  for(let index=0;index<5;index+=1)assert.equal((await api(request('wrong-password'),env,url)).status,401);assert.equal(db.user.failed_login_count,5);assert.ok(Date.parse(db.user.locked_until)>Date.now());assert.equal((await api(request(passwordFixture),env,url)).status,401);db.user.locked_until=new Date(Date.now()-1000).toISOString();db.user.failed_login_count=0;assert.equal((await api(request(passwordFixture),env,url)).status,200);assert.equal(db.session?.[4],'203.0.113.10');assert.equal(db.session?.[5],'CELULARS test agent');
 });
