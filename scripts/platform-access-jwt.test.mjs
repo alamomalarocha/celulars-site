@@ -48,12 +48,15 @@ class LoginD1Statement {
   bind(...values) { this.values = values; return this; }
   async first() {
     if (this.sql.includes('FROM sessions s JOIN users')) return this.db.principal ?? null;
+    if (this.sql.startsWith('SELECT u.id FROM users u JOIN user_roles')) return this.db.validEmployee === this.values[0] ? { id: this.values[0] } : null;
     if (this.sql.includes('FROM users u JOIN user_roles')) return this.values[0] === 'admin@demo.invalid' ? this.db.user : null;
     if (this.sql.startsWith('SELECT id FROM notifications')) return this.db.notification?.id === this.values[0] && this.db.principal?.id === this.values[1] ? { id: this.db.notification.id } : null;
     if (this.sql.startsWith('SELECT setting_value FROM settings')) return this.db.setting?.key === this.values[0] ? { setting_value: this.db.setting.value } : null;
     if (this.sql.startsWith('SELECT name,email,country')) return this.db.customer?.id === this.values[0] ? this.db.customer : null;
     if (this.sql.startsWith('SELECT id FROM customers WHERE email=? AND id<>?')) return this.db.duplicateCustomer ? { id: this.db.duplicateCustomer } : null;
     if (this.sql.startsWith('SELECT id FROM customers WHERE email=?')) return this.db.duplicateCustomer ? { id: this.db.duplicateCustomer } : null;
+    if (this.sql.startsWith('SELECT id,company_id FROM customers')) return this.db.requestCustomer?.id === this.values[0] ? this.db.requestCustomer : null;
+    if (this.sql.startsWith('SELECT id,lead_id,status,assigned_user_id FROM requests')) return this.db.requestRecord?.id === this.values[0] ? this.db.requestRecord : null;
     if (this.sql.startsWith('SELECT id,approval_status FROM companies')) return this.db.company?.id === this.values[0] ? { id: this.db.company.id, approval_status: this.db.company.approval_status } : null;
     if (this.sql.startsWith('SELECT id FROM companies')) return this.db.validCompany === this.values[0] ? { id: this.values[0] } : null;
     return null;
@@ -70,11 +73,15 @@ class LoginD1Statement {
     if (this.sql.startsWith('UPDATE customers SET')) this.db.updatedCustomer = this.values;
     if (this.sql.startsWith('UPDATE companies SET approval_status')) this.db.updatedCompany = this.values;
     if (this.sql.startsWith('INSERT INTO approvals')) this.db.approval = this.values;
+    if (this.sql.startsWith('INSERT INTO leads')) this.db.insertedLead = this.values;
+    if (this.sql.startsWith('INSERT INTO requests')) this.db.insertedRequest = this.values;
+    if (this.sql.startsWith('UPDATE requests SET status')) this.db.updatedRequestStatus = this.values;
+    if (this.sql.startsWith('UPDATE leads SET status')) this.db.updatedLeadStatus = this.values;
     return { success: true, results: [] };
   }
 }
 class LoginD1 {
-  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; this.customer = null; this.duplicateCustomer = null; this.validCompany = null; this.insertedCustomer = null; this.updatedCustomer = null; this.company = null; this.updatedCompany = null; this.approval = null; }
+  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; this.customer = null; this.duplicateCustomer = null; this.validCompany = null; this.insertedCustomer = null; this.updatedCustomer = null; this.company = null; this.updatedCompany = null; this.approval = null; this.requestCustomer = null; this.requestRecord = null; this.validEmployee = null; this.insertedLead = null; this.insertedRequest = null; this.updatedRequestStatus = null; this.updatedLeadStatus = null; }
   prepare(sql) { return new LoginD1Statement(this, sql); }
   async batch(statements) { return await Promise.all(statements.map(statement => statement.run())); }
 }
@@ -184,6 +191,37 @@ test('company approval enforces valid transitions, admin role and atomic audit',
   const forbidden = await api(request('SUSPENDED', 'EMPLOYEE'), env, url);
   assert.equal(forbidden.status, 403);
 });
+
+test('request creation is scoped and status transitions are internal, validated and audited', async () => {
+  const db = new LoginD1(null);
+  db.principal = { id: 'usr-wholesale', email: 'atacadista2@demo.invalid', display_name: 'Atacadista DEMO', company_id: 'company-wholesale', role: 'WHOLESALE', csrfToken: 'csrf-requests' };
+  const env = loginEnv(db);
+  const headers = { cookie: 'celulars_demo_online_session=session-token', 'x-csrf-token': 'csrf-requests', 'content-type': 'application/json' };
+  const createUrl = new URL('https://demo.celulars.com.br/api/requests');
+  const payload = { title: 'Consulta DEMO', description: 'Solicitacao ficticia de produto.', leadType: 'PRODUCT', priority: 'HIGH' };
+  const created = await api(new Request(createUrl, { method: 'POST', headers, body: JSON.stringify(payload) }), env, createUrl);
+  assert.equal(created.status, 201);
+  assert.equal(db.insertedLead?.[2], 'company-wholesale');
+  assert.equal(db.insertedRequest?.[4], 'usr-wholesale');
+  assert.equal(db.audit?.[2], 'CREATE');
+  const listResponse = await api(new Request(createUrl, { headers: { cookie: 'celulars_demo_online_session=session-token' } }), env, createUrl);
+  assert.equal((await listResponse.json()).readOnlyStatus, true);
+  db.requestRecord = { id: 'request-demo', lead_id: 'lead-demo', status: 'NEW', assigned_user_id: null };
+  const statusUrl = new URL('https://demo.celulars.com.br/api/requests/request-demo/status');
+  const forbidden = await api(new Request(statusUrl, { method: 'POST', headers, body: JSON.stringify({ status: 'ASSIGNED' }) }), env, statusUrl);
+  assert.equal(forbidden.status, 403);
+  db.principal = { ...db.principal, id: 'usr-employee', role: 'EMPLOYEE', company_id: null };
+  db.validEmployee = 'usr-employee';
+  const transitioned = await api(new Request(statusUrl, { method: 'POST', headers, body: JSON.stringify({ status: 'ASSIGNED', assignedUserId: 'usr-employee' }) }), env, statusUrl);
+  assert.equal(transitioned.status, 200);
+  assert.deepEqual(db.updatedRequestStatus?.slice(0,2), ['ASSIGNED','usr-employee']);
+  assert.deepEqual(db.updatedLeadStatus?.slice(0,2), ['ASSIGNED','usr-employee']);
+  assert.equal(db.audit?.[2], 'UPDATE');
+  db.requestRecord.status = 'ASSIGNED';
+  const invalid = await api(new Request(statusUrl, { method: 'POST', headers, body: JSON.stringify({ status: 'RESOLVED' }) }), env, statusUrl);
+  assert.equal(invalid.status, 409);
+});
+
 test('accepts a correctly signed Access JWT', async () => assert.equal((await verifyAccess(request(await token()), env)).email, 'alamomalarocha@gmail.com'));
 test('rejects a missing Access JWT', async () => assert.rejects(verifyAccess(request(), env), /ACCESS_TOKEN_MISSING/));
 test('rejects wrong issuer', async () => assert.rejects(verifyAccess(request(await token({iss:'https://invalid.example'})), env), /ACCESS_CLAIMS_INVALID/));

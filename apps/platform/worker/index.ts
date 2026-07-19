@@ -46,6 +46,14 @@ const settingDefinitions: Record<string, SettingDefinition> = {
   demo_mode: { type: 'BOOLEAN', label: 'Modo DEMO', validate: value => value === 'true' }
 };
 
+const requestLeadTypes = new Set(['RETAIL','WHOLESALE','PRODUCT','PRICE','PICKUP','SHIPPING','SUPPORT']);
+const requestPriorities = new Set(['LOW','NORMAL','HIGH','URGENT']);
+const requestTransitions: Record<string,string[]> = {
+  NEW:['ASSIGNED','IN_PROGRESS','CLOSED'], ASSIGNED:['IN_PROGRESS','WAITING_CUSTOMER','CLOSED'],
+  IN_PROGRESS:['WAITING_CUSTOMER','RESOLVED','CLOSED'], WAITING_CUSTOMER:['IN_PROGRESS','RESOLVED','CLOSED'],
+  RESOLVED:['CLOSED','IN_PROGRESS'], CLOSED:[]
+};
+
 function customerValues(input: Record<string, unknown>): { name: string; email: string; country: string; language: string; source: string; status: string; notes: string; companyId: string | null } | null {
   const value = {
     name: String(input.name ?? '').trim().slice(0, 120),
@@ -270,7 +278,44 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
     ]);
     return json(result);
   }
-  if (url.pathname === '/api/requests' && request.method === 'GET') return json({ requests: await list(env, `SELECT r.*,l.lead_type,l.priority FROM requests r LEFT JOIN leads l ON l.id=r.lead_id ORDER BY r.created_at DESC`), employees: await list(env, `SELECT u.id,u.display_name FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id WHERE r.code IN ('ADMIN','EMPLOYEE')`) });
+  if (url.pathname === '/api/requests' && request.method === 'GET') {
+    const scope = user.role === 'WHOLESALE' ? user.company_id : null;
+    if (user.role === 'WHOLESALE' && !scope) return json({ error: 'FORBIDDEN' }, 403);
+    return json({
+      requests: await list(env, `SELECT r.id,r.title,r.description,r.status,r.created_by_user_id,r.assigned_user_id,l.id lead_id,l.lead_type,l.priority,l.company_id,l.customer_id,l.tags_json,l.internal_notes,c.name customer_name,co.name company_name,u.display_name assigned_name,r.created_at,r.updated_at FROM requests r JOIN leads l ON l.id=r.lead_id LEFT JOIN customers c ON c.id=l.customer_id LEFT JOIN companies co ON co.id=l.company_id LEFT JOIN users u ON u.id=r.assigned_user_id WHERE (? IS NULL OR l.company_id=?) ORDER BY r.updated_at DESC LIMIT 200`, scope, scope),
+      employees: scope ? [] : await list(env, `SELECT DISTINCT u.id,u.display_name FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles ro ON ro.id=ur.role_id WHERE ro.code IN ('ADMIN','EMPLOYEE') AND u.status='ACTIVE' ORDER BY u.display_name`),
+      readOnlyStatus: Boolean(scope), environment: 'DEMO_ONLINE'
+    });
+  }
+  if (url.pathname === '/api/requests' && request.method === 'POST') {
+    const input=await body(request); const title=String(input.title??'').trim().slice(0,160); const description=String(input.description??'').trim().slice(0,2000); const leadType=String(input.leadType??'').trim().toUpperCase(); const priority=String(input.priority??'').trim().toUpperCase(); const customerId=typeof input.customerId==='string'&&input.customerId.trim()?input.customerId.trim():null; const companyId=user.role==='WHOLESALE'?user.company_id:null;
+    if (user.role==='WHOLESALE'&&!companyId) return json({error:'FORBIDDEN'},403);
+    if (title.length<3||description.length<3||!requestLeadTypes.has(leadType)||!requestPriorities.has(priority)) return json({error:'INVALID_REQUEST'},400);
+    if (customerId) { const customer=await env.DB.prepare('SELECT id,company_id FROM customers WHERE id=? AND deleted_at IS NULL LIMIT 1').bind(customerId).first<{id:string;company_id:string|null}>(); if (!customer||(companyId&&customer.company_id!==companyId)) return json({error:'INVALID_REQUEST'},400); }
+    const leadId=crypto.randomUUID(), id=crypto.randomUUID(), now=new Date().toISOString(); const result={id,leadId,title,status:'NEW',companyId,actor:user.id};
+    await env.DB.batch([
+      env.DB.prepare(`INSERT INTO leads(id,customer_id,company_id,lead_type,status,priority,tags_json,assigned_user_id,internal_notes,created_at,updated_at) VALUES(?,?,?,?,'NEW',?,'["DEMO"]',NULL,'Solicitacao criada no ambiente DEMO.',?,?)`).bind(leadId,customerId,companyId,leadType,priority,now,now),
+      env.DB.prepare(`INSERT INTO requests(id,lead_id,title,description,status,created_by_user_id,assigned_user_id,created_at,updated_at) VALUES(?,?,?,?,'NEW',?,NULL,?,?)`).bind(id,leadId,title,description,user.id,now,now),
+      env.DB.prepare('INSERT INTO audit_events(id,actor_user_id,action,entity_type,entity_id,after_json,ip_address,user_agent,created_at) VALUES(?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),user.id,'CREATE','REQUEST',id,JSON.stringify(result),request.headers.get('cf-connecting-ip')??'CLOUDFLARE',(request.headers.get('user-agent')??'unknown').slice(0,500),now)
+    ]);
+    return json(result,201);
+  }
+  const requestStatusRoute=url.pathname.match(/^\/api\/requests\/([^/]+)\/status$/);
+  if (requestStatusRoute?.[1]&&request.method==='POST') {
+    if (user.role==='WHOLESALE') return json({error:'FORBIDDEN'},403);
+    const id=decodeURIComponent(requestStatusRoute[1]); const input=await body(request); const status=String(input.status??'').trim().toUpperCase(); const assignedUserId=typeof input.assignedUserId==='string'&&input.assignedUserId.trim()?input.assignedUserId.trim():null;
+    const current=await env.DB.prepare('SELECT id,lead_id,status,assigned_user_id FROM requests WHERE id=? LIMIT 1').bind(id).first<{id:string;lead_id:string;status:string;assigned_user_id:string|null}>();
+    if (!current) return json({error:'REQUEST_NOT_FOUND'},404);
+    if (!(requestTransitions[current.status]??[]).includes(status)) return json({error:'INVALID_REQUEST_STATUS'},409);
+    if (assignedUserId&&!await env.DB.prepare(`SELECT u.id FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id WHERE u.id=? AND r.code IN ('ADMIN','EMPLOYEE') AND u.status='ACTIVE' LIMIT 1`).bind(assignedUserId).first()) return json({error:'INVALID_REQUEST_STATUS'},400);
+    const now=new Date().toISOString(); const result={id,fromStatus:current.status,toStatus:status,assignedUserId,actor:user.id};
+    await env.DB.batch([
+      env.DB.prepare('UPDATE requests SET status=?,assigned_user_id=COALESCE(?,assigned_user_id),updated_at=? WHERE id=?').bind(status,assignedUserId,now,id),
+      env.DB.prepare('UPDATE leads SET status=?,assigned_user_id=COALESCE(?,assigned_user_id),updated_at=? WHERE id=?').bind(status,assignedUserId,now,current.lead_id),
+      env.DB.prepare('INSERT INTO audit_events(id,actor_user_id,action,entity_type,entity_id,before_json,after_json,ip_address,user_agent,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),user.id,'UPDATE','REQUEST',id,JSON.stringify({status:current.status,assignedUserId:current.assigned_user_id}),JSON.stringify(result),request.headers.get('cf-connecting-ip')??'CLOUDFLARE',(request.headers.get('user-agent')??'unknown').slice(0,500),now)
+    ]);
+    return json(result);
+  }
   if (url.pathname === '/api/conversations' && request.method === 'GET') return json({ conversations: await list(env, 'SELECT * FROM conversations ORDER BY updated_at DESC'), messages: await list(env, 'SELECT * FROM messages ORDER BY created_at DESC'), allowInternalNotes: user.role !== 'WHOLESALE' });
   if (url.pathname === '/api/quotes' && request.method === 'GET') return json({ quotes: await list(env, 'SELECT q.*,c.name company_name FROM quotes q LEFT JOIN companies c ON c.id=q.company_id ORDER BY q.created_at DESC'), variants: await list(env, 'SELECT v.*,p.model_name,p.product_type FROM product_variants v JOIN products p ON p.id=v.product_id'), companies: await list(env, `SELECT * FROM companies WHERE approval_status='APPROVED'`), readOnlyInternalWorkflow: user.role === 'WHOLESALE' });
   if (url.pathname === '/api/orders' && request.method === 'GET') return json({ orders: await list(env, 'SELECT * FROM orders ORDER BY created_at DESC'), items: await list(env, 'SELECT * FROM order_items'), reservations: await list(env, 'SELECT * FROM reservations'), shipments: await list(env, 'SELECT * FROM shipments'), inventory: await list(env, 'SELECT * FROM inventory_items') });
