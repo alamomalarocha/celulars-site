@@ -24,14 +24,15 @@ test('persistence health and backup restore remain isolated and verified', () =>
   assert.equal(health.migrations, 10);
   mkdirSync(path.join(storagePath, 'demo-document'), { recursive: true });
   writeFileSync(path.join(storagePath, 'demo-document', 'private.txt'), 'documento privado DEMO');
-  const backup = createDemoBackup(config, new Date('2026-07-18T16:00:00.000Z'));
+  const existingBackupCount = listDemoBackups(config).length;
+  const backup = createDemoBackup(config, new Date('2000-01-01T16:00:00.000Z'));
   try {
     assert.equal(backup.manifest.productionBackup, false);
     assert.deepEqual(backup.manifest.artifacts.map((item) => item.kind), ['DATABASE', 'METADATA', 'DOCUMENT']);
     assert.equal(testDemoRestore(backup.directory, config).artifactsVerified, 3);
-    const second = createDemoBackup(config, new Date('2026-07-18T17:00:00.000Z'));
+    const second = createDemoBackup(config, new Date('2000-01-01T17:00:00.000Z'));
     assert.ok(listDemoBackups(config).some((item) => item.directory === second.directory));
-    assert.deepEqual(applyDemoBackupRetention(1, config), [backup.directory]);
+    assert.deepEqual(applyDemoBackupRetention(existingBackupCount + 1, config), [backup.directory]);
     rmSync(second.directory, { recursive: true, force: true });
   } finally {
     rmSync(backup.directory, { recursive: true, force: true });
