@@ -65,7 +65,7 @@ function json(body: unknown, status = 200, headers: HeadersInit = {}): Response 
 }
 
 function publicUser(user: Principal): object {
-  return { id: user.id, email: user.email, displayName: user.display_name, companyId: user.company_id, roles: [user.role], csrfToken: user.csrfToken };
+  return { id: user.id, email: user.email, displayName: user.display_name, companyId: user.company_id, roles: [user.role], permissions: user.role === 'ADMIN' ? ['companies.approve'] : [], csrfToken: user.csrfToken };
 }
 
 function base64url(value: string): Uint8Array {
@@ -239,7 +239,37 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
     ]);
     return json({ id, ...value, actor: user.id });
   }
-  if (url.pathname === '/api/companies' && request.method === 'GET') return json({ companies: user.role === 'WHOLESALE' ? await list(env, 'SELECT * FROM companies WHERE id=?', user.company_id) : await list(env, 'SELECT * FROM companies WHERE deleted_at IS NULL ORDER BY name') });
+  if (url.pathname === '/api/companies' && request.method === 'GET') {
+    const scope = user.role === 'WHOLESALE' ? user.company_id : null;
+    if (user.role === 'WHOLESALE' && !scope) return json({ error: 'FORBIDDEN' }, 403);
+    return json({
+      companies: await list(env, `SELECT c.id,c.name,c.company_type,c.country,c.demo_identifier,c.contact_name,c.contact_email,c.approval_status,c.classification,c.price_list_id,pl.name price_list_name,c.carrier_name,c.created_at,c.updated_at,COUNT(DISTINCT d.id) document_count,COUNT(DISTINCT u.id) user_count FROM companies c LEFT JOIN price_lists pl ON pl.id=c.price_list_id LEFT JOIN company_documents d ON d.company_id=c.id LEFT JOIN users u ON u.company_id=c.id WHERE c.deleted_at IS NULL AND (? IS NULL OR c.id=?) GROUP BY c.id ORDER BY c.company_type,c.name`, scope, scope),
+      documents: await list(env, 'SELECT id,company_id,file_name,mime_type,status,created_at FROM company_documents WHERE (? IS NULL OR company_id=?) ORDER BY created_at DESC', scope, scope),
+      approvals: user.role === 'WHOLESALE' ? [] : await list(env, 'SELECT a.id,a.company_id,a.from_status,a.to_status,a.notes,a.actor_user_id,u.display_name actor_name,a.created_at FROM approvals a JOIN users u ON u.id=a.actor_user_id ORDER BY a.created_at DESC LIMIT 100'),
+      readOnly: user.role === 'WHOLESALE', environment: 'DEMO_ONLINE'
+    });
+  }
+  const companyApproval = url.pathname.match(/^\/api\/companies\/([^/]+)\/approval$/);
+  if (companyApproval?.[1] && request.method === 'POST') {
+    if (user.role !== 'ADMIN') return json({ error: 'FORBIDDEN' }, 403);
+    const companyId = decodeURIComponent(companyApproval[1]);
+    const input = await body(request);
+    const status = String(input.status ?? '').trim().toUpperCase();
+    const notes = String(input.notes ?? '').trim().slice(0,1000);
+    if (!status || notes.length < 3) return json({ error: 'INVALID_COMPANY_APPROVAL' }, 400);
+    const company = await env.DB.prepare('SELECT id,approval_status FROM companies WHERE id=? AND deleted_at IS NULL LIMIT 1').bind(companyId).first<{ id:string; approval_status:string }>();
+    if (!company) return json({ error: 'COMPANY_NOT_FOUND' }, 404);
+    const transitions: Record<string,string[]> = { DRAFT:['SUBMITTED'], SUBMITTED:['UNDER_REVIEW'], UNDER_REVIEW:['APPROVED','REJECTED'], APPROVED:['SUSPENDED'], REJECTED:['SUBMITTED'], SUSPENDED:['UNDER_REVIEW'] };
+    if (!(transitions[company.approval_status] ?? []).includes(status)) return json({ error: 'INVALID_COMPANY_APPROVAL' }, 409);
+    const id=crypto.randomUUID(); const now=new Date().toISOString();
+    const result={id,companyId,fromStatus:company.approval_status,toStatus:status,notes,actor:user.id,createdAt:now};
+    await env.DB.batch([
+      env.DB.prepare('UPDATE companies SET approval_status=?,updated_at=? WHERE id=?').bind(status,now,companyId),
+      env.DB.prepare('INSERT INTO approvals(id,company_id,from_status,to_status,notes,actor_user_id,created_at) VALUES(?,?,?,?,?,?,?)').bind(id,companyId,company.approval_status,status,notes,user.id,now),
+      env.DB.prepare('INSERT INTO audit_events(id,actor_user_id,action,entity_type,entity_id,before_json,after_json,ip_address,user_agent,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),user.id,'COMPANY_APPROVAL','COMPANY',companyId,JSON.stringify({approvalStatus:company.approval_status}),JSON.stringify({approvalStatus:status,notes}),request.headers.get('cf-connecting-ip')??'CLOUDFLARE',(request.headers.get('user-agent')??'unknown').slice(0,500),now)
+    ]);
+    return json(result);
+  }
   if (url.pathname === '/api/requests' && request.method === 'GET') return json({ requests: await list(env, `SELECT r.*,l.lead_type,l.priority FROM requests r LEFT JOIN leads l ON l.id=r.lead_id ORDER BY r.created_at DESC`), employees: await list(env, `SELECT u.id,u.display_name FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id WHERE r.code IN ('ADMIN','EMPLOYEE')`) });
   if (url.pathname === '/api/conversations' && request.method === 'GET') return json({ conversations: await list(env, 'SELECT * FROM conversations ORDER BY updated_at DESC'), messages: await list(env, 'SELECT * FROM messages ORDER BY created_at DESC'), allowInternalNotes: user.role !== 'WHOLESALE' });
   if (url.pathname === '/api/quotes' && request.method === 'GET') return json({ quotes: await list(env, 'SELECT q.*,c.name company_name FROM quotes q LEFT JOIN companies c ON c.id=q.company_id ORDER BY q.created_at DESC'), variants: await list(env, 'SELECT v.*,p.model_name,p.product_type FROM product_variants v JOIN products p ON p.id=v.product_id'), companies: await list(env, `SELECT * FROM companies WHERE approval_status='APPROVED'`), readOnlyInternalWorkflow: user.role === 'WHOLESALE' });

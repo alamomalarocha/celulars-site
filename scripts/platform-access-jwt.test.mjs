@@ -54,6 +54,7 @@ class LoginD1Statement {
     if (this.sql.startsWith('SELECT name,email,country')) return this.db.customer?.id === this.values[0] ? this.db.customer : null;
     if (this.sql.startsWith('SELECT id FROM customers WHERE email=? AND id<>?')) return this.db.duplicateCustomer ? { id: this.db.duplicateCustomer } : null;
     if (this.sql.startsWith('SELECT id FROM customers WHERE email=?')) return this.db.duplicateCustomer ? { id: this.db.duplicateCustomer } : null;
+    if (this.sql.startsWith('SELECT id,approval_status FROM companies')) return this.db.company?.id === this.values[0] ? { id: this.db.company.id, approval_status: this.db.company.approval_status } : null;
     if (this.sql.startsWith('SELECT id FROM companies')) return this.db.validCompany === this.values[0] ? { id: this.values[0] } : null;
     return null;
   }
@@ -67,11 +68,13 @@ class LoginD1Statement {
     if (this.sql.startsWith('INSERT INTO audit_events')) this.db.audit = this.values;
     if (this.sql.startsWith('INSERT INTO customers')) this.db.insertedCustomer = this.values;
     if (this.sql.startsWith('UPDATE customers SET')) this.db.updatedCustomer = this.values;
+    if (this.sql.startsWith('UPDATE companies SET approval_status')) this.db.updatedCompany = this.values;
+    if (this.sql.startsWith('INSERT INTO approvals')) this.db.approval = this.values;
     return { success: true, results: [] };
   }
 }
 class LoginD1 {
-  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; this.customer = null; this.duplicateCustomer = null; this.validCompany = null; this.insertedCustomer = null; this.updatedCustomer = null; }
+  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; this.customer = null; this.duplicateCustomer = null; this.validCompany = null; this.insertedCustomer = null; this.updatedCustomer = null; this.company = null; this.updatedCompany = null; this.approval = null; }
   prepare(sql) { return new LoginD1Statement(this, sql); }
   async batch(statements) { return await Promise.all(statements.map(statement => statement.run())); }
 }
@@ -84,7 +87,9 @@ test('real login handler verifies scrypt v1, creates session and cookie', async 
   assert.match(response.headers.get('set-cookie') ?? '', /^celulars_demo_online_session=/);
   assert.equal(db.session?.[1], 'usr-admin');
   assert.equal(db.updated, true);
-  assert.equal((await response.json()).user.roles[0], 'ADMIN');
+  const loginPayload = await response.json();
+  assert.equal(loginPayload.user.roles[0], 'ADMIN');
+  assert.ok(loginPayload.user.permissions.includes('companies.approve'));
 });
 
 test('real login handler rejects wrong password without creating session', async () => {
@@ -159,6 +164,24 @@ test('customer create and update are validated, audited and blocked for wholesal
   assert.equal(db.audit?.[2], 'UPDATE');
   db.principal = { ...db.principal, id: 'usr-wholesale', role: 'WHOLESALE', company_id: 'company-wholesale' };
   const forbidden = await api(new Request(createUrl, { method: 'POST', headers, body: JSON.stringify(payload) }), env, createUrl);
+  assert.equal(forbidden.status, 403);
+});
+test('company approval enforces valid transitions, admin role and atomic audit', async () => {
+  const db = new LoginD1(null);
+  db.principal = { id: 'usr-admin', email: 'admin@demo.invalid', display_name: 'Administrador DEMO', company_id: null, role: 'ADMIN', csrfToken: 'csrf-company' };
+  db.company = { id: 'company-review', approval_status: 'UNDER_REVIEW' };
+  const env = loginEnv(db);
+  const url = new URL('https://demo.celulars.com.br/api/companies/company-review/approval');
+  const request = (status, role = 'ADMIN') => { db.principal = { ...db.principal, role }; return new Request(url, { method: 'POST', headers: { cookie: 'celulars_demo_online_session=session-token', 'x-csrf-token': 'csrf-company', 'content-type': 'application/json' }, body: JSON.stringify({ status, notes: 'Decisão comercial fictícia.' }) }); };
+  const approved = await api(request('APPROVED'), env, url);
+  assert.equal(approved.status, 200);
+  assert.deepEqual(db.updatedCompany?.[0], 'APPROVED');
+  assert.equal(db.approval?.[2], 'UNDER_REVIEW');
+  assert.equal(db.audit?.[2], 'COMPANY_APPROVAL');
+  db.company.approval_status = 'APPROVED';
+  const invalid = await api(request('REJECTED'), env, url);
+  assert.equal(invalid.status, 409);
+  const forbidden = await api(request('SUSPENDED', 'EMPLOYEE'), env, url);
   assert.equal(forbidden.status, 403);
 });
 test('accepts a correctly signed Access JWT', async () => assert.equal((await verifyAccess(request(await token()), env)).email, 'alamomalarocha@gmail.com'));
