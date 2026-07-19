@@ -56,12 +56,13 @@ class LoginD1Statement {
     if (this.sql.startsWith('SELECT id FROM customers WHERE email=? AND id<>?')) return this.db.duplicateCustomer ? { id: this.db.duplicateCustomer } : null;
     if (this.sql.startsWith('SELECT id FROM customers WHERE email=?')) return this.db.duplicateCustomer ? { id: this.db.duplicateCustomer } : null;
     if (this.sql.startsWith('SELECT id,company_id FROM customers')) return this.db.requestCustomer?.id === this.values[0] ? this.db.requestCustomer : null;
+    if (this.sql.startsWith('SELECT id,company_id FROM conversations')) return this.db.conversation?.id === this.values[0] ? this.db.conversation : null;
     if (this.sql.startsWith('SELECT id,lead_id,status,assigned_user_id FROM requests')) return this.db.requestRecord?.id === this.values[0] ? this.db.requestRecord : null;
     if (this.sql.startsWith('SELECT id,approval_status FROM companies')) return this.db.company?.id === this.values[0] ? { id: this.db.company.id, approval_status: this.db.company.approval_status } : null;
     if (this.sql.startsWith('SELECT id FROM companies')) return this.db.validCompany === this.values[0] ? { id: this.values[0] } : null;
     return null;
   }
-  async all() { return { success: true, results: [] }; }
+  async all() { this.db.allCalls.push({ sql: this.sql, values: this.values }); return { success: true, results: [] }; }
   async run() {
     if (this.sql.startsWith('INSERT INTO sessions')) this.db.session = this.values;
     if (this.sql.startsWith('UPDATE users SET last_login_at')) this.db.updated = true;
@@ -77,11 +78,14 @@ class LoginD1Statement {
     if (this.sql.startsWith('INSERT INTO requests')) this.db.insertedRequest = this.values;
     if (this.sql.startsWith('UPDATE requests SET status')) this.db.updatedRequestStatus = this.values;
     if (this.sql.startsWith('UPDATE leads SET status')) this.db.updatedLeadStatus = this.values;
+    if (this.sql.startsWith('INSERT INTO conversations')) this.db.insertedConversation = this.values;
+    if (this.sql.startsWith('INSERT INTO messages')) this.db.insertedMessage = this.values;
+    if (this.sql.startsWith('UPDATE conversations SET status')) this.db.updatedConversation = this.values;
     return { success: true, results: [] };
   }
 }
 class LoginD1 {
-  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; this.customer = null; this.duplicateCustomer = null; this.validCompany = null; this.insertedCustomer = null; this.updatedCustomer = null; this.company = null; this.updatedCompany = null; this.approval = null; this.requestCustomer = null; this.requestRecord = null; this.validEmployee = null; this.insertedLead = null; this.insertedRequest = null; this.updatedRequestStatus = null; this.updatedLeadStatus = null; }
+  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; this.customer = null; this.duplicateCustomer = null; this.validCompany = null; this.insertedCustomer = null; this.updatedCustomer = null; this.company = null; this.updatedCompany = null; this.approval = null; this.requestCustomer = null; this.requestRecord = null; this.validEmployee = null; this.insertedLead = null; this.insertedRequest = null; this.updatedRequestStatus = null; this.updatedLeadStatus = null; this.conversation = null; this.insertedConversation = null; this.insertedMessage = null; this.updatedConversation = null; this.allCalls = []; }
   prepare(sql) { return new LoginD1Statement(this, sql); }
   async batch(statements) { return await Promise.all(statements.map(statement => statement.run())); }
 }
@@ -220,6 +224,30 @@ test('request creation is scoped and status transitions are internal, validated 
   db.requestRecord.status = 'ASSIGNED';
   const invalid = await api(new Request(statusUrl, { method: 'POST', headers, body: JSON.stringify({ status: 'RESOLVED' }) }), env, statusUrl);
   assert.equal(invalid.status, 409);
+});
+
+test('conversations and messages preserve company scope, internal-note privacy and simulated delivery', async () => {
+  const db=new LoginD1(null);
+  db.principal={id:'usr-wholesale',email:'atacadista2@demo.invalid',display_name:'Atacadista DEMO',company_id:'company-wholesale',role:'WHOLESALE',csrfToken:'csrf-messages'};
+  const env=loginEnv(db);const headers={cookie:'celulars_demo_online_session=session-token','x-csrf-token':'csrf-messages','content-type':'application/json'};
+  const conversationsUrl=new URL('https://demo.celulars.com.br/api/conversations');
+  const listed=await api(new Request(conversationsUrl,{headers:{cookie:'celulars_demo_online_session=session-token'}}),env,conversationsUrl);
+  const listPayload=await listed.json();assert.equal(listPayload.allowInternalNotes,false);assert.equal(listPayload.environment,'DEMO_ONLINE');
+  assert.ok(db.allCalls.some(call=>call.sql.includes("m.message_type<>'INTERNAL_NOTE'")&&call.values[2]===1));
+  const created=await api(new Request(conversationsUrl,{method:'POST',headers,body:JSON.stringify({subject:'Conversa atacadista DEMO'})}),env,conversationsUrl);
+  assert.equal(created.status,201);assert.equal(db.insertedConversation?.[1],'company-wholesale');assert.equal(db.audit?.[2],'CREATE');
+  const conversationId=(await created.json()).id;db.conversation={id:conversationId,company_id:'company-wholesale'};
+  const messagesUrl=new URL('https://demo.celulars.com.br/api/messages');
+  const forbidden=await api(new Request(messagesUrl,{method:'POST',headers,body:JSON.stringify({conversationId,body:'Nota privada',messageType:'INTERNAL_NOTE'})}),env,messagesUrl);
+  assert.equal(forbidden.status,403);assert.equal(db.insertedMessage,null);
+  const sent=await api(new Request(messagesUrl,{method:'POST',headers,body:JSON.stringify({conversationId,body:'Mensagem ficticia',messageType:'MESSAGE'})}),env,messagesUrl);
+  assert.equal(sent.status,201);assert.equal(db.insertedMessage?.[4],'MESSAGE');assert.equal(db.updatedConversation?.[0],'OPEN');assert.equal((await sent.json()).externalDelivery,'DEMO_NOT_SENT');assert.equal(db.audit?.[2],'MESSAGE_SENT');
+  db.principal={...db.principal,id:'usr-employee',role:'EMPLOYEE',company_id:null};
+  const internal=await api(new Request(messagesUrl,{method:'POST',headers,body:JSON.stringify({conversationId,body:'Nota interna ficticia',messageType:'INTERNAL_NOTE'})}),env,messagesUrl);
+  assert.equal(internal.status,201);assert.equal(db.insertedMessage?.[4],'INTERNAL_NOTE');
+  db.principal={...db.principal,id:'usr-wholesale',role:'WHOLESALE',company_id:'other-company'};
+  const foreign=await api(new Request(messagesUrl,{method:'POST',headers,body:JSON.stringify({conversationId,body:'Mensagem indevida',messageType:'MESSAGE'})}),env,messagesUrl);
+  assert.equal(foreign.status,404);
 });
 
 test('accepts a correctly signed Access JWT', async () => assert.equal((await verifyAccess(request(await token()), env)).email, 'alamomalarocha@gmail.com'));

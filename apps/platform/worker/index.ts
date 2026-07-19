@@ -316,7 +316,43 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
     ]);
     return json(result);
   }
-  if (url.pathname === '/api/conversations' && request.method === 'GET') return json({ conversations: await list(env, 'SELECT * FROM conversations ORDER BY updated_at DESC'), messages: await list(env, 'SELECT * FROM messages ORDER BY created_at DESC'), allowInternalNotes: user.role !== 'WHOLESALE' });
+  if (url.pathname === '/api/conversations' && request.method === 'GET') {
+    const scope=user.role==='WHOLESALE'?user.company_id:null;
+    if(user.role==='WHOLESALE'&&!scope) return json({error:'FORBIDDEN'},403);
+    return json({
+      conversations:await list(env,`SELECT c.id,c.company_id,c.customer_id,c.subject,c.status,c.assigned_user_id,co.name company_name,cu.name customer_name,u.display_name assigned_name,c.created_at,c.updated_at,COUNT(m.id) message_count FROM conversations c LEFT JOIN companies co ON co.id=c.company_id LEFT JOIN customers cu ON cu.id=c.customer_id LEFT JOIN users u ON u.id=c.assigned_user_id LEFT JOIN messages m ON m.conversation_id=c.id WHERE (? IS NULL OR c.company_id=?) GROUP BY c.id ORDER BY c.updated_at DESC LIMIT 100`,scope,scope),
+      messages:await list(env,`SELECT m.id,m.conversation_id,m.sender_user_id,u.display_name sender_name,m.body,m.message_type,m.external_delivery,m.created_at FROM messages m JOIN conversations c ON c.id=m.conversation_id LEFT JOIN users u ON u.id=m.sender_user_id WHERE (? IS NULL OR c.company_id=?) AND (?=0 OR m.message_type<>'INTERNAL_NOTE') ORDER BY m.created_at DESC LIMIT 300`,scope,scope,scope?1:0),
+      templates:await list(env,'SELECT id,name,body FROM message_templates WHERE active=1 ORDER BY name'),
+      allowInternalNotes:!scope, environment:'DEMO_ONLINE'
+    });
+  }
+  if(url.pathname==='/api/conversations'&&request.method==='POST') {
+    const input=await body(request); const subject=String(input.subject??'').trim().slice(0,180); const customerId=typeof input.customerId==='string'&&input.customerId.trim()?input.customerId.trim():null; const companyId=user.role==='WHOLESALE'?user.company_id:null;
+    if(user.role==='WHOLESALE'&&!companyId) return json({error:'FORBIDDEN'},403);
+    if(subject.length<3) return json({error:'INVALID_CONVERSATION'},400);
+    if(customerId){const customer=await env.DB.prepare('SELECT id,company_id FROM customers WHERE id=? AND deleted_at IS NULL LIMIT 1').bind(customerId).first<{id:string;company_id:string|null}>();if(!customer||(companyId&&customer.company_id!==companyId))return json({error:'INVALID_CONVERSATION'},400);}
+    const id=crypto.randomUUID(),now=new Date().toISOString();const result={id,companyId,customerId,subject,status:'OPEN',actor:user.id};
+    await env.DB.batch([
+      env.DB.prepare(`INSERT INTO conversations(id,company_id,customer_id,subject,status,assigned_user_id,created_at,updated_at) VALUES(?,?,?,?,'OPEN',NULL,?,?)`).bind(id,companyId,customerId,subject,now,now),
+      env.DB.prepare('INSERT INTO audit_events(id,actor_user_id,action,entity_type,entity_id,after_json,ip_address,user_agent,created_at) VALUES(?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),user.id,'CREATE','CONVERSATION',id,JSON.stringify(result),request.headers.get('cf-connecting-ip')??'CLOUDFLARE',(request.headers.get('user-agent')??'unknown').slice(0,500),now)
+    ]);
+    return json(result,201);
+  }
+  if(url.pathname==='/api/messages'&&request.method==='POST') {
+    const input=await body(request);const conversationId=String(input.conversationId??'').trim();const messageBody=String(input.body??'').trim().slice(0,4000);const messageType=String(input.messageType??'MESSAGE').trim().toUpperCase();const scope=user.role==='WHOLESALE'?user.company_id:null;
+    if(user.role==='WHOLESALE'&&!scope) return json({error:'FORBIDDEN'},403);
+    if(scope&&messageType==='INTERNAL_NOTE') return json({error:'FORBIDDEN'},403);
+    if(!conversationId||!messageBody||!['MESSAGE','INTERNAL_NOTE','TEMPLATE'].includes(messageType)) return json({error:'INVALID_MESSAGE'},400);
+    const conversation=await env.DB.prepare('SELECT id,company_id FROM conversations WHERE id=? LIMIT 1').bind(conversationId).first<{id:string;company_id:string|null}>();
+    if(!conversation||(scope&&conversation.company_id!==scope)) return json({error:'CONVERSATION_NOT_FOUND'},404);
+    const id=crypto.randomUUID(),now=new Date().toISOString();const result={id,conversationId,body:messageBody,messageType,externalDelivery:'DEMO_NOT_SENT',actor:user.id};
+    await env.DB.batch([
+      env.DB.prepare(`INSERT INTO messages(id,conversation_id,sender_user_id,body,message_type,external_delivery,created_at) VALUES(?,?,?,?,?,'DEMO_NOT_SENT',?)`).bind(id,conversationId,user.id,messageBody,messageType,now),
+      env.DB.prepare('UPDATE conversations SET status=?,updated_at=? WHERE id=?').bind('OPEN',now,conversationId),
+      env.DB.prepare('INSERT INTO audit_events(id,actor_user_id,action,entity_type,entity_id,after_json,ip_address,user_agent,created_at) VALUES(?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),user.id,'MESSAGE_SENT','MESSAGE',id,JSON.stringify({id,conversationId,messageType,externalDelivery:'DEMO_NOT_SENT'}),request.headers.get('cf-connecting-ip')??'CLOUDFLARE',(request.headers.get('user-agent')??'unknown').slice(0,500),now)
+    ]);
+    return json(result,201);
+  }
   if (url.pathname === '/api/quotes' && request.method === 'GET') return json({ quotes: await list(env, 'SELECT q.*,c.name company_name FROM quotes q LEFT JOIN companies c ON c.id=q.company_id ORDER BY q.created_at DESC'), variants: await list(env, 'SELECT v.*,p.model_name,p.product_type FROM product_variants v JOIN products p ON p.id=v.product_id'), companies: await list(env, `SELECT * FROM companies WHERE approval_status='APPROVED'`), readOnlyInternalWorkflow: user.role === 'WHOLESALE' });
   if (url.pathname === '/api/orders' && request.method === 'GET') return json({ orders: await list(env, 'SELECT * FROM orders ORDER BY created_at DESC'), items: await list(env, 'SELECT * FROM order_items'), reservations: await list(env, 'SELECT * FROM reservations'), shipments: await list(env, 'SELECT * FROM shipments'), inventory: await list(env, 'SELECT * FROM inventory_items') });
   if (url.pathname === '/api/settings' && request.method === 'GET') {
