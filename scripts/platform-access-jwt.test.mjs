@@ -58,18 +58,24 @@ class LoginD1Statement {
     if (this.sql.startsWith('SELECT id,company_id FROM customers')) return this.db.requestCustomer?.id === this.values[0] ? this.db.requestCustomer : null;
     if (this.sql.startsWith('SELECT id,company_id FROM conversations')) return this.db.conversation?.id === this.values[0] ? this.db.conversation : null;
     if (this.sql.startsWith('SELECT id,lead_id,status,assigned_user_id FROM requests')) return this.db.requestRecord?.id === this.values[0] ? this.db.requestRecord : null;
+    if (this.sql.startsWith('SELECT id,approval_status,price_list_id FROM companies')) return this.db.quoteCompany?.id === this.values[0] ? this.db.quoteCompany : null;
+    if (this.sql.startsWith('SELECT id FROM product_variants')) return this.db.validVariant === this.values[0] ? { id: this.values[0] } : null;
+    if (this.sql.startsWith('SELECT amount_cents FROM prices')) return this.db.listedPrice == null ? null : { amount_cents: this.db.listedPrice };
+    if (this.sql.startsWith('SELECT id,company_id,status FROM quotes')) return this.db.quoteRecord?.id === this.values[0] ? this.db.quoteRecord : null;
+    if (this.sql.startsWith('SELECT id,company_id,customer_id FROM quotes')) return this.db.acceptedQuote?.id === this.values[0] ? this.db.acceptedQuote : null;
+    if (this.sql.startsWith('SELECT id FROM orders WHERE quote_id')) return this.db.existingOrder ? { id: this.db.existingOrder } : null;
     if (this.sql.startsWith('SELECT id,approval_status FROM companies')) return this.db.company?.id === this.values[0] ? { id: this.db.company.id, approval_status: this.db.company.approval_status } : null;
     if (this.sql.startsWith('SELECT id FROM companies')) return this.db.validCompany === this.values[0] ? { id: this.values[0] } : null;
     return null;
   }
-  async all() { this.db.allCalls.push({ sql: this.sql, values: this.values }); return { success: true, results: [] }; }
+  async all() { this.db.allCalls.push({ sql: this.sql, values: this.values }); if (this.sql.startsWith('SELECT variant_id,quantity,unit_price_cents FROM quote_items')) return { success: true, results: this.db.quoteItems }; return { success: true, results: [] }; }
   async run() {
     if (this.sql.startsWith('INSERT INTO sessions')) this.db.session = this.values;
     if (this.sql.startsWith('UPDATE users SET last_login_at')) this.db.updated = true;
     if (this.sql.startsWith('UPDATE notifications SET read_at=COALESCE')) this.db.markedNotification = this.values[1];
     if (this.sql.startsWith('UPDATE notifications SET read_at=?')) this.db.markedAllFor = this.values[1];
     if (this.sql.startsWith('UPDATE settings SET')) this.db.updatedSetting = this.values;
-    if (this.sql.startsWith('INSERT INTO audit_events')) this.db.audit = this.values;
+    if (this.sql.startsWith('INSERT INTO audit_events')) { this.db.audit = this.values; this.db.audits.push(this.values); }
     if (this.sql.startsWith('INSERT INTO customers')) this.db.insertedCustomer = this.values;
     if (this.sql.startsWith('UPDATE customers SET')) this.db.updatedCustomer = this.values;
     if (this.sql.startsWith('UPDATE companies SET approval_status')) this.db.updatedCompany = this.values;
@@ -81,11 +87,17 @@ class LoginD1Statement {
     if (this.sql.startsWith('INSERT INTO conversations')) this.db.insertedConversation = this.values;
     if (this.sql.startsWith('INSERT INTO messages')) this.db.insertedMessage = this.values;
     if (this.sql.startsWith('UPDATE conversations SET status')) this.db.updatedConversation = this.values;
+    if (this.sql.startsWith('INSERT INTO quotes')) this.db.insertedQuote = this.values;
+    if (this.sql.startsWith('INSERT INTO quote_items')) this.db.insertedQuoteItem = this.values;
+    if (this.sql.startsWith('UPDATE quotes SET status=?')) this.db.updatedQuoteStatus = this.values;
+    if (this.sql.includes("UPDATE quotes SET status='CONVERTED'")) this.db.convertedQuote = this.values;
+    if (this.sql.startsWith('INSERT INTO orders')) this.db.insertedOrder = this.values;
+    if (this.sql.startsWith('INSERT INTO order_items')) this.db.insertedOrderItems.push(this.values);
     return { success: true, results: [] };
   }
 }
 class LoginD1 {
-  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; this.customer = null; this.duplicateCustomer = null; this.validCompany = null; this.insertedCustomer = null; this.updatedCustomer = null; this.company = null; this.updatedCompany = null; this.approval = null; this.requestCustomer = null; this.requestRecord = null; this.validEmployee = null; this.insertedLead = null; this.insertedRequest = null; this.updatedRequestStatus = null; this.updatedLeadStatus = null; this.conversation = null; this.insertedConversation = null; this.insertedMessage = null; this.updatedConversation = null; this.allCalls = []; }
+  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; this.customer = null; this.duplicateCustomer = null; this.validCompany = null; this.insertedCustomer = null; this.updatedCustomer = null; this.company = null; this.updatedCompany = null; this.approval = null; this.requestCustomer = null; this.requestRecord = null; this.validEmployee = null; this.insertedLead = null; this.insertedRequest = null; this.updatedRequestStatus = null; this.updatedLeadStatus = null; this.conversation = null; this.insertedConversation = null; this.insertedMessage = null; this.updatedConversation = null; this.allCalls = []; this.quoteCompany = null; this.validVariant = null; this.listedPrice = null; this.quoteRecord = null; this.acceptedQuote = null; this.existingOrder = null; this.quoteItems = []; this.insertedQuote = null; this.insertedQuoteItem = null; this.updatedQuoteStatus = null; this.convertedQuote = null; this.insertedOrder = null; this.insertedOrderItems = []; this.audits = []; }
   prepare(sql) { return new LoginD1Statement(this, sql); }
   async batch(statements) { return await Promise.all(statements.map(statement => statement.run())); }
 }
@@ -248,6 +260,18 @@ test('conversations and messages preserve company scope, internal-note privacy a
   db.principal={...db.principal,id:'usr-wholesale',role:'WHOLESALE',company_id:'other-company'};
   const foreign=await api(new Request(messagesUrl,{method:'POST',headers,body:JSON.stringify({conversationId,body:'Mensagem indevida',messageType:'MESSAGE'})}),env,messagesUrl);
   assert.equal(foreign.status,404);
+});
+
+test('quotes use DEMO list prices, enforce wholesale decisions and convert atomically for internal users', async () => {
+  const db=new LoginD1(null);db.principal={id:'usr-wholesale',email:'atacadista2@demo.invalid',display_name:'Atacadista DEMO',company_id:'company-wholesale',role:'WHOLESALE',csrfToken:'csrf-quotes'};db.quoteCompany={id:'company-wholesale',approval_status:'APPROVED',price_list_id:'price-list-demo'};db.validVariant='variant-demo';db.listedPrice=12345;
+  const env=loginEnv(db),headers={cookie:'celulars_demo_online_session=session-token','x-csrf-token':'csrf-quotes','content-type':'application/json'},quotesUrl=new URL('https://demo.celulars.com.br/api/quotes');
+  const listed=await api(new Request(quotesUrl,{headers:{cookie:'celulars_demo_online_session=session-token'}}),env,quotesUrl);const listPayload=await listed.json();assert.equal(listPayload.readOnlyInternalWorkflow,true);assert.equal(listPayload.scopedCompanyId,'company-wholesale');
+  const created=await api(new Request(quotesUrl,{method:'POST',headers,body:JSON.stringify({variantId:'variant-demo',quantity:2,unitPriceCents:1,notes:'Cotacao ficticia.'})}),env,quotesUrl);assert.equal(created.status,201);assert.equal(db.insertedQuote?.[2],'company-wholesale');assert.equal(db.insertedQuoteItem?.[4],12345);assert.equal((await created.json()).unitPriceCents,12345);assert.equal(db.audit?.[2],'CREATE');
+  db.quoteRecord={id:'quote-demo',company_id:'company-wholesale',status:'SENT'};const statusUrl=new URL('https://demo.celulars.com.br/api/quotes/quote-demo/status');const accepted=await api(new Request(statusUrl,{method:'POST',headers,body:JSON.stringify({status:'ACCEPTED'})}),env,statusUrl);assert.equal(accepted.status,200);assert.equal(db.updatedQuoteStatus?.[0],'ACCEPTED');assert.equal(db.audit?.[2],'QUOTE_ACCEPTED');
+  db.quoteRecord.status='DRAFT';const forbiddenTransition=await api(new Request(statusUrl,{method:'POST',headers,body:JSON.stringify({status:'SENT'})}),env,statusUrl);assert.equal(forbiddenTransition.status,403);
+  const convertUrl=new URL('https://demo.celulars.com.br/api/quotes/quote-demo/convert');const forbiddenConvert=await api(new Request(convertUrl,{method:'POST',headers,body:JSON.stringify({deliveryMethod:'PICKUP_MIAMI',addressDemo:'Endereco DEMO',carrierDemo:'Carrier DEMO'})}),env,convertUrl);assert.equal(forbiddenConvert.status,403);
+  db.principal={...db.principal,id:'usr-employee',role:'EMPLOYEE',company_id:null};db.acceptedQuote={id:'quote-demo',company_id:'company-wholesale',customer_id:null};db.quoteItems=[{variant_id:'variant-demo',quantity:2,unit_price_cents:12345}];db.audits=[];
+  const converted=await api(new Request(convertUrl,{method:'POST',headers,body:JSON.stringify({deliveryMethod:'PICKUP_MIAMI',addressDemo:'Endereco DEMO',carrierDemo:'Carrier DEMO'})}),env,convertUrl);assert.equal(converted.status,201);assert.equal(db.insertedOrder?.[5],'MIAMI_PICKUP');assert.equal(db.insertedOrderItems.length,1);assert.equal(db.convertedQuote?.[1],'quote-demo');assert.deepEqual(db.audits.map(row=>row[2]),['QUOTE_CONVERTED','ORDER_CREATED']);
 });
 
 test('accepts a correctly signed Access JWT', async () => assert.equal((await verifyAccess(request(await token()), env)).email, 'alamomalarocha@gmail.com'));
