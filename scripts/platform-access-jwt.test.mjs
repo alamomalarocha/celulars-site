@@ -51,6 +51,10 @@ class LoginD1Statement {
     if (this.sql.includes('FROM users u JOIN user_roles')) return this.values[0] === 'admin@demo.invalid' ? this.db.user : null;
     if (this.sql.startsWith('SELECT id FROM notifications')) return this.db.notification?.id === this.values[0] && this.db.principal?.id === this.values[1] ? { id: this.db.notification.id } : null;
     if (this.sql.startsWith('SELECT setting_value FROM settings')) return this.db.setting?.key === this.values[0] ? { setting_value: this.db.setting.value } : null;
+    if (this.sql.startsWith('SELECT name,email,country')) return this.db.customer?.id === this.values[0] ? this.db.customer : null;
+    if (this.sql.startsWith('SELECT id FROM customers WHERE email=? AND id<>?')) return this.db.duplicateCustomer ? { id: this.db.duplicateCustomer } : null;
+    if (this.sql.startsWith('SELECT id FROM customers WHERE email=?')) return this.db.duplicateCustomer ? { id: this.db.duplicateCustomer } : null;
+    if (this.sql.startsWith('SELECT id FROM companies')) return this.db.validCompany === this.values[0] ? { id: this.values[0] } : null;
     return null;
   }
   async all() { return { success: true, results: [] }; }
@@ -61,11 +65,13 @@ class LoginD1Statement {
     if (this.sql.startsWith('UPDATE notifications SET read_at=?')) this.db.markedAllFor = this.values[1];
     if (this.sql.startsWith('UPDATE settings SET')) this.db.updatedSetting = this.values;
     if (this.sql.startsWith('INSERT INTO audit_events')) this.db.audit = this.values;
+    if (this.sql.startsWith('INSERT INTO customers')) this.db.insertedCustomer = this.values;
+    if (this.sql.startsWith('UPDATE customers SET')) this.db.updatedCustomer = this.values;
     return { success: true, results: [] };
   }
 }
 class LoginD1 {
-  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; }
+  constructor(user) { this.user = user; this.session = null; this.updated = false; this.principal = null; this.notification = null; this.markedNotification = null; this.markedAllFor = null; this.setting = null; this.updatedSetting = null; this.audit = null; this.customer = null; this.duplicateCustomer = null; this.validCompany = null; this.insertedCustomer = null; this.updatedCustomer = null; }
   prepare(sql) { return new LoginD1Statement(this, sql); }
   async batch(statements) { return await Promise.all(statements.map(statement => statement.run())); }
 }
@@ -129,6 +135,30 @@ test('settings writes are validated, admin-only and audited atomically', async (
   assert.equal(invalid.status, 400);
   db.principal = { ...db.principal, id: 'usr-employee', role: 'EMPLOYEE' };
   const forbidden = await api(request('120'), env, url);
+  assert.equal(forbidden.status, 403);
+});
+test('customer create and update are validated, audited and blocked for wholesale', async () => {
+  const db = new LoginD1(null);
+  db.principal = { id: 'usr-employee', email: 'funcionario1@demo.invalid', display_name: 'Funcionário DEMO', company_id: null, role: 'EMPLOYEE', csrfToken: 'csrf-customers' };
+  const env = loginEnv(db);
+  const headers = { cookie: 'celulars_demo_online_session=session-token', 'x-csrf-token': 'csrf-customers', 'content-type': 'application/json' };
+  const payload = { name: 'Cliente Teste DEMO', email: 'cliente.teste@demo.invalid', country: 'br', language: 'pt-BR', source: 'Teste automatizado', status: 'LEAD', notes: 'Registro fictício.' };
+  const createUrl = new URL('https://demo.celulars.com.br/api/customers');
+  const created = await api(new Request(createUrl, { method: 'POST', headers, body: JSON.stringify(payload) }), env, createUrl);
+  assert.equal(created.status, 201);
+  assert.equal(db.insertedCustomer?.[2], 'cliente.teste@demo.invalid');
+  assert.equal(db.audit?.[2], 'CREATE');
+  const invalid = await api(new Request(createUrl, { method: 'POST', headers, body: JSON.stringify({ ...payload, email: 'invalid' }) }), env, createUrl);
+  assert.equal(invalid.status, 400);
+  const id = 'customer-demo-edit';
+  db.customer = { id, name: 'Antes', email: 'antes@demo.invalid', country: 'US', language: 'pt-BR', source: 'DEMO', status: 'LEAD', notes: 'Antes', company_id: null };
+  const updateUrl = new URL(`https://demo.celulars.com.br/api/customers/${id}`);
+  const updated = await api(new Request(updateUrl, { method: 'PATCH', headers, body: JSON.stringify({ ...payload, status: 'ACTIVE' }) }), env, updateUrl);
+  assert.equal(updated.status, 200);
+  assert.equal(db.updatedCustomer?.[5], 'ACTIVE');
+  assert.equal(db.audit?.[2], 'UPDATE');
+  db.principal = { ...db.principal, id: 'usr-wholesale', role: 'WHOLESALE', company_id: 'company-wholesale' };
+  const forbidden = await api(new Request(createUrl, { method: 'POST', headers, body: JSON.stringify(payload) }), env, createUrl);
   assert.equal(forbidden.status, 403);
 });
 test('accepts a correctly signed Access JWT', async () => assert.equal((await verifyAccess(request(await token()), env)).email, 'alamomalarocha@gmail.com'));

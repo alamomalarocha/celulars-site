@@ -46,6 +46,20 @@ const settingDefinitions: Record<string, SettingDefinition> = {
   demo_mode: { type: 'BOOLEAN', label: 'Modo DEMO', validate: value => value === 'true' }
 };
 
+function customerValues(input: Record<string, unknown>): { name: string; email: string; country: string; language: string; source: string; status: string; notes: string; companyId: string | null } | null {
+  const value = {
+    name: String(input.name ?? '').trim().slice(0, 120),
+    email: String(input.email ?? '').trim().toLowerCase().slice(0, 180),
+    country: String(input.country ?? '').trim().toUpperCase().slice(0, 2),
+    language: String(input.language ?? '').trim().slice(0, 12),
+    source: String(input.source ?? '').trim().slice(0, 80),
+    status: String(input.status ?? '').trim().toUpperCase(),
+    notes: String(input.notes ?? '').trim().slice(0, 1000),
+    companyId: typeof input.companyId === 'string' && input.companyId.trim() ? input.companyId.trim() : null
+  };
+  return value.name.length >= 2 && /^[^@\s]+@[^@\s]+$/.test(value.email) && value.country.length === 2 && value.language.length >= 2 && value.source.length >= 2 && ['LEAD','ACTIVE','INACTIVE'].includes(value.status) && value.notes.length >= 3 ? value : null;
+}
+
 function json(body: unknown, status = 200, headers: HeadersInit = {}): Response {
   return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...headers } });
 }
@@ -194,7 +208,37 @@ async function api(request: Request, env: Env, url: URL): Promise<Response> {
   if (url.pathname === '/api/price-lists' && request.method === 'GET') return json({ lists: await list(env, `SELECT * FROM price_lists WHERE status='ACTIVE' ORDER BY name`) });
   if (url.pathname === '/api/prices' && request.method === 'GET') return json({ prices: await list(env, `SELECT pr.*,pl.name list_name,v.capacity,v.color,p.model_name,p.product_type FROM prices pr JOIN price_lists pl ON pl.id=pr.price_list_id JOIN product_variants v ON v.id=pr.variant_id JOIN products p ON p.id=v.product_id WHERE pr.valid_until IS NULL ORDER BY p.model_name`), readOnly: user.role === 'WHOLESALE' });
   if (url.pathname === '/api/inventory' && request.method === 'GET') return json({ inventory: await list(env, `SELECT i.*,v.capacity,v.color,p.model_name,p.product_type,COALESCE(SUM(m.physical_delta),0) physical_quantity,COALESCE(SUM(m.reserved_delta),0) reserved_quantity,COALESCE(SUM(m.physical_delta+m.reserved_delta),0) available_quantity FROM inventory_items i JOIN product_variants v ON v.id=i.variant_id JOIN products p ON p.id=v.product_id LEFT JOIN inventory_movements m ON m.inventory_item_id=i.id GROUP BY i.id ORDER BY p.model_name`) });
-  if (url.pathname === '/api/customers' && request.method === 'GET') return json({ customers: user.role === 'WHOLESALE' ? [] : await list(env, 'SELECT * FROM customers WHERE deleted_at IS NULL ORDER BY created_at DESC') });
+  if (url.pathname === '/api/customers' && request.method === 'GET') return json({ customers: user.role === 'WHOLESALE' ? [] : await list(env, 'SELECT * FROM customers WHERE deleted_at IS NULL ORDER BY updated_at DESC,name LIMIT 200'), environment: 'DEMO_ONLINE' });
+  if (url.pathname === '/api/customers' && request.method === 'POST') {
+    if (user.role === 'WHOLESALE') return json({ error: 'FORBIDDEN' }, 403);
+    const value = customerValues(await body(request));
+    if (!value) return json({ error: 'INVALID_CUSTOMER' }, 400);
+    if (await env.DB.prepare('SELECT id FROM customers WHERE email=? LIMIT 1').bind(value.email).first()) return json({ error: 'CUSTOMER_EXISTS' }, 409);
+    if (value.companyId && !await env.DB.prepare('SELECT id FROM companies WHERE id=? AND deleted_at IS NULL LIMIT 1').bind(value.companyId).first()) return json({ error: 'INVALID_CUSTOMER' }, 400);
+    const id = crypto.randomUUID(); const now = new Date().toISOString();
+    await env.DB.batch([
+      env.DB.prepare('INSERT INTO customers(id,name,email,phone_demo,country,language,source,status,notes,assigned_user_id,company_id,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(id,value.name,value.email,`DEMO-PHONE-${id.slice(0,8)}`,value.country,value.language,value.source,value.status,value.notes,user.id,value.companyId,now,now),
+      env.DB.prepare('INSERT INTO audit_events(id,actor_user_id,action,entity_type,entity_id,after_json,ip_address,user_agent,created_at) VALUES(?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),user.id,'CREATE','CUSTOMER',id,JSON.stringify(value),request.headers.get('cf-connecting-ip')??'CLOUDFLARE',(request.headers.get('user-agent')??'unknown').slice(0,500),now)
+    ]);
+    return json({ id, ...value, actor: user.id }, 201);
+  }
+  const customerRoute = url.pathname.match(/^\/api\/customers\/([^/]+)$/);
+  if (customerRoute?.[1] && request.method === 'PATCH') {
+    if (user.role === 'WHOLESALE') return json({ error: 'FORBIDDEN' }, 403);
+    const id = decodeURIComponent(customerRoute[1]);
+    const value = customerValues(await body(request));
+    if (!value) return json({ error: 'INVALID_CUSTOMER' }, 400);
+    const current = await env.DB.prepare('SELECT name,email,country,language,source,status,notes,company_id FROM customers WHERE id=? AND deleted_at IS NULL LIMIT 1').bind(id).first<Record<string, unknown>>();
+    if (!current) return json({ error: 'CUSTOMER_NOT_FOUND' }, 404);
+    if (await env.DB.prepare('SELECT id FROM customers WHERE email=? AND id<>? LIMIT 1').bind(value.email,id).first()) return json({ error: 'CUSTOMER_EXISTS' }, 409);
+    if (value.companyId && !await env.DB.prepare('SELECT id FROM companies WHERE id=? AND deleted_at IS NULL LIMIT 1').bind(value.companyId).first()) return json({ error: 'INVALID_CUSTOMER' }, 400);
+    const now = new Date().toISOString();
+    await env.DB.batch([
+      env.DB.prepare('UPDATE customers SET name=?,email=?,country=?,language=?,source=?,status=?,notes=?,company_id=?,assigned_user_id=?,updated_at=? WHERE id=?').bind(value.name,value.email,value.country,value.language,value.source,value.status,value.notes,value.companyId,user.id,now,id),
+      env.DB.prepare('INSERT INTO audit_events(id,actor_user_id,action,entity_type,entity_id,before_json,after_json,ip_address,user_agent,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)').bind(crypto.randomUUID(),user.id,'UPDATE','CUSTOMER',id,JSON.stringify(current),JSON.stringify(value),request.headers.get('cf-connecting-ip')??'CLOUDFLARE',(request.headers.get('user-agent')??'unknown').slice(0,500),now)
+    ]);
+    return json({ id, ...value, actor: user.id });
+  }
   if (url.pathname === '/api/companies' && request.method === 'GET') return json({ companies: user.role === 'WHOLESALE' ? await list(env, 'SELECT * FROM companies WHERE id=?', user.company_id) : await list(env, 'SELECT * FROM companies WHERE deleted_at IS NULL ORDER BY name') });
   if (url.pathname === '/api/requests' && request.method === 'GET') return json({ requests: await list(env, `SELECT r.*,l.lead_type,l.priority FROM requests r LEFT JOIN leads l ON l.id=r.lead_id ORDER BY r.created_at DESC`), employees: await list(env, `SELECT u.id,u.display_name FROM users u JOIN user_roles ur ON ur.user_id=u.id JOIN roles r ON r.id=ur.role_id WHERE r.code IN ('ADMIN','EMPLOYEE')`) });
   if (url.pathname === '/api/conversations' && request.method === 'GET') return json({ conversations: await list(env, 'SELECT * FROM conversations ORDER BY updated_at DESC'), messages: await list(env, 'SELECT * FROM messages ORDER BY created_at DESC'), allowInternalNotes: user.role !== 'WHOLESALE' });
