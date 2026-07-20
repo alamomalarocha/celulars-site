@@ -32,15 +32,9 @@ Camadas:
 
 `node:sqlite` ainda emite aviso experimental no Node 24. O banco DEMO e descartavel e nao deve ser promovido para producao. Uploads, e-mail, WhatsApp, pagamento e rastreio externo permanecem simulados.
 
-## Caminho para producao
+## Estado de producao
 
-1. substituir o adaptador SQLite por D1 ou banco transacional aprovado;
-2. usar provedor de identidade e gerenciamento de segredos;
-3. configurar ambiente protegido separado do Pages publico;
-4. executar migrations em homologacao;
-5. importar somente dados reais revisados;
-6. validar RBAC, auditoria, backup e recuperacao;
-7. ativar integracoes externas individualmente.
+O Worker e o D1 de producao ja estao provisionados em ambiente separado da DEMO e do Pages publico. O banco comercial permanece vazio, e integracoes externas e importacao real permanecem desabilitadas. Consulte [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md) e [PRODUCTION-RECOVERY.md](PRODUCTION-RECOVERY.md).
 
 ## Migracao dos dados DEMO
 
@@ -72,4 +66,4 @@ Operacoes de reserva, liberacao, pedido e movimentos usam transacoes `BEGIN IMME
 
 ## Deploy
 
-O build estatico do site ignora `apps/platform/`. A plataforma nao possui rota no Cloudflare Pages e deve retornar 404 em previews publicos. Uma futura implantacao exige runtime e protecao separados.
+O build estatico do site ignora `apps/platform/`. A plataforma nao possui rota no Cloudflare Pages. Os Workers DEMO e de producao usam dominios, bancos e protecoes separados do site publico.

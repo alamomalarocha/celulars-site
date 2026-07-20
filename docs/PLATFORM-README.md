@@ -1,6 +1,6 @@
 # Plataforma CELULARS DEMO
 
-Aplicacao interna para homologar operacoes da CELULARS com dados exclusivamente ficticios. A plataforma fica em `apps/platform/`, nao e publicada pelo build estatico e nao entra em `dist/`. Alem do modo local, existe um Worker DEMO isolado em `demo.celulars.com.br`, protegido por Cloudflare Access e documentado em `DEMO-ONLINE-DEPLOYMENT.md`.
+Aplicacao interna para homologar operacoes da CELULARS com dados exclusivamente ficticios. A plataforma fica em `apps/platform/`, nao e publicada pelo build estatico e nao entra em `dist/`. O Worker DEMO e o painel de producao usam infraestrutura isolada. O estado operacional canonico esta em [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md), e a recuperacao controlada esta em [PRODUCTION-RECOVERY.md](PRODUCTION-RECOVERY.md).
 
 ## Requisitos
 
@@ -13,7 +13,7 @@ Aplicacao interna para homologar operacoes da CELULARS com dados exclusivamente 
 ## Inicio rapido
 
 ```powershell
-npm install
+npx --yes pnpm@11.9.0 install --frozen-lockfile --ignore-scripts
 npm run platform:build
 $env:PLATFORM_DEMO_PASSWORD = '<senha-local-temporaria>'
 npm run platform:reset
@@ -81,7 +81,7 @@ Consulte [DEMO-ACCESS.md](DEMO-ACCESS.md) e [RBAC.md](RBAC.md).
 
 ## Seguranca
 
-A aplicacao usa senha com `scrypt`, sessao server-side, cookie HttpOnly, CSRF, MFA TOTP opcional, validacao de origem, queries parametrizadas, rate limiting, headers defensivos, RBAC e permissoes customizadas no servidor. O servidor local deve permanecer em `127.0.0.1`. A unica exposicao online autorizada e o Worker DEMO isolado, com Cloudflare Access, JWT validado no Worker, `workers.dev` e previews desabilitados e providers externos em modo MOCK.
+A aplicacao usa senha com `scrypt`, sessao server-side, cookie HttpOnly, CSRF, MFA TOTP opcional, validacao de origem, queries parametrizadas, rate limiting, headers defensivos, RBAC e permissoes customizadas no servidor. O servidor local deve permanecer em `127.0.0.1`. DEMO e producao usam Workers, D1 e dominios distintos; ambos mantem `workers.dev` e previews desabilitados. Integracoes externas e importacao real permanecem bloqueadas em producao.
 
 Consulte [SECURITY-PLATFORM.md](SECURITY-PLATFORM.md).
 

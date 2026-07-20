@@ -1,9 +1,11 @@
 # Runbook da Plataforma CELULARS DEMO
 
 ## Preparacao
+O estado de producao e a recuperacao operacional sao mantidos em [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md) e [PRODUCTION-RECOVERY.md](PRODUCTION-RECOVERY.md). Restauracoes nunca sao automaticas.
+
 
 ```powershell
-npm install
+npx --yes pnpm@11.9.0 install --frozen-lockfile --ignore-scripts
 npm run platform:build
 $env:PLATFORM_DEMO_PASSWORD = '<senha-local-temporaria>'
 npm run platform:reset

@@ -32,7 +32,7 @@
     "REAL_PAYMENTS_ENABLED": "false",
     "REAL_SHIPMENTS_ENABLED": "false",
     "REAL_STORAGE_ENABLED": "false",
-    "REAL_DATA_IMPORT_ENABLED": "true",
+    "REAL_DATA_IMPORT_ENABLED": "false",
     "PUBLIC_SIGNUP_ENABLED": "false",
     "PRODUCTION_MODE": "true",
     "ACCESS_TEAM_DOMAIN": "black-hall-e4fd.cloudflareaccess.com",

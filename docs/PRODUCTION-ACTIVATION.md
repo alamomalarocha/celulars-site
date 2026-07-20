@@ -1,14 +1,12 @@
-# Ativacao futura da Plataforma CELULARS
+# Governanca de ativacao da Plataforma CELULARS
 
-A plataforma atual e uma demonstracao local. Nao basta publicar os arquivos para transforma-la em producao.
+A infraestrutura do painel de producao ja esta provisionada, mas permanece com banco comercial vazio, importacao bloqueada e integracoes externas desligadas. Consulte [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md). Provisionamento nao autoriza importar dados, ativar providers ou mesclar o PR #7.
 
-## Bloqueios atuais
+## Bloqueios atuais para operacao comercial completa
 
-- SQLite local e descartavel;
-- segredo de sessao possui fallback somente DEMO;
-- contas e dados sao ficticios;
-- integracoes externas sao simuladas;
-- nao ha estrategia operacional de backup real;
+- dados comerciais ainda nao foram autorizados;
+- importacao real e integracoes externas estao desabilitadas;
+- a configuracao efetiva do Access e o painel autenticado ainda exigem homologacao humana;
 - nao ha ambiente de staging protegido aprovado;
 - nao ha politica de retencao e privacidade aplicada a dados reais.
 
@@ -69,7 +67,7 @@ A plataforma atual e uma demonstracao local. Nao basta publicar os arquivos para
 
 ## Rollback
 
-O rollback deve cobrir aplicacao, schema e integracoes. Nunca restaure o banco DEMO sobre dados reais. Cada migration de producao precisa de plano de reversao ou compensacao documentado.
+O rollback deve cobrir aplicacao, schema e integracoes. Nunca restaure o banco DEMO sobre dados reais. Cada migration de producao precisa de plano de reversao ou compensacao documentado. O procedimento obrigatorio esta em [PRODUCTION-RECOVERY.md](PRODUCTION-RECOVERY.md).
 
 ## Criterio de pronto
 
