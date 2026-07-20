@@ -71,8 +71,8 @@ Não execute o seed ou reset sem conferir explicitamente o binding `DB` e o nome
 Deploy de código não apaga D1. Antes de um redeploy, registre o Version ID. Para rollback, liste versões e use o mecanismo oficial de rollback do Wrangler/Cloudflare para a versão anterior; o D1 permanece separado e não deve ser apagado.
 
 ```powershell
-npx --yes wrangler@4.52.1 deployments list --name celulars-platform-demo
-npx --yes wrangler@4.52.1 rollback --name celulars-platform-demo
+npx --yes wrangler@4.112.0 deployments list --name celulars-platform-demo
+npx --yes wrangler@4.112.0 rollback --name celulars-platform-demo
 ```
 
 O rollback da migração de senha exige o export D1 privado criado imediatamente antes da mudança. Restaure somente no banco DEMO e em conjunto com uma versão do Worker que reconheça o formato restaurado. Nunca registre hash, salt ou senha no runbook.
