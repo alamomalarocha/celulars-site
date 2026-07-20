@@ -1,17 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readdirSync, rmSync } from 'node:fs';
-import { homedir, tmpdir } from 'node:os';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { pbkdf2Sync, scryptSync } from 'node:crypto';
+import { createRequire } from 'node:module';
 
-const cache = join(homedir(), '.cache', 'codex-wrangler-npm', '_npx');
-const entry = readdirSync(cache, { recursive: true, withFileTypes: true }).find(item => item.isFile() && item.name === 'wrangler.js');
-if (!entry) throw new Error('WRANGLER_CACHE_NOT_FOUND');
+const require = createRequire(import.meta.url);
+const wranglerEntry = require.resolve('wrangler');
 const outdir = mkdtempSync(join(tmpdir(), 'celulars-jwt-test-'));
-const bundle = spawnSync(process.execPath, [join(entry.parentPath, entry.name), 'deploy', '--dry-run', '--outdir', outdir], { cwd: fileURLToPath(new URL('..', import.meta.url)), encoding: 'utf8' });
+const bundle = spawnSync(process.execPath, [wranglerEntry, 'deploy', '--dry-run', '--outdir', outdir], { cwd: fileURLToPath(new URL('..', import.meta.url)), encoding: 'utf8' });
 if (bundle.status !== 0) throw new Error(bundle.stderr || 'WORKER_BUNDLE_FAILED');
 globalThis.Cloudflare = { compatibilityFlags: { enable_nodejs_process_v2: false } };
 const { api, verifyAccess, verifyPassword } = await import(`${pathToFileURL(join(outdir, 'index.js')).href}?test=${Date.now()}`);
@@ -28,6 +28,10 @@ const saltFixture = 'YWJjZGVmZ2hpamtsbW5vcA';
 const legacyHashFixture = pbkdf2Sync(passwordFixture, saltFixture, 210_000, 32, 'sha256').toString('hex');
 const scryptDerivedFixture = scryptSync(passwordFixture, saltFixture, 32, { N: 16_384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 });
 const hashFixture = 'scrypt$v1$N=16384,r=8,p=1,l=32$' + saltFixture + '$' + scryptDerivedFixture.toString('hex');
+test('uses the project Wrangler without depending on a Codex npx cache', () => {
+  assert.equal(wranglerEntry.includes('codex-wrangler-npm'), false);
+  assert.equal(wranglerEntry.includes(join('node_modules', 'wrangler')), true);
+});
 test('verifies versioned scrypt v1', async () => assert.equal(await verifyPassword(passwordFixture, saltFixture, hashFixture), true));
 test('retains legacy PBKDF2 verification for rollback only', async () => assert.equal(await verifyPassword(passwordFixture, saltFixture, legacyHashFixture), true));
 test('rejects an incorrect scrypt password', async () => assert.equal(await verifyPassword('wrong-password', saltFixture, hashFixture), false));
