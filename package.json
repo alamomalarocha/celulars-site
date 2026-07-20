@@ -2,6 +2,7 @@
   "name": "celulars-site",
   "private": true,
   "version": "1.0.0",
+  "packageManager": "pnpm@11.9.0",
   "description": "Site estatico da CELULARS",
   "scripts": {
     "validate": "node scripts/validate-site.mjs",
@@ -11,9 +12,40 @@
     "catalog:test": "node scripts/test-catalog-manager.mjs",
     "catalog:csv-test": "node scripts/test-catalog-csv.mjs",
     "inventory:test": "node scripts/test-inventory-manager.mjs",
-    "inventory:color-test": "node scripts/test-inventory-color.mjs"
+    "inventory:color-test": "node scripts/test-inventory-color.mjs",
+    "platform:dev": "node --enable-source-maps apps/platform/build/server/main.js",
+    "platform:migrate": "node --enable-source-maps apps/platform/build/database/migrate.js",
+    "platform:seed": "node --enable-source-maps apps/platform/build/database/seed.js",
+    "platform:reset": "node --enable-source-maps apps/platform/build/database/reset.js",
+    "platform:test": "node --test --test-concurrency=1 apps/platform/build/tests/*.test.js",
+    "platform:e2e": "node --test --test-concurrency=1 apps/platform/build/tests-e2e/*.test.js",
+    "platform:build": "tsc -p apps/platform/tsconfig.json",
+    "platform:lint": "node scripts/platform-lint.mjs",
+    "platform:typecheck": "tsc -p apps/platform/tsconfig.json --noEmit",
+    "platform:doctor": "npm run platform:build && node --enable-source-maps apps/platform/build/src/doctor.js",
+    "platform:backup": "npm run platform:build && node --enable-source-maps apps/platform/build/database/backup.js",
+    "platform:restore:test": "npm run platform:build && node --test --test-name-pattern=backup apps/platform/build/tests/persistence.test.js",
+    "platform:check": "npm run platform:lint && npm run platform:typecheck && npm run platform:build && npm run platform:test && npm run platform:e2e",
+    "platform:deploy:check": "node scripts/platform-deploy-check.mjs",
+    "platform:build:staging": "npm run platform:build && node scripts/platform-build-target.mjs STAGING",
+    "platform:build:production": "npm run platform:build && node scripts/platform-build-target.mjs PRODUCTION",
+    "platform:activation:check": "npm run platform:build && node apps/platform/build/src/activation-cli.js",
+    "platform:bootstrap-admin": "npm run platform:build && node apps/platform/build/src/bootstrap-admin.js",
+    "platform:deploy:demo": "npx --yes wrangler@4.52.1 deploy",
+    "platform:migrate:demo": "npx --yes wrangler@4.52.1 d1 migrations apply DB --remote",
+    "platform:seed:demo": "npm run platform:build && node scripts/platform-demo-online-seed.mjs && npx --yes wrangler@4.52.1 d1 execute DB --remote --file apps/platform/data/demo-online-seed.sql",
+    "platform:doctor:demo": "node scripts/platform-demo-online-doctor.mjs",
+    "platform:e2e:demo-online": "node --test scripts/platform-access-jwt.test.mjs scripts/platform-demo-online.e2e.test.mjs",
+    "platform:bootstrap:production": "node scripts/platform-production-bootstrap.mjs",
+    "platform:migrate:production": "npx --yes wrangler@4.52.1 d1 migrations apply DB --remote --config wrangler.production.jsonc",
+    "platform:deploy:production": "npx --yes wrangler@4.52.1 deploy --config wrangler.production.jsonc",
+    "platform:e2e:production-online": "node --test scripts/platform-access-jwt.test.mjs scripts/platform-production-online.e2e.test.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.3"
   }
 }

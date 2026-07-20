@@ -1,0 +1,41 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "celulars-platform",
+  "main": "apps/platform/worker/index.ts",
+  "compatibility_date": "2026-07-18",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": true },
+  "routes": [
+    { "pattern": "painel.celulars.com.br", "custom_domain": true }
+  ],
+  "assets": {
+    "directory": "apps/platform/public",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "celulars-platform-prod-db",
+      "database_id": "ca8a0264-4a3c-47e1-b111-12310b142ff9",
+      "migrations_dir": "apps/platform/database/migrations"
+    }
+  ],
+  "vars": {
+    "PLATFORM_ENV": "PRODUCTION",
+    "PLATFORM_DEMO": "false",
+    "PLATFORM_ENABLED": "true",
+    "REAL_EMAIL_ENABLED": "false",
+    "REAL_WHATSAPP_ENABLED": "false",
+    "REAL_PAYMENTS_ENABLED": "false",
+    "REAL_SHIPMENTS_ENABLED": "false",
+    "REAL_STORAGE_ENABLED": "false",
+    "REAL_DATA_IMPORT_ENABLED": "false",
+    "PUBLIC_SIGNUP_ENABLED": "false",
+    "PRODUCTION_MODE": "true",
+    "ACCESS_TEAM_DOMAIN": "black-hall-e4fd.cloudflareaccess.com",
+    "ACCESS_ALLOWED_EMAIL": "alamomalarocha@gmail.com"
+  }
+}

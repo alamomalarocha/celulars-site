@@ -1,0 +1,66 @@
+name: Validate and deploy CELULARS platform
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: celulars-platform-production
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install dependencies from the frozen pnpm lockfile
+        run: npx --yes pnpm@11.9.0 install --frozen-lockfile --ignore-scripts
+      - run: npm run platform:check
+      - run: npm run platform:deploy:check
+      - name: Validate production configuration
+        run: |
+          node -e "const fs=require('fs');const c=fs.readFileSync('wrangler.production.jsonc','utf8');for(const v of ['celulars-platform','celulars-platform-prod-db','painel.celulars.com.br','workers_dev\": false','preview_urls\": false','PLATFORM_DEMO\": \"false','PRODUCTION_MODE\": \"true','REAL_DATA_IMPORT_ENABLED\": \"false'])if(!c.includes(v))throw new Error('Missing '+v)"
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    environment: celulars-platform-production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+          package-manager-cache: false
+      - name: Install dependencies from the frozen pnpm lockfile
+        run: npx --yes pnpm@11.9.0 install --frozen-lockfile --ignore-scripts
+      - name: Require Cloudflare deployment credentials
+        run: test -n "$CLOUDFLARE_API_TOKEN" && test -n "$CLOUDFLARE_ACCOUNT_ID"
+      - name: Backup D1 before migration
+        run: npx --yes wrangler@4.52.1 d1 export celulars-platform-prod-db --remote --output celulars-platform-prod-pre-deploy.sql
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: celulars-platform-prod-backup-${{ github.sha }}
+          path: celulars-platform-prod-pre-deploy.sql
+          retention-days: 30
+      - run: npm run platform:migrate:production
+      - run: npm run platform:deploy:production
+      - name: Verify Access and public site
+        run: npm run platform:e2e:production-online

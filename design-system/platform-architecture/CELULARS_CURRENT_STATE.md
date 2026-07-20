@@ -1,4 +1,5 @@
 # CELULARS Current State
+> Atualizacao de 19 de julho de 2026: este arquivo descreve o site publico e o estado anterior ao projeto da plataforma. A plataforma interna DEMO foi implementada separadamente em `apps/platform/`, esta protegida em `demo.celulars.com.br` e nao alterou os itens publicos descritos aqui. Para o estado atual, consulte `docs/DEMO-ONLINE-DEPLOYMENT.md` e `docs/ROADMAP-PAINEL.md`.
 
 ## Referência
 
@@ -69,7 +70,7 @@ Estado:
 - imagens de aparelho foram removidas da experiência pública da página iPhones;
 - CDVS permanece como sistema interno/documental.
 
-## Pontos pendentes
+## Pontos pendentes no momento deste registro historico
 
 - Definir proteção definitiva da área Atacado.
 - Decidir quando iniciar Pages Functions/Workers.

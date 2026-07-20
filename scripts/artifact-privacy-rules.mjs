@@ -1,4 +1,5 @@
 export const forbiddenPublicPathPatterns = [
+  /(?:^|\/)apps\/platform(?:\/|$)/,
   /(?:^|\/)tools(?:\/|$)/,
   /(?:^|\/)internal(?:\/|$)/,
   /(?:^|\/)fixtures?(?:\/|$)/,
