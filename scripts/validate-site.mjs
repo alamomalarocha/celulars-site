@@ -158,6 +158,39 @@ function validateAccessPage(html, label) {
   const whatsappLinks = html.match(/href="https:\/\/wa\.me\/17865466540\?/g) || [];
   check(panelLinks.length === 3, `${label}: esperado um link de painel para cada perfil; encontrados ${panelLinks.length}.`);
   check(whatsappLinks.length === 1, `${label}: WhatsApp deve aparecer somente no card Atacadista; encontrados ${whatsappLinks.length}.`);
+
+  const wholesaleIndex = html.indexOf('<h2>Atacadista</h2>');
+  const employeeIndex = html.indexOf('<h2>Funcionário</h2>');
+  const administratorIndex = html.indexOf('<h2>Administrador</h2>');
+  check(wholesaleIndex >= 0 && wholesaleIndex < employeeIndex && employeeIndex < administratorIndex, `${label}: ordem dos perfis deve ser Atacadista, Funcionario e Administrador.`);
+  check(/>01<\/span>[\s\S]*?<h2>Atacadista<\/h2>/.test(html), `${label}: Atacadista nao esta associado ao numero 01.`);
+  check(/>02<\/span>[\s\S]*?<h2>Funcionário<\/h2>/.test(html), `${label}: Funcionario nao esta associado ao numero 02.`);
+  check(/>03<\/span>[\s\S]*?<h2>Administrador<\/h2>/.test(html), `${label}: Administrador nao esta associado ao numero 03.`);
+}
+
+function validateIphonePage(html, label) {
+  const normalized = visibleText(html).toLocaleLowerCase('pt-BR');
+  const requiredText = [
+    'importante: preços e disponibilidade',
+    'os valores exibidos são referências comerciais',
+    'as quantidades em estoque também podem variar',
+    'somente é reservado para retirada ou envio após a confirmação do pagamento',
+    'documento da compra',
+    'invoice',
+    'laudo técnico individual disponível',
+    'qr code',
+    'consultar pelo whatsapp'
+  ];
+  for (const text of requiredText) check(normalized.includes(text), `${label}: aviso comercial incompleto (${text}).`);
+
+  for (const obsolete of ['table-exchange-card', 'data-table-reference-rate', 'data-table-ptax-date', 'data-table-rate-note']) {
+    check(!html.includes(obsolete), `${label}: bloco repetido de cotacao ainda contem ${obsolete}.`);
+  }
+  check(!normalized.includes('cotação usada nesta tabela'), `${label}: texto repetido de cotacao ainda presente.`);
+  check(html.includes('CATALOG_RATE'), `${label}: CATALOG_RATE foi removido.`);
+  check(html.includes('brl-estimate'), `${label}: estimativas em reais foram removidas.`);
+  check(html.includes('formatUsdCents'), `${label}: valores principais em US$ foram removidos.`);
+  check(html.includes('fetchBcbPtax') && html.includes('readBcbCache') && html.includes('updateBcbExchangeRate'), `${label}: carregamento ou cache da PTAX foi removido.`);
 }
 
 await validateUnicodeControls();
@@ -215,6 +248,7 @@ const headerJs = await read('apple-inspired-header.js');
 check(/CELULARS_EXCHANGE_SPREAD_BRL\s*=\s*0\.15/.test(headerJs), 'Ajuste PTAX compartilhado nao e R$0,1500.');
 check(/BCB_CACHE_TTL_MS\s*=\s*86400000/.test(headerJs), 'Cache PTAX compartilhado nao e diario.');
 check(/CELULARS_EXCHANGE_SPREAD_BRL\s*=\s*0\.15/.test(iphoneHtml), 'Ajuste PTAX do catalogo nao e R$0,1500.');
+validateIphonePage(iphoneHtml, 'iphones.html');
 
 validateAccessPage(pageSources.get('acessos.html') || '', 'acessos.html');
 
@@ -268,6 +302,7 @@ if (validateDist) {
       }
     }
     validateAccessPage(await read('acessos.html', distRoot), 'dist/acessos.html');
+    validateIphonePage(await read('iphones.html', distRoot), 'dist/iphones.html');
   }
 }
 
