@@ -4,8 +4,10 @@ Checkpoint de produção atualizado em 21 de julho de 2026. Este é o documento 
 
 ## Estado confirmado
 
-- os PRs #7, #8, #9 e #11 foram mesclados; o PR documental #10 permanece aberto, em rascunho e sem merge;
-- a referência de produção é o merge commit `0693a3937d66f9acc564653db174981641b9809f` da `main`;
+- os PRs #7, #8, #9 e #11 foram mesclados; o PR #10 consolida documentalmente este checkpoint, sem ampliar o escopo operacional;
+- a baseline operacional validada para este checkpoint é o merge commit `0693a3937d66f9acc564653db174981641b9809f` da `main`;
+- merges exclusivamente documentais posteriores podem gerar novos workflows, artifacts e deployments sem alterar código operacional ou ampliar a autorização comercial;
+- a evidência histórica associada ao workflow `29826659240` e ao artifact `8493574407` permanece válida para essa baseline;
 - o painel está publicado em `https://painel.celulars.com.br` pelo Worker `celulars-platform`;
 - o banco D1 de produção é `celulars-platform-prod-db` e continua sem dados comerciais;
 - Cloudflare Access e o login interno com MFA protegem o painel;
