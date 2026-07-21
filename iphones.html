@@ -1398,43 +1398,52 @@
   }
 }
 
-.table-exchange-card {
+.catalog-commercial-note {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 10px;
-  margin: 18px 0 14px;
-  padding: 16px 18px;
-  border: 1px solid rgba(29, 29, 31, .1);
-  border-radius: 16px;
-  background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
-  box-shadow: 0 10px 28px rgba(14, 22, 40, .04);
+  gap: 14px;
+  margin: 20px 0 16px;
+  padding: clamp(18px, 2.5vw, 24px) clamp(18px, 3vw, 28px);
+  overflow: hidden;
+  border: 1px solid rgba(230, 167, 0, .58);
+  border-radius: 20px;
+  background: linear-gradient(135deg, #fff8e6 0%, #fffdf6 100%);
+  box-shadow: 0 12px 32px rgba(122, 67, 0, .07);
 }
 
-.table-exchange-card > div {
-  display: grid;
-  gap: 4px;
+.catalog-commercial-note::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: #e6a700;
+  content: "";
 }
 
-.table-exchange-card span:first-child {
-  color: #667085;
-  font-size: .72rem;
-  font-weight: 860;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-.table-exchange-card strong {
-  color: #1d1d1f;
-  font-size: clamp(1.02rem, 2vw, 1.28rem);
-  font-weight: 880;
-}
-
-.table-exchange-card small,
-.table-exchange-card p {
+.catalog-commercial-note h2 {
   margin: 0;
-  color: #667085;
-  font-size: .82rem;
-  line-height: 1.45;
+  color: #7a4300;
+  font-size: clamp(1.12rem, 2vw, 1.35rem);
+  font-weight: 880;
+  line-height: 1.2;
+}
+
+.catalog-commercial-note__copy {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, 2.5vw, 26px);
+}
+
+.catalog-commercial-note p {
+  margin: 0;
+  color: #4b3a20;
+  font-size: .9rem;
+  line-height: 1.58;
+}
+
+@media (max-width: 700px) {
+  .catalog-commercial-note__copy {
+    grid-template-columns: 1fr;
+  }
 }
 
 .table-action-bar {
@@ -1855,17 +1864,16 @@
       <div>
         <span class="eyebrow">CELULARS</span>
         <h1 id="catalog-title">Tabela de iPhones</h1>
-        <p class="catalog-subtitle">Consulte iPhones novos e modelos CPO P1 / Grade A provenientes do mercado americano. A linha CPO &eacute; formada principalmente por aparelhos de trade-in de operadoras dos Estados Unidos, selecionados pela CELULARS para o varejo. Os valores principais aparecem em US$, com estimativa em R$ pela Cota&ccedil;&atilde;o CELULARS, e a confirma&ccedil;&atilde;o acontece pelo atendimento em portugu&ecirc;s no WhatsApp institucional.</p>
+        <p class="catalog-subtitle">Consulte iPhones novos e modelos CPO P1 / Grade A selecionados pela CELULARS, com atendimento em português para confirmar valores e disponibilidade.</p>
       </div>
     </div>
-    <div class="table-exchange-card" role="note" aria-live="polite">
-      <div>
-        <span>Cota&ccedil;&atilde;o usada nesta tabela</span>
-        <strong>USD/BRL CELULARS: <span data-table-reference-rate>Atualizando cota&ccedil;&atilde;o CELULARS...</span></strong>
-        <small data-table-ptax-date>Base PTAX/Banco Central em atualiza&ccedil;&atilde;o.</small>
+    <aside class="catalog-commercial-note" role="note" aria-labelledby="catalog-commercial-note-title">
+      <h2 id="catalog-commercial-note-title">Importante: preços e disponibilidade</h2>
+      <div class="catalog-commercial-note__copy">
+        <p>Os valores exibidos são referências comerciais e podem ser atualizados a qualquer momento, conforme a cotação cambial, a dinâmica do mercado e a disponibilidade de cada modelo, capacidade, cor e condição. As quantidades em estoque também podem variar ao longo do dia. Consulte a CELULARS para confirmar o preço final e a disponibilidade no momento do pedido.</p>
+        <p>O aparelho somente é reservado para retirada ou envio após a confirmação do pagamento. Depois da confirmação, o cliente recebe o documento da compra — invoice — e, nos aparelhos CPO com laudo técnico individual disponível, um QR Code para consultar o relatório do dispositivo.</p>
       </div>
-      <p data-table-rate-note>Usada apenas para estimar os valores em reais. A confirma&ccedil;&atilde;o final acontece pelo WhatsApp institucional.</p>
-    </div>
+    </aside>
     <div class="table-action-bar" role="note">
       <a class="table-main-whatsapp" href="https://wa.me/17865466540?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20consultar%20iPhones%20americanos%20pela%20CELULARS.%20Gostaria%20de%20receber%20atendimento%20em%20portugu%C3%AAs%20para%20confirmar%20modelos%2C%20capacidades%2C%20cores%2C%20valores%20em%20d%C3%B3lar%20e%20estimativa%20em%20reais." target="_blank" rel="noopener noreferrer">Consultar pelo WhatsApp</a>
     </div>
@@ -1898,9 +1906,8 @@
     <div class="post-table-notes" aria-labelledby="catalog-important-title">
       <h2 id="catalog-important-title">Informa&ccedil;&otilde;es importantes</h2>
       <div class="post-table-note-grid">
-        <div class="operation-note" role="note"><strong>Valores:</strong> o US$ &eacute; a refer&ecirc;ncia principal; o R$ &eacute; estimativo pela Cota&ccedil;&atilde;o CELULARS. Nos aparelhos novos, a refer&ecirc;ncia exibida j&aacute; considera as taxas aplic&aacute;veis.</div>
         <div class="operation-note" role="note"><strong>Origem e sele&ccedil;&atilde;o CPO:</strong> aparelhos provenientes principalmente de trade-in de operadoras e outros canais americanos. O diferencial est&aacute; no canal de aquisi&ccedil;&atilde;o, na triagem e na sele&ccedil;&atilde;o P1 / Grade A; os valores por capacidade seguem a tabela comercial da CELULARS.</div>
-        <div class="operation-note" role="note"><strong>Atendimento e retirada:</strong> valores finais, disponibilidade e retirada em Miami s&atilde;o confirmados previamente pelo WhatsApp institucional.</div>
+        <div class="operation-note" role="note"><strong>Atendimento:</strong> suporte comercial em português pelo WhatsApp institucional.</div>
         <div class="operation-note" role="note"><strong>Atacado:</strong> condi&ccedil;&otilde;es exclusivas para clientes comerciais aprovados, mediante an&aacute;lise da CELULARS. <a href="acessos.html">Solicitar acesso</a>.</div>
       </div>
     </div>
@@ -1977,7 +1984,7 @@
   function readLegacyBcbCache(){for(const key of BCB_LEGACY_CACHE_KEYS){try{const c=JSON.parse(localStorage.getItem(key)||'null');if(c&&Number(c.rate)>0)return{...c,cacheVersion:key.includes('_v2')?2:1}}catch(e){}}return null}
   function writeBcbCache(c){try{localStorage.setItem(BCB_CACHE_KEY,JSON.stringify({...c,spread:CELULARS_EXCHANGE_SPREAD_BRL,referenceRate:referenceRateFrom(c),cacheVersion:3}))}catch(e){}}
   function logBcbStatus(source,rateInfo){try{console.info('[CELULARS PTAX]',{source,checkedAt:new Date().toISOString(),checkedKey:localDateKey(),quoteDate:rateInfo.date||String(rateInfo.dataHoraCotacao||'').slice(0,10),ptaxRate:Number(rateInfo.rate)||null,spread:CELULARS_EXCHANGE_SPREAD_BRL,referenceRate:referenceRateFrom(rateInfo),cacheKey:BCB_CACHE_KEY})}catch(e){}}
-  function updateExchangeCard(rateInfo,status){const ptax=Number(rateInfo.rate)||FALLBACK_BCB_RATE,reference=ptax+CELULARS_EXCHANGE_SPREAD_BRL,referenceEls=document.querySelectorAll('[data-cel-reference-rate], [data-bcb-rate]'),ptaxEls=document.querySelectorAll('[data-cel-ptax-rate]'),spreadEls=document.querySelectorAll('[data-cel-spread-rate]'),dateEls=document.querySelectorAll('[data-bcb-date], [data-cel-ptax-date]'),tableRateEls=document.querySelectorAll('[data-table-reference-rate]'),tableDateEls=document.querySelectorAll('[data-table-ptax-date]'),tableNoteEls=document.querySelectorAll('[data-table-rate-note]');referenceEls.forEach(el=>el.textContent=formatBcbRate(reference));ptaxEls.forEach(el=>el.textContent=formatBcbRate(ptax));spreadEls.forEach(el=>el.textContent=formatBcbRate(CELULARS_EXCHANGE_SPREAD_BRL));dateEls.forEach(el=>{el.textContent=status==='fallback'?'Cotação indisponível temporariamente.':'Atualizada em '+formatBcbDate(rateInfo.date||rateInfo.dataHoraCotacao)+'.'});tableRateEls.forEach(el=>{el.textContent=status==='fallback'?'Cotação indisponível no momento':formatBcbRate(reference)});tableDateEls.forEach(el=>{el.textContent=status==='fallback'?'Confirme os valores pelo WhatsApp institucional.':'Base PTAX/Banco Central atualizada em '+formatBcbDate(rateInfo.date||rateInfo.dataHoraCotacao)+'.'});tableNoteEls.forEach(el=>{el.textContent=status==='fallback'?'Cotação indisponível no momento. Confirme os valores pelo WhatsApp institucional.':'Usada apenas para estimar os valores em reais. A confirmação final acontece pelo WhatsApp institucional.'})}
+  function updateExchangeCard(rateInfo,status){const ptax=Number(rateInfo.rate)||FALLBACK_BCB_RATE,reference=ptax+CELULARS_EXCHANGE_SPREAD_BRL,referenceEls=document.querySelectorAll('[data-cel-reference-rate], [data-bcb-rate]'),ptaxEls=document.querySelectorAll('[data-cel-ptax-rate]'),spreadEls=document.querySelectorAll('[data-cel-spread-rate]'),dateEls=document.querySelectorAll('[data-bcb-date], [data-cel-ptax-date]');referenceEls.forEach(el=>el.textContent=formatBcbRate(reference));ptaxEls.forEach(el=>el.textContent=formatBcbRate(ptax));spreadEls.forEach(el=>el.textContent=formatBcbRate(CELULARS_EXCHANGE_SPREAD_BRL));dateEls.forEach(el=>{el.textContent=status==='fallback'?'Cotação indisponível temporariamente.':'Atualizada em '+formatBcbDate(rateInfo.date||rateInfo.dataHoraCotacao)+'.'})}
   function fetchBcbPtax(){if(window.__celularsPtaxRequest)return window.__celularsPtaxRequest;window.__celularsPtaxRequest=(async()=>{const end=new Date(),start=new Date(),controller=typeof AbortController==='function'?new AbortController():null,timeout=controller?setTimeout(()=>controller.abort(),BCB_FETCH_TIMEOUT_MS):null;start.setDate(end.getDate()-14);const url="https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarPeriodo(dataInicial=@dataInicial,dataFinalCotacao=@dataFinalCotacao)?@dataInicial='"+bcbParamDate(start)+"'&@dataFinalCotacao='"+bcbParamDate(end)+"'&$format=json&$orderby=dataHoraCotacao desc&$top=1";try{const options=controller?{cache:'no-store',signal:controller.signal}:{cache:'no-store'},res=await fetch(url,options);if(!res.ok)throw new Error('BCB PTAX HTTP '+res.status);const data=await res.json(),row=data&&data.value&&data.value[0];if(!row||!Number(row.cotacaoVenda))throw new Error('BCB PTAX sem cota\u00e7\u00e3o');return{rate:Number(row.cotacaoVenda),date:String(row.dataHoraCotacao).slice(0,10),dataHoraCotacao:row.dataHoraCotacao,fetchedKey:localDateKey(),fetchedAt:Date.now(),source:'Banco Central do Brasil - PTAX USD/BRL venda'}}finally{if(timeout)clearTimeout(timeout)}})();return window.__celularsPtaxRequest}
   async function updateBcbExchangeRate(){const cached=readBcbCache(),today=localDateKey();if(cached&&cached.fetchedKey===today&&Date.now()-Number(cached.fetchedAt||0)<BCB_CACHE_TTL_MS){CATALOG_RATE=referenceRateFrom(cached);updateExchangeCard(cached,'cache');logBcbStatus('cache',cached);renderCatalog();return}try{const fresh=await fetchBcbPtax();CATALOG_RATE=referenceRateFrom(fresh);writeBcbCache(fresh);updateExchangeCard(fresh,'live');logBcbStatus('api',fresh);renderCatalog()}catch(e){console.warn('Não foi possível carregar PTAX do Banco Central.',e);const saved=readBcbCache()||readLegacyBcbCache();if(saved){CATALOG_RATE=referenceRateFrom(saved);updateExchangeCard(saved,'saved');logBcbStatus('saved-cache',saved);renderCatalog()}else{const fallback={rate:FALLBACK_BCB_RATE,date:''};CATALOG_RATE=referenceRateFrom(fallback);updateExchangeCard(fallback,'fallback');logBcbStatus('fallback',fallback);renderCatalog()}}}
   function isNewModel(m){return IPHONE_17_MODELS.has(m.model_name)}
