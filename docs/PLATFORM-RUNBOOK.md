@@ -1,7 +1,7 @@
 # Runbook da Plataforma CELULARS DEMO
 
 ## Preparacao
-O estado de producao e a recuperacao operacional sao mantidos em [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md) e [PRODUCTION-RECOVERY.md](PRODUCTION-RECOVERY.md). Restauracoes nunca sao automaticas.
+Este runbook continua dedicado ao ambiente DEMO local. A producao ja esta publicada, incluindo o pipeline validado com Node.js 24.18.0 e pnpm 11.9.0; seu estado canonico e a recuperacao operacional sao mantidos em [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md) e [PRODUCTION-RECOVERY.md](PRODUCTION-RECOVERY.md). Restauracoes nunca sao automaticas.
 
 
 ```powershell
@@ -74,7 +74,7 @@ npm run platform:deploy:check
 npm run platform:activation:check
 ```
 
-O doctor deve retornar READY no ambiente DEMO. O deploy-check apenas valida a preparacao e nunca publica. O activation-check deve permanecer NOT READY ate banco, storage, dominio/TLS, segredos, providers, staging, politicas e aprovacoes reais serem provisionados. O backup DEMO inclui SQLite, documentos privados e metadados nao secretos com checksum por artefato.
+O doctor deve retornar READY no ambiente DEMO. O deploy-check apenas valida a preparacao e nunca publica. No ambiente local DEMO, o activation-check permanece NOT READY por desenho enquanto dependencias comerciais externas nao estiverem configuradas; isso nao contradiz a base operacional de producao ja publicada, descrita no documento canonico. O backup DEMO inclui SQLite, documentos privados e metadados nao secretos com checksum por artefato.
 
 Para criptografar todos os artefatos do backup com AES-256-GCM, defina `PLATFORM_BACKUP_PASSPHRASE` antes de executar o comando. A restauracao de teste exige a mesma frase; frase ausente ou incorreta falha de forma fechada. O adaptador remoto permanece desabilitado ate um destino externo ser explicitamente provisionado.
 

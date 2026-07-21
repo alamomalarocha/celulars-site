@@ -1,74 +1,54 @@
-# Governanca de ativacao da Plataforma CELULARS
+# Governança de ativação da Plataforma CELULARS
 
-A infraestrutura do painel de producao ja esta provisionada, mas permanece com banco comercial vazio, importacao bloqueada e integracoes externas desligadas. Consulte [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md). Provisionamento nao autoriza importar dados, ativar providers ou mesclar o PR #7.
+A base operacional de produção foi ativada com banco comercial vazio. O estado confirmado, incluindo a separação entre evidência automática, evidência humana e itens não verificados, está em [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md).
 
-## Bloqueios atuais para operacao comercial completa
+## Ativação concluída
 
-- dados comerciais ainda nao foram autorizados;
-- importacao real e integracoes externas estao desabilitadas;
-- a configuracao efetiva do Access e o painel autenticado ainda exigem homologacao humana;
-- nao ha ambiente de staging protegido aprovado;
-- nao ha politica de retencao e privacidade aplicada a dados reais.
+- Worker `celulars-platform` e D1 `celulars-platform-prod-db` provisionados e publicados;
+- deploy restrito à `main`, depois de `validate`;
+- pré-validação somente leitura da conta e do D1 antes de operações remotas;
+- backup e artifact criados antes das migrations;
+- migrations concluídas antes do deploy;
+- smoke tests online executados depois do deploy;
+- Cloudflare Access, login administrativo, MFA e logout homologados pelo proprietário;
+- módulos comerciais e banco real confirmados vazios;
+- site público e aplicação DEMO preservados.
+- Cloudflare Pages validado com Node.js `24.18.0`, pnpm `11.9.0` e scripts de dependências aprovados por versão em modo fail-closed.
 
-## Checklist de ativacao
+## Bloqueios deliberados para operação comercial com dados reais
 
-### Infraestrutura
+- importação de dados reais não foi autorizada;
+- cadastro público e integrações externas estão desabilitados;
+- nenhum recurso pago foi ativado;
+- storage externo de documentos não foi provisionado;
+- política final de LGPD, retenção e responsabilidades para dados reais requer aprovação;
+- auditoria visual exaustiva e cobertura autenticada de todas as APIs não fazem parte do checkpoint atual.
 
-- escolher runtime protegido separado do Pages publico;
-- adotar D1, PostgreSQL ou banco transacional aprovado;
-- configurar migrations automatizadas e rollback;
-- configurar backups, restauracao e monitoramento;
-- separar desenvolvimento, homologacao e producao.
+## Checklist para uma mudança futura de escopo
 
-### Identidade e segredos
+Antes de importar dados ou ativar qualquer provider:
 
-- integrar provedor de identidade aprovado;
-- exigir MFA para administradores;
-- armazenar segredos em cofre gerenciado;
-- remover todos os fallbacks DEMO;
-- definir rotacao e revogacao de sessoes;
-- ativar cookies `Secure` sob HTTPS.
+1. definir responsável, finalidade, retenção e base legal de cada dado;
+2. delimitar a menor mudança possível em branch e PR próprios;
+3. revisar threat model, RBAC, privacidade e tratamento de falhas;
+4. validar em ambiente seguro sem copiar o banco DEMO para produção;
+5. criar backup de produção antes de qualquer migration ou escrita autorizada;
+6. validar migrations e plano de reversão ou compensação;
+7. obter aprovação humana explícita para merge e ativação;
+8. publicar apenas pela `main` e acompanhar todo o pipeline;
+9. executar smoke tests online e confirmar o site público intacto;
+10. monitorar sem registrar PII ou credenciais desnecessárias.
 
-### Dados
+Mudanças no ambiente de build também devem manter instalação congelada, versões de runtime registradas no repositório e aprovação mínima de scripts de dependências. Não desabilite `strictDepBuilds` nem use permissões amplas para contornar falhas de instalação.
 
-- definir responsavel e finalidade de cada dado;
-- revisar LGPD, privacidade e retencao;
-- importar apenas dados reais aprovados;
-- nunca migrar o banco DEMO;
-- validar isolamento por empresa e trilha de auditoria.
+## Integrações
 
-### Integracoes
+E-mail, WhatsApp, pagamentos, transportadora, SMS e storage externo devem continuar desligados até homologação específica. Cada integração exige consentimento, credenciais em cofre gerenciado, idempotência, retries controlados, webhooks assinados quando aplicável e critérios de desligamento.
 
-- habilitar e-mail em ambiente de teste antes de producao;
-- habilitar WhatsApp com templates e consentimento;
-- homologar pagamentos sem armazenar dados de cartao;
-- homologar transportadoras e webhooks assinados;
-- definir idempotencia, retries e dead-letter handling.
+## Rollback e restauração
 
-### Aplicacao
+Rollback do Worker e restauração do D1 são operações distintas. Nunca restaure automaticamente nem use o banco DEMO como fonte para produção. Em caso de falha, interrompa o processo e siga o procedimento controlado em [PRODUCTION-RECOVERY.md](PRODUCTION-RECOVERY.md).
 
-- repetir threat model e pentest;
-- executar testes de carga e concorrencia;
-- validar WCAG 2.2 AA;
-- adicionar logs estruturados sem PII desnecessaria;
-- configurar alertas, SLOs e resposta a incidentes;
-- revisar RBAC com a operacao CELULARS.
+## Critério de pronto para operação comercial
 
-### Liberacao
-
-1. congelar schema aprovado;
-2. executar migrations em staging;
-3. validar smoke tests e E2E;
-4. fazer backup e ensaio de restauracao;
-5. revisar configuracoes e segredos;
-6. obter aprovacao humana formal;
-7. liberar gradualmente;
-8. monitorar e manter plano de rollback.
-
-## Rollback
-
-O rollback deve cobrir aplicacao, schema e integracoes. Nunca restaure o banco DEMO sobre dados reais. Cada migration de producao precisa de plano de reversao ou compensacao documentado. O procedimento obrigatorio esta em [PRODUCTION-RECOVERY.md](PRODUCTION-RECOVERY.md).
-
-## Criterio de pronto
-
-A ativacao real so pode ocorrer quando seguranca, privacidade, backup, observabilidade, operacao, suporte e responsaveis estiverem formalmente definidos. O PR da DEMO nao concede autorizacao de producao.
+Dados reais ou integrações só podem entrar em operação quando segurança, privacidade, backup, observabilidade, suporte, responsáveis e autorização estiverem formalmente definidos. A infraestrutura publicada, por si só, não amplia essa autorização.
