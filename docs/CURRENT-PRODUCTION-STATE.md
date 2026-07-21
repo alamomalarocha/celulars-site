@@ -20,6 +20,14 @@ Checkpoint de produção atualizado em 21 de julho de 2026. Este é o documento 
 
 Produção operacional, neste checkpoint, significa infraestrutura publicada e acesso administrativo homologado com banco comercial vazio. Não significa autorização para importar dados reais ou ativar integrações.
 
+## Homologação durante o pré-lançamento
+
+Durante a fase de pré-lançamento, `celulars.com.br` é o ambiente de homologação visual do site e `painel.celulars.com.br` é o ambiente de homologação funcional da plataforma pelo proprietário. Funcionalidades concluídas e aprovadas devem ser testadas, mescladas e publicadas nesses ambientes; não devem permanecer somente no workspace local ou na DEMO.
+
+A aplicação DEMO fica reservada para testes isolados, fixtures, mocks, dados fictícios e mudanças ainda não aprovadas. Essa regra production-first não autoriza dados comerciais reais, integrações externas ou recursos pagos: o banco de produção permanece vazio até inserção pelo proprietário ou autorização explícita, e cada integração continua sujeita a aprovação específica.
+
+O site comercial e o painel permanecem arquiteturalmente separados. O site público pode apresentar links claros para o painel, mas não deve duplicar campos de senha, One-time PIN ou MFA, incorporar o painel por iframe nem processar credenciais administrativas.
+
 ## Evidência automática
 
 A execução de produção do GitHub Actions `29826659240`, associada ao commit acima, foi concluída com sucesso e confirmou a ordem segura:
