@@ -25,6 +25,12 @@ O build do Cloudflare Pages usa Node.js `24.18.0`, pnpm `11.9.0` e aprovação f
 
 O site público e a aplicação DEMO foram preservados durante a ativação.
 
+### Homologação no pré-lançamento
+
+Nesta fase, a evolução aprovada segue production-first: o site real é usado para homologação visual e o painel real para homologação funcional do proprietário. Uma funcionalidade concluída deve percorrer testes, revisão, merge e publicação, sem ficar restrita ao ambiente local ou à DEMO. A DEMO continua destinada a testes isolados, dados fictícios e mudanças ainda não aprovadas.
+
+Essa estratégia preserva a separação entre o site comercial e a autenticação do painel. Ela não autoriza popular o banco real nem ativar integrações externas ou recursos pagos.
+
 ## Limites preservados
 
 A plataforma DEMO não atualiza nem publica automaticamente `data/catalog-public.json`. Permanecem separados:

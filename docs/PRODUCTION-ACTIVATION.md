@@ -15,6 +15,12 @@ A base operacional de produção foi ativada com banco comercial vazio. O estado
 - site público e aplicação DEMO preservados.
 - Cloudflare Pages validado com Node.js `24.18.0`, pnpm `11.9.0` e scripts de dependências aprovados por versão em modo fail-closed.
 
+## Fluxo de homologação no pré-lançamento
+
+Funcionalidades aprovadas devem ser validadas localmente, revisadas em PR e publicadas pela `main` para homologação do proprietário no site ou painel real. A DEMO permanece reservada para testes destrutivos ou isolados, fixtures, mocks, dados fictícios e trabalho ainda não aprovado. O estado canônico e os limites dessa regra production-first estão em [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md).
+
+O site comercial apenas encaminha contas autorizadas ao painel protegido; autenticação, senha e MFA não devem ser duplicados no site público. Publicar uma funcionalidade não autoriza importar dados comerciais, ativar providers externos ou contratar recursos pagos.
+
 ## Bloqueios deliberados para operação comercial com dados reais
 
 - importação de dados reais não foi autorizada;

@@ -123,6 +123,16 @@ function compileScripts(html, pageName) {
   }
 }
 
+function validateAccessPage(html, label) {
+  check(html.includes('https://painel.celulars.com.br'), `${label}: destino do painel operacional ausente.`);
+  check(html.includes('Entrar no painel operacional'), `${label}: CTA principal do painel operacional ausente.`);
+  check(html.includes('Painel operacional ativo'), `${label}: status ativo do painel ausente.`);
+  check(!html.includes('Controle futuro'), `${label}: texto obsoleto "Controle futuro" presente.`);
+  check(!html.includes('&Aacute;rea operacional futura') && !html.includes('Área operacional futura'), `${label}: texto obsoleto "Area operacional futura" presente.`);
+  check(!html.includes('Em implanta&ccedil;&atilde;o') && !html.includes('Em implantação'), `${label}: texto obsoleto "Em implantacao" presente.`);
+  check(!html.includes('Em prepara&ccedil;&atilde;o') && !html.includes('Em preparação'), `${label}: texto obsoleto "Em preparacao" presente.`);
+}
+
 await validateUnicodeControls();
 
 for (const file of requiredRootFiles) {
@@ -179,6 +189,8 @@ check(/CELULARS_EXCHANGE_SPREAD_BRL\s*=\s*0\.15/.test(headerJs), 'Ajuste PTAX co
 check(/BCB_CACHE_TTL_MS\s*=\s*86400000/.test(headerJs), 'Cache PTAX compartilhado nao e diario.');
 check(/CELULARS_EXCHANGE_SPREAD_BRL\s*=\s*0\.15/.test(iphoneHtml), 'Ajuste PTAX do catalogo nao e R$0,1500.');
 
+validateAccessPage(pageSources.get('acessos.html') || '', 'acessos.html');
+
 for (const script of ['apple-inspired-header.js', 'visual-direction.js', 'data/catalog-public.js']) {
   try {
     new Function(await read(script));
@@ -228,6 +240,7 @@ if (validateDist) {
         check(await exists(normalized, distRoot), `dist/${page}: recurso local ausente (${normalized}).`);
       }
     }
+    validateAccessPage(await read('acessos.html', distRoot), 'dist/acessos.html');
   }
 }
 
