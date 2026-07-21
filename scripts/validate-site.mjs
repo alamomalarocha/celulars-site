@@ -124,13 +124,40 @@ function compileScripts(html, pageName) {
 }
 
 function validateAccessPage(html, label) {
-  check(html.includes('https://painel.celulars.com.br'), `${label}: destino do painel operacional ausente.`);
-  check(html.includes('Entrar no painel operacional'), `${label}: CTA principal do painel operacional ausente.`);
-  check(html.includes('Painel operacional ativo'), `${label}: status ativo do painel ausente.`);
-  check(!html.includes('Controle futuro'), `${label}: texto obsoleto "Controle futuro" presente.`);
-  check(!html.includes('&Aacute;rea operacional futura') && !html.includes('Área operacional futura'), `${label}: texto obsoleto "Area operacional futura" presente.`);
-  check(!html.includes('Em implanta&ccedil;&atilde;o') && !html.includes('Em implantação'), `${label}: texto obsoleto "Em implantacao" presente.`);
-  check(!html.includes('Em prepara&ccedil;&atilde;o') && !html.includes('Em preparação'), `${label}: texto obsoleto "Em preparacao" presente.`);
+  const requiredContent = [
+    'Escolha seu acesso',
+    'Administrador',
+    'Funcionário',
+    'Atacadista',
+    'Entrar como administrador',
+    'Entrar como funcionário',
+    'Entrar como atacadista',
+    'Solicitar acesso',
+    'https://painel.celulars.com.br',
+    'Cada usuário visualiza somente os recursos autorizados para o seu perfil.'
+  ];
+  for (const content of requiredContent) {
+    check(html.includes(content), `${label}: conteudo obrigatorio ausente (${content}).`);
+  }
+
+  const obsoleteContent = [
+    /controle futuro/i,
+    /em prepara(?:ção|&ccedil;&atilde;o)/i,
+    /(?:á|&aacute;)rea operacional futura/i,
+    /tabela de permiss(?:ões|&otilde;es)/i,
+    /status da plataforma/i,
+    /seguran(?:ça|&ccedil;a) da plataforma/i,
+    /data-profile-tab/i,
+    /data-profile-summary/i
+  ];
+  for (const pattern of obsoleteContent) {
+    check(!pattern.test(html), `${label}: estrutura ou texto obsoleto presente (${pattern.source}).`);
+  }
+
+  const panelLinks = html.match(/href="https:\/\/painel\.celulars\.com\.br"/g) || [];
+  const whatsappLinks = html.match(/href="https:\/\/wa\.me\/17865466540\?/g) || [];
+  check(panelLinks.length === 3, `${label}: esperado um link de painel para cada perfil; encontrados ${panelLinks.length}.`);
+  check(whatsappLinks.length === 1, `${label}: WhatsApp deve aparecer somente no card Atacadista; encontrados ${whatsappLinks.length}.`);
 }
 
 await validateUnicodeControls();
