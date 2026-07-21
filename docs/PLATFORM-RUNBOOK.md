@@ -1,7 +1,7 @@
 # Runbook da Plataforma CELULARS DEMO
 
 ## Preparacao
-Este runbook continua dedicado ao ambiente DEMO local. A producao ja esta publicada e seu estado canonico e a recuperacao operacional sao mantidos em [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md) e [PRODUCTION-RECOVERY.md](PRODUCTION-RECOVERY.md). Restauracoes nunca sao automaticas.
+Este runbook continua dedicado ao ambiente DEMO local. A producao ja esta publicada, incluindo o pipeline validado com Node.js 24.18.0 e pnpm 11.9.0; seu estado canonico e a recuperacao operacional sao mantidos em [CURRENT-PRODUCTION-STATE.md](CURRENT-PRODUCTION-STATE.md) e [PRODUCTION-RECOVERY.md](PRODUCTION-RECOVERY.md). Restauracoes nunca sao automaticas.
 
 
 ```powershell

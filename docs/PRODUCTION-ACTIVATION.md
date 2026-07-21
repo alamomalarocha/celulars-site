@@ -13,6 +13,7 @@ A base operacional de produção foi ativada com banco comercial vazio. O estado
 - Cloudflare Access, login administrativo, MFA e logout homologados pelo proprietário;
 - módulos comerciais e banco real confirmados vazios;
 - site público e aplicação DEMO preservados.
+- Cloudflare Pages validado com Node.js `24.18.0`, pnpm `11.9.0` e scripts de dependências aprovados por versão em modo fail-closed.
 
 ## Bloqueios deliberados para operação comercial com dados reais
 
@@ -37,6 +38,8 @@ Antes de importar dados ou ativar qualquer provider:
 8. publicar apenas pela `main` e acompanhar todo o pipeline;
 9. executar smoke tests online e confirmar o site público intacto;
 10. monitorar sem registrar PII ou credenciais desnecessárias.
+
+Mudanças no ambiente de build também devem manter instalação congelada, versões de runtime registradas no repositório e aprovação mínima de scripts de dependências. Não desabilite `strictDepBuilds` nem use permissões amplas para contornar falhas de instalação.
 
 ## Integrações
 

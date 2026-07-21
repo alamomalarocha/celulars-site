@@ -1,11 +1,11 @@
 # Estado atual canônico da Plataforma CELULARS
 
-Checkpoint de produção atualizado em 20 de julho de 2026. Este é o documento canônico para o estado operacional do painel; planos históricos não substituem as confirmações registradas aqui.
+Checkpoint de produção atualizado em 21 de julho de 2026. Este é o documento canônico para o estado operacional do painel; planos históricos não substituem as confirmações registradas aqui.
 
 ## Estado confirmado
 
-- os PRs #7, #8 e #9 foram mesclados;
-- a referência de produção é o commit `5cdff38ef8a7f4b06d69f33fdc8d7d92e8bfe330` da `main`;
+- os PRs #7, #8, #9 e #11 foram mesclados; o PR documental #10 permanece aberto, em rascunho e sem merge;
+- a referência de produção é o merge commit `0693a3937d66f9acc564653db174981641b9809f` da `main`;
 - o painel está publicado em `https://painel.celulars.com.br` pelo Worker `celulars-platform`;
 - o banco D1 de produção é `celulars-platform-prod-db` e continua sem dados comerciais;
 - Cloudflare Access e o login interno com MFA protegem o painel;
@@ -14,23 +14,24 @@ Checkpoint de produção atualizado em 20 de julho de 2026. Este é o documento 
 - `celulars.com.br`, `www.celulars.com.br`, o catálogo público, a PTAX, o inventário privado e `dist/` permanecem separados e intactos;
 - importação de dados reais, cadastro público, e-mail, WhatsApp, pagamentos, transportadora, SMS e storage externos permanecem desabilitados;
 - nenhum recurso pago foi ativado.
+- o Cloudflare Pages instala com Node.js `24.18.0` e pnpm `11.9.0`; a política fail-closed autoriza scripts somente para as versões fixadas de `esbuild`, `sharp` e `workerd`.
 
 Produção operacional, neste checkpoint, significa infraestrutura publicada e acesso administrativo homologado com banco comercial vazio. Não significa autorização para importar dados reais ou ativar integrações.
 
 ## Evidência automática
 
-A execução de produção do GitHub Actions `29785583449`, associada ao commit acima, foi concluída com sucesso e confirmou a ordem segura:
+A execução de produção do GitHub Actions `29826659240`, associada ao commit acima, foi concluída com sucesso e confirmou a ordem segura:
 
 1. validação do repositório;
 2. presença das credenciais de implantação, sem expor valores;
 3. pré-validação somente leitura da conta Cloudflare e do D1;
 4. export do D1 antes das migrations;
-5. upload do backup `celulars-platform-prod-backup-5cdff38ef8a7f4b06d69f33fdc8d7d92e8bfe330` como artifact histórico `8478336293`;
+5. upload de 7.992 bytes do backup `celulars-platform-prod-backup-0693a3937d66f9acc564653db174981641b9809f` como artifact `8493574407`;
 6. migrations aplicadas sem pendências;
 7. deploy do Worker;
 8. 37 de 37 smoke tests online aprovados.
 
-Os testes online confirmaram a proteção do painel pelo Access, a indisponibilidade da aplicação em `workers.dev`, a disponibilidade do site público e das chaves JWT do Access. Pull requests executam `validate`, mas o job de deploy fica bloqueado; produção só é implantada a partir da `main`.
+Os testes online confirmaram a proteção do painel pelo Access, a indisponibilidade da aplicação em `workers.dev`, a disponibilidade do site público e das chaves JWT do Access. O workflow do site `29826659182` e o deployment de produção do Cloudflare Pages também foram aprovados. A falha `ERR_PNPM_IGNORED_BUILDS` foi resolvida pelo PR #11 antes do build, sem ampliar a execução de scripts de dependências. Pull requests executam `validate`, mas o job de deploy fica bloqueado; produção só é implantada a partir da `main`.
 
 ## Evidência humana autenticada
 
@@ -45,6 +46,7 @@ O proprietário homologou, sem automação de credenciais:
 - produtos, estoque, CRM, empresas, documentos, aprovações, pedidos, itens, reservas e logística sem registros comerciais;
 - ausência de dados DEMO no painel de produção;
 - logout funcional.
+- o log autenticado do preview do PR #11 detectou `nodejs@24.18.0` e `pnpm@11.9.0` e confirmou a instalação do Node.js `24.18.0`.
 
 ## Itens não afirmados por este checkpoint
 

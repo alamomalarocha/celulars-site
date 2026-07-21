@@ -19,7 +19,9 @@ Foram concluídos:
 
 ### Base operacional de produção
 
-Os PRs #7, #8 e #9 foram mesclados. O painel de produção foi provisionado e publicado com Worker e D1 próprios, pipeline com backup anterior às migrations, deploy controlado pela `main` e smoke tests posteriores. Cloudflare Access, login administrativo e MFA foram homologados; os módulos comerciais e o banco real permanecem vazios.
+Os PRs #7, #8, #9 e #11 foram mesclados. O painel de produção foi provisionado e publicado com Worker e D1 próprios, pipeline com backup anterior às migrations, deploy controlado pela `main` e smoke tests posteriores. Cloudflare Access, login administrativo e MFA foram homologados; os módulos comerciais e o banco real permanecem vazios.
+
+O build do Cloudflare Pages usa Node.js `24.18.0`, pnpm `11.9.0` e aprovação fail-closed somente dos scripts de instalação necessários às versões fixadas no lockfile. O PR #11 eliminou `ERR_PNPM_IGNORED_BUILDS`; os workflows e o deployment de produção subsequentes foram aprovados.
 
 O site público e a aplicação DEMO foram preservados durante a ativação.
 
